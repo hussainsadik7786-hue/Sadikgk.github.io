@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>History MCQ Quiz</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(to right, #e3f2fd, #f1f8e9);
+        padding: 20px;
+    }
+    .container {
+        max-width: 800px;
+        margin: auto;
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+        text-align: center;
+        color: #0d47a1;
+    }
+    .question {
+        color: green;
+        font-weight: bold;
+        margin-top: 20px;
+    }
+    .options label {
+        display: block;
+        margin-left: 15px;
+        padding: 5px;
+        cursor: pointer;
+    }
+    .correct {
+        color: green;
+        font-weight: bold;
+    }
+    .wrong {
+        color: red;
+        font-weight: bold;
+    }
+    button {
+        margin-top: 25px;
+        padding: 12px;
+        width: 100%;
+        font-size: 18px;
+        background-color: #1976d2;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #0d47a1;
+    }
+    #result {
+        margin-top: 25px;
+        font-size: 18px;
+        text-align: center;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>📘 History MCQ Test</h2>
+
+<form id="quizForm">
+
+<div class="question">1. वास्को-द-गामा कहाँ का यात्री था?</div>
+<div class="options">
+<label><input type="radio" name="q1"> स्पेन</label>
+<label><input type="radio" name="q1" data-correct="true"> पुर्तगाल</label>
+<label><input type="radio" name="q1"> इंग्लैंड</label>
+<label><input type="radio" name="q1"> अमेरिका</label>
+</div>
+
+<div class="question">2. यूरोपवासियों ने कम्पास का प्रयोग किससे सीखा?</div>
+<div class="options">
+<label><input type="radio" name="q2"> भारत से</label>
+<label><input type="radio" name="q2"> अरबों से</label>
+<label><input type="radio" name="q2" data-correct="true"> चीनी से</label>
+<label><input type="radio" name="q2"> मुस्लिम वैज्ञानिकों से</label>
+</div>
+
+<div class="question">3. उत्तमाशा अन्तरीप की खोज किसने की?</div>
+<div class="options">
+<label><input type="radio" name="q3"> कोलंबस</label>
+<label><input type="radio" name="q3"> वास्को-द-गामा</label>
+<label><input type="radio" name="q3"> मैगलन</label>
+<label><input type="radio" name="q3" data-correct="true"> डियास बार्थोलोम्यू</label>
+</div>
+
+<div class="question">4. अमेरिका की खोज किस वर्ष हुई?</div>
+<div class="options">
+<label><input type="radio" name="q4"> 1453</label>
+<label><input type="radio" name="q4" data-correct="true"> 1492</label>
+<label><input type="radio" name="q4"> 1499</label>
+<label><input type="radio" name="q4"> 1519</label>
+</div>
+
+<div class="question">5. कुस्तुन्तुनिया का पतन किस वर्ष हुआ?</div>
+<div class="options">
+<label><input type="radio" name="q5"> 1420</label>
+<label><input type="radio" name="q5" data-correct="true"> 1453</label>
+<label><input type="radio" name="q5"> 1510</label>
+<label><input type="radio" name="q5"> 1498</label>
+</div>
+
+<button type="button" onclick="checkResult()">Submit Test</button>
+</form>
+
+<div id="result"></div>
+</div>
+
+<script>
+function checkResult() {
+    let score = 0;
+    let attempted = 0;
+    let total = 5;
+
+    document.querySelectorAll(".options").forEach(optionBlock => {
+        const radios = optionBlock.querySelectorAll("input[type='radio']");
+        let selected = false;
+
+        radios.forEach(radio => {
+            const label = radio.parentElement;
+            if (radio.checked) {
+                selected = true;
+                attempted++;
+                if (radio.dataset.correct) {
+                    score++;
+                    label.classList.add("correct");
+                } else {
+                    label.classList.add("wrong");
+                }
+            }
+            if (radio.dataset.correct) {
+                label.classList.add("correct");
+            }
+            radio.disabled = true;
+        });
+    });
+
+    let percent = (score / total * 100).toFixed(2);
+    let unattempted = total - attempted;
+
+    document.getElementById("result").innerHTML = `
+        ✅ Score: <b>${score} / ${total}</b><br>
+        📊 Percentage: <b>${percent}%</b><br>
+        ✍ Attempted: ${attempted}<br>
+        ❌ Unattempted: ${unattempted}
+    `;
+}
+</script>
+
+</body>
+</html>
