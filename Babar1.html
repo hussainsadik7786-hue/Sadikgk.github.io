@@ -2,61 +2,47 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Babar Mughal Quiz</title>
+<title>Babar Mughal Online Quiz</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body{
-  margin:0;
-  font-family: "Segoe UI", sans-serif;
-  background: linear-gradient(120deg,#1d2671,#c33764);
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  font-family: Arial, sans-serif;
+  background:#eef2f5;
+  padding:20px;
 }
-.quiz-card{
+.container{
+  max-width:700px;
+  margin:auto;
   background:#fff;
-  width:95%;
-  max-width:650px;
-  border-radius:12px;
   padding:25px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.3);
+  border-radius:10px;
+  box-shadow:0 0 15px rgba(0,0,0,0.1);
 }
 .header{
   display:flex;
   justify-content:space-between;
   align-items:center;
+  margin-bottom:15px;
 }
 .timer{
-  background:#ff4d4d;
-  color:#fff;
-  padding:6px 14px;
-  border-radius:20px;
   font-weight:bold;
+  color:#d60000;
 }
-.progress{
-  height:8px;
-  background:#eee;
-  border-radius:5px;
-  overflow:hidden;
-  margin:15px 0;
-}
-.progress-bar{
-  height:100%;
-  width:0%;
-  background:#4caf50;
-  transition:0.4s;
+.question{
+  font-size:18px;
+  margin-bottom:15px;
 }
 .option{
   border:1px solid #ccc;
-  border-radius:8px;
+  border-radius:6px;
   padding:10px;
   margin:8px 0;
   cursor:pointer;
 }
-.option input{ margin-right:8px; }
-.option:hover{ background:#f5f5f5; }
-
+.option input{
+  margin-right:10px;
+}
 .correct{
   background:#d4edda;
   border-color:#28a745;
@@ -65,45 +51,41 @@ body{
   background:#f8d7da;
   border-color:#dc3545;
 }
-
 .buttons{
+  margin-top:20px;
   text-align:center;
-  margin-top:15px;
 }
 button{
-  padding:8px 18px;
+  padding:10px 18px;
   margin:5px;
   border:none;
-  border-radius:20px;
+  border-radius:5px;
   cursor:pointer;
-  background:#1d2671;
+  background:#007bff;
   color:#fff;
-  font-size:14px;
 }
-button:hover{ opacity:0.9; }
-
-.score{
-  text-align:center;
+button:disabled{
+  background:#999;
+}
+.result{
+  margin-top:20px;
   font-size:20px;
-  margin-top:15px;
-  color:#1d2671;
+  font-weight:bold;
+  text-align:center;
 }
 </style>
 </head>
 
 <body>
 
-<div class="quiz-card">
+<div class="container">
+
   <div class="header">
-    <h2>Babar Mughal Quiz</h2>
-    <div class="timer" id="timer">15:00</div>
+    <div id="qCount">Question 1 / 15</div>
+    <div class="timer">⏱ Time Left: <span id="time">15:00</span></div>
   </div>
 
-  <div class="progress">
-    <div class="progress-bar" id="progress"></div>
-  </div>
-
-  <div id="questionBox"></div>
+  <div id="quizArea"></div>
 
   <div class="buttons">
     <button onclick="prevQ()">Previous</button>
@@ -111,9 +93,83 @@ button:hover{ opacity:0.9; }
     <button onclick="submitQuiz()">Final Submit</button>
   </div>
 
-  <div class="score" id="score"></div>
+  <div id="result" class="result"></div>
+
 </div>
 
 <script>
-const quiz=[
-{q:"बाबर का पूरा नाम क्या था?",o:["ज़हीरुद्दीन मुहम्मद","जलालुद्दीन","अलाउद्दीन","नासिरुद्दीन
+const quiz = [
+{q:"बाबर का पूरा नाम क्या था?", o:["ज़हीरुद्दीन मुहम्मद","नासिरुद्दीन","जलालुद्दीन","अलाउद्दीन"], a:0},
+{q:"बाबर का जन्म कब हुआ?", o:["1483","1485","1490","1478"], a:0},
+{q:"बाबर का जन्म स्थान?", o:["समरकंद","फरगना","काबुल","दिल्ली"], a:1},
+{q:"बाबर किस वंश से था?", o:["खिलजी","लोदी","तैमूर","गुलाम"], a:2},
+{q:"मुगल साम्राज्य की स्थापना किसने की?", o:["हुमायूँ","बाबर","अकबर","शेरशाह"], a:1},
+{q:"पानीपत का प्रथम युद्ध कब हुआ?", o:["1525","1526","1527","1528"], a:1},
+{q:"पानीपत युद्ध में बाबर ने किसे हराया?", o:["राणा सांगा","इब्राहिम लोदी","शेरशाह","सिकंदर लोदी"], a:1},
+{q:"बाबरनामा किस भाषा में लिखा गया?", o:["फारसी","अरबी","तुर्की","हिंदी"], a:2},
+{q:"खानवा का युद्ध किससे हुआ?", o:["अफगान","राणा सांगा","हुमायूँ","शेरशाह"], a:1},
+{q:"घाघरा का युद्ध कब हुआ?", o:["1527","1528","1529","1530"], a:2},
+{q:"भारत में तोपखाने का प्रयोग किसने किया?", o:["बाबर","अकबर","बलबन","अलाउद्दीन"], a:0},
+{q:"बाबर की राजधानी क्या थी?", o:["दिल्ली","लाहौर","आगरा","काबुल"], a:2},
+{q:"बाबर की मृत्यु कब हुई?", o:["1529","1530","1531","1535"], a:1},
+{q:"बाबर के बाद शासक कौन बना?", o:["अकबर","हुमायूँ","जहाँगीर","शाहजहाँ"], a:1},
+{q:"बाबर कहाँ दफन है?", o:["आगरा","दिल्ली","काबुल","लाहौर"], a:2}
+];
+
+let index = 0;
+let answers = new Array(quiz.length);
+let submitted = false;
+let time = 900;
+
+function loadQ(){
+ const q = quiz[index];
+ document.getElementById("qCount").innerText =
+ `Question ${index+1} / ${quiz.length}`;
+
+ let html = `<div class="question">${q.q}</div>`;
+ q.o.forEach((opt,i)=>{
+   let cls = "";
+   if(submitted){
+     if(i===q.a) cls="correct";
+     else if(answers[index]===i) cls="wrong";
+   }
+   html += `
+   <label class="option ${cls}">
+     <input type="radio" name="opt"
+     ${answers[index]===i?"checked":""}
+     ${submitted?"disabled":""}
+     onclick="answers[${index}]=${i}">
+     ${opt}
+   </label>`;
+ });
+ document.getElementById("quizArea").innerHTML = html;
+}
+loadQ();
+
+function nextQ(){ if(index<quiz.length-1){ index++; loadQ(); } }
+function prevQ(){ if(index>0){ index--; loadQ(); } }
+
+function submitQuiz(){
+ if(submitted) return;
+ submitted = true;
+ let score = 0;
+ quiz.forEach((q,i)=>{ if(answers[i]===q.a) score++; });
+ document.getElementById("result").innerText =
+ `🎯 Your Score: ${score} / ${quiz.length}`;
+ loadQ();
+}
+
+setInterval(()=>{
+ if(time>0 && !submitted){
+  time--;
+  let m=Math.floor(time/60);
+  let s=time%60;
+  document.getElementById("time").innerText =
+  `${m}:${s<10?"0"+s:s}`;
+  if(time===0) submitQuiz();
+ }
+},1000);
+</script>
+
+</body>
+</html>
