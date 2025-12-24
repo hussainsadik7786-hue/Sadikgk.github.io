@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>Babar Mughal Quiz</title>
+<style>
+body { font-family: Arial; background:#f4f4f4; padding:20px; }
+.quiz-box { background:#fff; padding:20px; max-width:600px; margin:auto; border-radius:8px; }
+.option { display:block; margin:8px 0; padding:8px; border:1px solid #ccc; border-radius:5px; cursor:pointer; }
+.correct { background:#c8f7c5; border-color:green; }
+.wrong { background:#f7c5c5; border-color:red; }
+button { padding:8px 15px; margin:5px; }
+#timer { font-weight:bold; color:red; }
+</style>
+</head>
+
+<body>
+
+<div class="quiz-box">
+<h2>Babar Mughal Quiz</h2>
+<p>Time Left: <span id="timer">15:00</span></p>
+
+<div id="questionBox"></div>
+
+<button onclick="prevQ()">Previous</button>
+<button onclick="nextQ()">Next</button>
+<button onclick="submitQuiz()">Final Submit</button>
+
+<h3 id="score"></h3>
+</div>
+
+<script>
+const quiz = [
+{q:"बाबर का पूरा नाम क्या था?", o:["ज़हीरुद्दीन मुहम्मद","जलालुद्दीन","अलाउद्दीन","नासिरुद्दीन"], a:0},
+{q:"बाबर का जन्म कब हुआ?", o:["1483","1485","1490","1478"], a:0},
+{q:"बाबर का जन्म स्थान?", o:["समरकंद","फरगना","काबुल","दिल्ली"], a:1},
+{q:"बाबर किस वंश से था?", o:["खिलजी","लोदी","तैमूर","गुलाम"], a:2},
+{q:"मुगल साम्राज्य की स्थापना किसने की?", o:["हुमायूँ","बाबर","अकबर","शेरशाह"], a:1},
+{q:"पानीपत का पहला युद्ध कब हुआ?", o:["1525","1526","1527","1528"], a:1},
+{q:"पानीपत युद्ध में बाबर ने किसे हराया?", o:["राणा सांगा","इब्राहिम लोदी","शेरशाह","सिकंदर लोदी"], a:1},
+{q:"बाबरनामा किस भाषा में लिखा?", o:["फारसी","अरबी","तुर्की","हिंदी"], a:2},
+{q:"खानवा का युद्ध किससे हुआ?", o:["अफगान","राणा सांगा","हुमायूँ","शेरशाह"], a:1},
+{q:"घाघरा का युद्ध कब हुआ?", o:["1527","1528","1529","1530"], a:2},
+{q:"तोपखाने का प्रयोग भारत में किसने किया?", o:["बाबर","अकबर","बलबन","अलाउद्दीन"], a:0},
+{q:"बाबर की राजधानी क्या थी?", o:["दिल्ली","लाहौर","आगरा","काबुल"], a:2},
+{q:"बाबर की मृत्यु कब हुई?", o:["1529","1530","1531","1535"], a:1},
+{q:"बाबर के बाद शासक कौन बना?", o:["अकबर","हुमायूँ","जहाँगीर","शाहजहाँ"], a:1},
+{q:"बाबर कहाँ दफन है?", o:["आगरा","दिल्ली","काबुल","लाहौर"], a:2}
+];
+
+let index = 0;
+let answers = new Array(quiz.length);
+let time = 900;
+let submitted = false;
+
+function loadQ() {
+ let q = quiz[index];
+ let html = `<h3>Q${index+1}. ${q.q}</h3>`;
+ q.o.forEach((opt,i)=>{
+  let cls="";
+  if(submitted){
+    if(i===q.a) cls="correct";
+    else if(answers[index]===i) cls="wrong";
+  }
+  html += `<label class="option ${cls}">
+  <input type="radio" name="opt" ${answers[index]===i?"checked":""}
+  onclick="answers[${index}]=${i}" ${submitted?"disabled":""}>
+  ${opt}</label>`;
+ });
+ document.getElementById("questionBox").innerHTML = html;
+}
+loadQ();
+
+function nextQ(){ if(index<quiz.length-1){ index++; loadQ(); } }
+function prevQ(){ if(index>0){ index--; loadQ(); } }
+
+function submitQuiz(){
+ submitted = true;
+ let score = 0;
+ quiz.forEach((q,i)=>{ if(answers[i]===q.a) score++; });
+ document.getElementById("score").innerText =
+ `Score: ${score} / ${quiz.length}`;
+ loadQ();
+}
+
+setInterval(()=>{
+ if(time>0 && !submitted){
+  time--;
+  let m = Math.floor(time/60);
+  let s = time%60;
+  document.getElementById("timer").innerText =
+  `${m}:${s<10?"0"+s:s}`;
+  if(time===0) submitQuiz();
+ }
+},1000);
+</script>
+
+</body>
+</html>
