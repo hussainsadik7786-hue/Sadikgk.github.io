@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Babar Quiz</title>
+
+<style>
+body{font-family:Arial;background:#f2f2f2}
+.box{background:#fff;max-width:600px;margin:30px auto;padding:20px;border-radius:8px}
+.option{display:block;border:1px solid #ccc;padding:8px;margin:6px 0}
+.correct{background:#c8f7c5}
+.wrong{background:#f7c5c5}
+button{padding:8px 14px;margin:5px}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+<h3 id="timer">15:00</h3>
+<h3 id="qno"></h3>
+<div id="question"></div>
+<div id="options"></div>
+
+<button onclick="prev()">Previous</button>
+<button onclick="next()">Next</button>
+<button onclick="submit()">Final Submit</button>
+
+<h2 id="result"></h2>
+</div>
+
+<script>
+var quiz=[
+{q:"बाबर का पूरा नाम क्या था?",o:["ज़हीरुद्दीन मुहम्मद","जलालुद्दीन","अलाउद्दीन","नासिरुद्दीन"],a:0},
+{q:"बाबर का जन्म कब हुआ?",o:["1483","1485","1490","1478"],a:0},
+{q:"बाबर का जन्म स्थान?",o:["समरकंद","फरगना","काबुल","दिल्ली"],a:1},
+{q:"मुगल साम्राज्य की स्थापना किसने की?",o:["अकबर","बाबर","हुमायूँ","शेरशाह"],a:1},
+{q:"पानीपत का पहला युद्ध कब हुआ?",o:["1525","1526","1527","1528"],a:1}
+];
+
+var i=0;
+var ans=[];
+var done=false;
+var time=900;
+
+function load(){
+document.getElementById("qno").innerHTML="Question "+(i+1)+"/"+quiz.length;
+document.getElementById("question").innerHTML=quiz[i].q;
+var op="";
+for(var j=0;j<quiz[i].o.length;j++){
+let cls="";
+if(done){
+ if(j==quiz[i].a) cls="correct";
+ else if(ans[i]==j) cls="wrong";
+}
+op+=`<label class="option ${cls}">
+<input type="radio" name="opt" ${ans[i]==j?"checked":""}
+${done?"disabled":""}
+onclick="ans[${i}]=${j}">
+${quiz[i].o[j]}</label>`;
+}
+document.getElementById("options").innerHTML=op;
+}
+load();
+
+function next(){if(i<quiz.length-1){i++;load();}}
+function prev(){if(i>0){i--;load();}}
+
+function submit(){
+done=true;
+var score=0;
+for(var k=0;k<quiz.length;k++){
+if(ans[k]==quiz[k].a) score++;
+}
+document.getElementById("result").innerHTML=
+"Score: "+score+" / "+quiz.length;
+load();
+}
+
+setInterval(function(){
+if(time>0 && !done){
+time--;
+var m=Math.floor(time/60);
+var s=time%60;
+document.getElementById("timer").innerHTML=
+(m<10?"0"+m:m)+":"+(s<10?"0"+s:s);
+if(time==0) submit();
+}
+},1000);
+</script>
+
+</body>
+</html>
