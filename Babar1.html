@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>Babar Mughal Quiz</title>
+
+<style>
+body{
+  margin:0;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(120deg,#1d2671,#c33764);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.quiz-card{
+  background:#fff;
+  width:95%;
+  max-width:650px;
+  border-radius:12px;
+  padding:25px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.3);
+}
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.timer{
+  background:#ff4d4d;
+  color:#fff;
+  padding:6px 14px;
+  border-radius:20px;
+  font-weight:bold;
+}
+.progress{
+  height:8px;
+  background:#eee;
+  border-radius:5px;
+  overflow:hidden;
+  margin:15px 0;
+}
+.progress-bar{
+  height:100%;
+  width:0%;
+  background:#4caf50;
+  transition:0.4s;
+}
+.option{
+  border:1px solid #ccc;
+  border-radius:8px;
+  padding:10px;
+  margin:8px 0;
+  cursor:pointer;
+}
+.option input{ margin-right:8px; }
+.option:hover{ background:#f5f5f5; }
+
+.correct{
+  background:#d4edda;
+  border-color:#28a745;
+}
+.wrong{
+  background:#f8d7da;
+  border-color:#dc3545;
+}
+
+.buttons{
+  text-align:center;
+  margin-top:15px;
+}
+button{
+  padding:8px 18px;
+  margin:5px;
+  border:none;
+  border-radius:20px;
+  cursor:pointer;
+  background:#1d2671;
+  color:#fff;
+  font-size:14px;
+}
+button:hover{ opacity:0.9; }
+
+.score{
+  text-align:center;
+  font-size:20px;
+  margin-top:15px;
+  color:#1d2671;
+}
+</style>
+</head>
+
+<body>
+
+<div class="quiz-card">
+  <div class="header">
+    <h2>Babar Mughal Quiz</h2>
+    <div class="timer" id="timer">15:00</div>
+  </div>
+
+  <div class="progress">
+    <div class="progress-bar" id="progress"></div>
+  </div>
+
+  <div id="questionBox"></div>
+
+  <div class="buttons">
+    <button onclick="prevQ()">Previous</button>
+    <button onclick="nextQ()">Next</button>
+    <button onclick="submitQuiz()">Final Submit</button>
+  </div>
+
+  <div class="score" id="score"></div>
+</div>
+
+<script>
+const quiz=[
+{q:"बाबर का पूरा नाम क्या था?",o:["ज़हीरुद्दीन मुहम्मद","जलालुद्दीन","अलाउद्दीन","नासिरुद्दीन
