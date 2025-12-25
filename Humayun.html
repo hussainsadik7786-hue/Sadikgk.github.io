@@ -1,252 +1,151 @@
-
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>मुगल साम्राज्य 1530-1555 MCQ टेस्ट</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-        }
-        .container {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-        .subtitle {
-            text-align: center;
-            color: #7f8c8d;
-            margin-bottom: 30px;
-            font-size: 16px;
-        }
-        .question {
-            margin-bottom: 25px;
-            padding: 20px;
-            border: 2px solid #ecf0f1;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-        .question:hover {
-            border-color: #3498db;
-            box-shadow: 0 5px 15px rgba(52,152,219,0.2);
-        }
-        .question-number {
-            background: #3498db;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 50%;
-            font-weight: bold;
-            font-size: 14px;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-        .question-text {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-        .options {
-            list-style: none;
-            padding: 0;
-        }
-        .option {
-            margin-bottom: 10px;
-            padding: 12px 15px;
-            background: #f8f9fa;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 16px;
-            position: relative;
-        }
-        .option:hover {
-            background: #e3f2fd;
-            border-color: #2196f3;
-            transform: translateX(5px);
-        }
-        .option input[type="radio"] {
-            margin-right: 10px;
-            transform: scale(1.2);
-        }
-        .option.selected {
-            background: #fff3cd;
-            border-color: #ffc107;
-        }
-        .option.correct {
-            background: #d4edda !important;
-            border-color: #28a745 !important;
-            color: #155724;
-        }
-        .option.incorrect {
-            background: #f8d7da !important;
-            border-color: #dc3545 !important;
-            color: #721c24;
-        }
-        .submit-btn {
-            background: linear-gradient(45deg, #28a745, #20c997);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 18px;
-            border-radius: 50px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 20px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(40,167,69,0.4);
-        }
-        .submit-btn:disabled {
-            background: #6c757d;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .score-section {
-            display: none;
-            text-align: center;
-            padding: 30px;
-            background: linear-gradient(135deg, #28a745, #20c997);
-            color: white;
-            border-radius: 15px;
-            margin-top: 20px;
-        }
-        .score {
-            font-size: 48px;
-            font-weight: bold;
-            margin: 20px 0;
-        }
-        .score-text {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        .restart-btn {
-            background: white;
-            color: #28a745;
-            border: 2px solid white;
-            padding: 12px 30px;
-            font-size: 16px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 20px;
-        }
-        .restart-btn:hover {
-            background: rgba(255,255,255,0.9);
-            transform: translateY(-2px);
-        }
-        .progress {
-            width: 100%;
-            height: 8px;
-            background: #ecf0f1;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #3498db, #2980b9);
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Mughal Empire Test (1530–1555)</title>
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f6f8;
+}
+.container{
+    width:90%;
+    max-width:700px;
+    margin:20px auto;
+    background:white;
+    padding:20px;
+    border-radius:8px;
+    box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+h2{
+    text-align:center;
+}
+#timer{
+    text-align:center;
+    font-size:18px;
+    color:red;
+    margin-bottom:10px;
+}
+.option{
+    padding:10px;
+    margin:8px 0;
+    border:1px solid #ccc;
+    border-radius:5px;
+    cursor:pointer;
+}
+.option:hover{
+    background:#eef;
+}
+.correct{
+    background:#c8f7c5;
+    border-color:green;
+}
+.wrong{
+    background:#f7c5c5;
+    border-color:red;
+}
+button{
+    padding:10px 15px;
+    margin-top:15px;
+    font-size:16px;
+    cursor:pointer;
+}
+#scoreBox{
+    text-align:center;
+    font-size:20px;
+    margin-top:20px;
+}
+</style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>🕌 मुगल साम्राज्य 1530-1555</h1>
-        <p class="subtitle">हुमायूँ काल - 25 बहुविकल्पीय प्रश्न</p>
-        
-        <div class="progress">
-            <div class="progress-bar" id="progressBar"></div>
-        </div>
-        
-        <form id="quizForm">
-            <div class="question">
-                <div class="question-number">1</div>
-                <div class="question-text">हुमायूँ ने मुगल सिंहासन पर कब विराजमान हुए?</div>
-                <ul class="options">
-                    <li class="option"><input type="radio" name="q1" value="a"> a) 1526 ई.</li>
-                    <li class="option"><input type="radio" name="q1" value="b"> b) 1530 ई.</li>
-                    <li class="option"><input type="radio" name="q1" value="c"> c) 1540 ई.</li>
-                    <li class="option"><input type="radio" name="q1" value="d"> d) 1555 ई.</li>
-                </ul>
-            </div>
 
-            <div class="question">
-                <div class="question-number">2</div>
-                <div class="question-text">देवरा का युद्ध कब लड़ा गया?</div>
-                <ul class="options">
-                    <li class="option"><input type="radio" name="q2" value="a"> a) 1531 ई.</li>
-                    <li class="option"><input type="radio" name="q2" value="b"> b) 1539 ई.</li>
-                    <li class="option"><input type="radio" name="q2" value="c"> c) 1540 ई.</li>
-                    <li class="option"><input type="radio" name="q2" value="d"> d) 1555 ई.</li>
-                </ul>
-            </div>
+<div class="container">
+<h2>Mughal Empire Test (1530–1555)</h2>
+<div id="timer">Time Left: 15:00</div>
+<div id="quiz"></div>
+<button onclick="nextQuestion()">Next</button>
+<button onclick="submitQuiz()">Submit</button>
+<div id="scoreBox"></div>
+</div>
 
-            <div class="question">
-                <div class="question-number">3</div>
-                <div class="question-text">देवरा के युद्ध में हुमायूँ का विरोधी कौन था?</div>
-                <ul class="options">
-                    <li class="option"><input type="radio" name="q3" value="a"> a) शेर शाह सूरी</li>
-                    <li class="option"><input type="radio" name="q3" value="b"> b) बहादुर शाह</li>
-                    <li class="option"><input type="radio" name="q3" value="c"> c) महमूद लोदी</li>
-                    <li class="option"><input type="radio" name="q3" value="d"> d) सिकंदर सूरी</li>
-                </ul>
-            </div>
+<script>
+const questions = [
+{q:"Humayun ascended the Mughal throne in?", o:["1526","1530","1540","1555"], a:1},
+{q:"Humayun was the son of?", o:["Akbar","Babur","Sher Shah","Ibrahim Lodi"], a:1},
+{q:"Full name of Humayun?", o:["Nasiruddin Muhammad","Jalaluddin Muhammad","Shamsuddin","Firoz"], a:0},
+{q:"Battle of Chausa was fought in?", o:["1535","1537","1539","1540"], a:2},
+{q:"Humayun was defeated at Chausa by?", o:["Akbar","Babur","Sher Shah Suri","Hemu"], a:2},
+{q:"Battle of Kannauj was fought in?", o:["1539","1540","1545","1555"], a:1},
+{q:"After Kannauj, Humayun?", o:["Died","Won","Left India","Captured"], a:2},
+{q:"Humayun took refuge in?", o:["Turkey","Iran","China","Arab"], a:1},
+{q:"Iran ruler who helped Humayun?", o:["Shah Abbas","Shah Ismail","Shah Tahmasp","Nadir Shah"], a:2},
+{q:"Humayun remained in exile for?", o:["5 yrs","10 yrs","15 yrs","20 yrs"], a:2},
+{q:"Humayun recaptured Delhi in?", o:["1545","1550","1555","1556"], a:2},
+{q:"Humayun’s general during return?", o:["Bairam Khan","Hemu","Sher Shah","Ali Mardan"], a:0},
+{q:"Humayun died in?", o:["1555","1556","1557","1560"], a:1},
+{q:"Cause of Humayun’s death?", o:["War","Disease","Fall from stairs","Murder"], a:2},
+{q:"Humayun’s tomb is in?", o:["Agra","Delhi","Lahore","Sikri"], a:1},
+{q:"Successor of Humayun?", o:["Babur","Akbar","Jahangir","Shah Jahan"], a:1},
+{q:"Suri dynasty founder?", o:["Babur","Akbar","Sher Shah","Hemu"], a:2},
+{q:"Humayun interested in?", o:["War","Astrology","Trade","Agriculture"], a:1},
+{q:"Humayun’s sister?", o:["Noor Jahan","Gulbadan Begum","Jodha","Razia"], a:1},
+{q:"Book written by Gulbadan?", o:["Baburnama","Humayunnama","Akbarnama","Tarikh"], a:1},
+{q:"Humayun ruled total?", o:["10 yrs","15 yrs","20 yrs","25 yrs"], a:1},
+{q:"Delhi was ruled by whom during exile?", o:["Akbar","Sher Shah","Babur","Hemu"], a:1},
+{q:"Humayun regained throne with help of?", o:["Akbar","Bairam Khan","Hemu","Shah Abbas"], a:1},
+{q:"Humayun is called?", o:["Great warrior","Lucky king","Unlucky ruler","Cruel king"], a:2},
+{q:"Mughal empire restored by Humayun in?", o:["1540","1555","1556","1560"], a:1}
+];
 
-            <div class="question">
-                <div class="question-number">4</div>
-                <div class="question-text">चौसा का युद्ध कब हुआ?</div>
-                <ul class="options">
-                    <li class="option"><input type="radio" name="q4" value="a"> a) 1531 ई.</li>
-                    <li class="option"><input type="radio" name="q4" value="b"> b) 1535 ई.</li>
-                    <li class="option"><input type="radio" name="q4" value="c"> c) 1539 ई.</li>
-                    <li class="option"><input type="radio" name="q4" value="d"> d) 1540 ई.</li>
-                </ul>
-            </div>
+let index = 0;
+let score = 0;
+let selected = Array(questions.length).fill(null);
 
-            <div class="question">
-                <div class="question-number">5</div>
-                <div class="question-text">चौसा युद्ध में हुमायूँ को किसने हराया?</div>
-                <ul class="options">
-                    <li class="option"><input type="radio" name="q5" value="a"> a) बहादुर शाह</li>
-                    <li class="option"><input type="radio" name="q5" value="b"> b) शेर खाँ (शेर शाह)</li>
-                    <li class="option"><input type="radio" name="q5" value="c"> c) सिकंदर सूरी</li>
-                    <li class="option"><input type="radio" name="q5" value="d"> d) महमूद लोदी</li>
-                </ul>
-            </div>
+function loadQuestion(){
+    let q = questions[index];
+    let html = `<h3>Q${index+1}. ${q.q}</h3>`;
+    q.o.forEach((opt,i)=>{
+        html += `<div class="option" onclick="selectOption(${i})">${opt}</div>`;
+    });
+    document.getElementById("quiz").innerHTML = html;
+}
+function selectOption(i){
+    selected[index]=i;
+}
+function nextQuestion(){
+    if(index < questions.length-1){
+        index++;
+        loadQuestion();
+    }
+}
+function submitQuiz(){
+    let html="";
+    questions.forEach((q,i)=>{
+        html+=`<h4>Q${i+1}. ${q.q}</h4>`;
+        q.o.forEach((opt,j)=>{
+            let cls="";
+            if(j===q.a) cls="correct";
+            if(j===selected[i] && j!==q.a) cls="wrong";
+            html+=`<div class="option ${cls}">${opt}</div>`;
+        });
+        if(selected[i]===q.a) score++;
+    });
+    document.getElementById("quiz").innerHTML=html;
+    document.getElementById("scoreBox").innerHTML=`Your Score: ${score} / ${questions.length}`;
+}
 
-            <div class="question">
-                <div class="question-number">6</div>
-                <div class="question-text">बिलग्राम या कन्नौज युद्ध कब लड़ा गया?</div>
-                <ul class="options">
-                    <li class="option"><input type="radio" name="q6" value="a"> a) 1535 ई.</li>
-                    <li class="option"><input type="radio" name="q6" value="b"> b) 1539 ई.</li>
-                    <li class="option"><input type="radio" name="q6" value="c"> c) 1540 ई.</li>
-                    <li class="option"><input type="radio" name="q6" value="d"> d) 1555 ई.</li>
-                </ul>
-            </div>
+let time=900;
+setInterval(()=>{
+    let m=Math.floor(time/60);
+    let s=time%60;
+    document.getElementById("timer").innerText=`Time Left: ${m}:${s<10?"0"+s:s}`;
+    if(time<=0) submitQuiz();
+    time--;
+},1000);
 
-            <div class="
+loadQuestion();
+</script>
+
+</body>
+</html>
