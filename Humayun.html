@@ -1,40 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <title>Mughal Empire Test (1530–1555)</title>
 <style>
 body{
-    font-family: Arial, sans-serif;
-    background:#f4f6f8;
+    font-family: Arial;
+    background:#eef2f5;
 }
 .container{
-    width:90%;
-    max-width:700px;
+    max-width:750px;
     margin:20px auto;
-    background:white;
+    background:#fff;
     padding:20px;
     border-radius:8px;
-    box-shadow:0 0 10px rgba(0,0,0,0.1);
 }
-h2{
-    text-align:center;
-}
+h2{text-align:center;}
 #timer{
     text-align:center;
-    font-size:18px;
     color:red;
+    font-size:18px;
     margin-bottom:10px;
 }
 .option{
+    border:1px solid #ccc;
     padding:10px;
     margin:8px 0;
-    border:1px solid #ccc;
     border-radius:5px;
     cursor:pointer;
 }
-.option:hover{
-    background:#eef;
+.option.selected{
+    background:#dbeafe;
 }
 .correct{
     background:#c8f7c5;
@@ -46,11 +42,10 @@ h2{
 }
 button{
     padding:10px 15px;
-    margin-top:15px;
+    margin:10px 5px 0 0;
     font-size:16px;
-    cursor:pointer;
 }
-#scoreBox{
+#score{
     text-align:center;
     font-size:20px;
     margin-top:20px;
@@ -61,12 +56,15 @@ button{
 <body>
 
 <div class="container">
-<h2>Mughal Empire Test (1530–1555)</h2>
+<h2>Mughal Empire (1530–1555)</h2>
 <div id="timer">Time Left: 15:00</div>
 <div id="quiz"></div>
-<button onclick="nextQuestion()">Next</button>
+
+<button onclick="prev()">Previous</button>
+<button onclick="next()">Next</button>
 <button onclick="submitQuiz()">Submit</button>
-<div id="scoreBox"></div>
+
+<div id="score"></div>
 </div>
 
 <script>
@@ -75,71 +73,61 @@ const questions = [
 {q:"Humayun was the son of?", o:["Akbar","Babur","Sher Shah","Ibrahim Lodi"], a:1},
 {q:"Full name of Humayun?", o:["Nasiruddin Muhammad","Jalaluddin Muhammad","Shamsuddin","Firoz"], a:0},
 {q:"Battle of Chausa was fought in?", o:["1535","1537","1539","1540"], a:2},
-{q:"Humayun was defeated at Chausa by?", o:["Akbar","Babur","Sher Shah Suri","Hemu"], a:2},
-{q:"Battle of Kannauj was fought in?", o:["1539","1540","1545","1555"], a:1},
-{q:"After Kannauj, Humayun?", o:["Died","Won","Left India","Captured"], a:2},
+{q:"Humayun was defeated by Sher Shah at?", o:["Panipat","Chausa","Kannauj","Delhi"], a:1},
+{q:"Battle of Kannauj fought in?", o:["1539","1540","1545","1555"], a:1},
+{q:"After defeat, Humayun?", o:["Won","Captured","Left India","Died"], a:2},
 {q:"Humayun took refuge in?", o:["Turkey","Iran","China","Arab"], a:1},
 {q:"Iran ruler who helped Humayun?", o:["Shah Abbas","Shah Ismail","Shah Tahmasp","Nadir Shah"], a:2},
-{q:"Humayun remained in exile for?", o:["5 yrs","10 yrs","15 yrs","20 yrs"], a:2},
-{q:"Humayun recaptured Delhi in?", o:["1545","1550","1555","1556"], a:2},
-{q:"Humayun’s general during return?", o:["Bairam Khan","Hemu","Sher Shah","Ali Mardan"], a:0},
-{q:"Humayun died in?", o:["1555","1556","1557","1560"], a:1},
-{q:"Cause of Humayun’s death?", o:["War","Disease","Fall from stairs","Murder"], a:2},
-{q:"Humayun’s tomb is in?", o:["Agra","Delhi","Lahore","Sikri"], a:1},
-{q:"Successor of Humayun?", o:["Babur","Akbar","Jahangir","Shah Jahan"], a:1},
-{q:"Suri dynasty founder?", o:["Babur","Akbar","Sher Shah","Hemu"], a:2},
-{q:"Humayun interested in?", o:["War","Astrology","Trade","Agriculture"], a:1},
-{q:"Humayun’s sister?", o:["Noor Jahan","Gulbadan Begum","Jodha","Razia"], a:1},
-{q:"Book written by Gulbadan?", o:["Baburnama","Humayunnama","Akbarnama","Tarikh"], a:1},
-{q:"Humayun ruled total?", o:["10 yrs","15 yrs","20 yrs","25 yrs"], a:1},
-{q:"Delhi was ruled by whom during exile?", o:["Akbar","Sher Shah","Babur","Hemu"], a:1},
-{q:"Humayun regained throne with help of?", o:["Akbar","Bairam Khan","Hemu","Shah Abbas"], a:1},
-{q:"Humayun is called?", o:["Great warrior","Lucky king","Unlucky ruler","Cruel king"], a:2},
-{q:"Mughal empire restored by Humayun in?", o:["1540","1555","1556","1560"], a:1}
+{q:"Humayun recaptured Delhi in?", o:["1545","1550","1555","1556"], a:2}
 ];
 
-let index = 0;
-let score = 0;
-let selected = Array(questions.length).fill(null);
+let index=0;
+let answers=new Array(questions.length).fill(null);
+let score=0;
 
 function loadQuestion(){
-    let q = questions[index];
-    let html = `<h3>Q${index+1}. ${q.q}</h3>`;
+    let q=questions[index];
+    let html=`<h3>Q${index+1}. ${q.q}</h3>`;
     q.o.forEach((opt,i)=>{
-        html += `<div class="option" onclick="selectOption(${i})">${opt}</div>`;
+        let cls= answers[index]===i ? "option selected" : "option";
+        html+=`<div class="${cls}" onclick="select(${i})">${opt}</div>`;
     });
-    document.getElementById("quiz").innerHTML = html;
+    document.getElementById("quiz").innerHTML=html;
 }
-function selectOption(i){
-    selected[index]=i;
+function select(i){
+    answers[index]=i;
+    loadQuestion();
 }
-function nextQuestion(){
-    if(index < questions.length-1){
-        index++;
-        loadQuestion();
-    }
+function next(){
+    if(index<questions.length-1){index++;loadQuestion();}
+}
+function prev(){
+    if(index>0){index--;loadQuestion();}
 }
 function submitQuiz(){
+    clearInterval(timerInt);
     let html="";
+    score=0;
     questions.forEach((q,i)=>{
         html+=`<h4>Q${i+1}. ${q.q}</h4>`;
         q.o.forEach((opt,j)=>{
-            let cls="";
-            if(j===q.a) cls="correct";
-            if(j===selected[i] && j!==q.a) cls="wrong";
-            html+=`<div class="option ${cls}">${opt}</div>`;
+            let cls="option";
+            if(j===q.a) cls+=" correct";
+            if(j===answers[i] && j!==q.a) cls+=" wrong";
+            html+=`<div class="${cls}">${opt}</div>`;
         });
-        if(selected[i]===q.a) score++;
+        if(answers[i]===q.a) score++;
     });
     document.getElementById("quiz").innerHTML=html;
-    document.getElementById("scoreBox").innerHTML=`Your Score: ${score} / ${questions.length}`;
+    document.getElementById("score").innerHTML=`Score: ${score} / ${questions.length}`;
 }
 
 let time=900;
-setInterval(()=>{
+let timerInt=setInterval(()=>{
     let m=Math.floor(time/60);
     let s=time%60;
-    document.getElementById("timer").innerText=`Time Left: ${m}:${s<10?"0"+s:s}`;
+    document.getElementById("timer").innerText=
+        `Time Left: ${m}:${s<10?"0"+s:s}`;
     if(time<=0) submitQuiz();
     time--;
 },1000);
