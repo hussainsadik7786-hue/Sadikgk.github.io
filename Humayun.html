@@ -1,24 +1,25 @@
+
 <!DOCTYPE html>
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>हुमायूँ मुगल काल MCQ क्विज (1530-1555)</title>
+    <title>मुगल साम्राज्य 1530-1555 MCQ टेस्ट</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
         }
-        .quiz-container {
+        .container {
             background: white;
-            padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            margin-bottom: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
         h1 {
             text-align: center;
@@ -29,452 +30,223 @@
             text-align: center;
             color: #7f8c8d;
             margin-bottom: 30px;
-            font-size: 1.1em;
+            font-size: 16px;
         }
         .question {
             margin-bottom: 25px;
             padding: 20px;
             border: 2px solid #ecf0f1;
             border-radius: 10px;
-            background: #fdfefe;
+            transition: all 0.3s ease;
         }
-        .question h3 {
-            color: #34495e;
+        .question:hover {
+            border-color: #3498db;
+            box-shadow: 0 5px 15px rgba(52,152,219,0.2);
+        }
+        .question-number {
+            background: #3498db;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .question-text {
+            font-size: 18px;
+            font-weight: bold;
             margin-bottom: 15px;
-            font-size: 1.2em;
+            line-height: 1.5;
         }
         .options {
             list-style: none;
             padding: 0;
         }
-        .options li {
-            margin: 10px 0;
+        .option {
+            margin-bottom: 10px;
             padding: 12px 15px;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 1em;
-            border: 2px solid transparent;
+            font-size: 16px;
+            position: relative;
         }
-        .options li:hover {
-            background: #3498db;
-            color: white;
+        .option:hover {
+            background: #e3f2fd;
+            border-color: #2196f3;
             transform: translateX(5px);
         }
-        .correct {
-            background: #2ecc71 !important;
-            color: white !important;
-            border-color: #27ae60 !important;
+        .option input[type="radio"] {
+            margin-right: 10px;
+            transform: scale(1.2);
         }
-        .incorrect {
-            background: #e74c3c !important;
-            color: white !important;
-            border-color: #c0392b !important;
+        .option.selected {
+            background: #fff3cd;
+            border-color: #ffc107;
         }
-        .selected {
-            background: #3498db !important;
-            color: white !important;
-            border-color: #2980b9 !important;
+        .option.correct {
+            background: #d4edda !important;
+            border-color: #28a745 !important;
+            color: #155724;
         }
-        button {
-            background: #3498db;
+        .option.incorrect {
+            background: #f8d7da !important;
+            border-color: #dc3545 !important;
+            color: #721c24;
+        }
+        .submit-btn {
+            background: linear-gradient(45deg, #28a745, #20c997);
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 1.1em;
-            border-radius: 25px;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 50px;
             cursor: pointer;
-            transition: all 0.3s ease;
             width: 100%;
-            margin: 20px 0;
+            margin-top: 20px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        button:hover {
-            background: #2980b9;
+        .submit-btn:hover {
             transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(40,167,69,0.4);
         }
-        .result {
+        .submit-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .score-section {
             display: none;
             text-align: center;
             padding: 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #28a745, #20c997);
             color: white;
             border-radius: 15px;
             margin-top: 20px;
         }
         .score {
-            font-size: 3em;
+            font-size: 48px;
             font-weight: bold;
             margin: 20px 0;
         }
+        .score-text {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .restart-btn {
+            background: white;
+            color: #28a745;
+            border: 2px solid white;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .restart-btn:hover {
+            background: rgba(255,255,255,0.9);
+            transform: translateY(-2px);
+        }
         .progress {
+            width: 100%;
+            height: 8px;
             background: #ecf0f1;
-            border-radius: 10px;
-            height: 10px;
-            margin: 20px 0;
+            border-radius: 4px;
+            margin-bottom: 20px;
             overflow: hidden;
         }
         .progress-bar {
             height: 100%;
-            background: #27ae60;
+            background: linear-gradient(90deg, #3498db, #2980b9);
             width: 0%;
-            transition: width 0.5s ease;
-        }
-        .answered {
-            opacity: 0.7;
+            transition: width 0.3s ease;
         }
     </style>
 </head>
 <body>
-    <div class="quiz-container">
-        <h1>🕌 हुमायूँ मुगल काल MCQ</h1>
-        <p class="subtitle">(1530-1555) - 25 प्रश्न | सही उत्तर हरे रंग में, गलत लाल रंग में</p>
+    <div class="container">
+        <h1>🕌 मुगल साम्राज्य 1530-1555</h1>
+        <p class="subtitle">हुमायूँ काल - 25 बहुविकल्पीय प्रश्न</p>
         
         <div class="progress">
             <div class="progress-bar" id="progressBar"></div>
         </div>
         
         <form id="quizForm">
-            <div class="question" data-question="1">
-                <h3>1. हुमायूँ ने मुगल सिंहासन कब संभाला?</h3>
+            <div class="question">
+                <div class="question-number">1</div>
+                <div class="question-text">हुमायूँ ने मुगल सिंहासन पर कब विराजमान हुए?</div>
                 <ul class="options">
-                    <li data-correct="true">b) 1530</li>
-                    <li data-correct="false">a) 1526</li>
-                    <li data-correct="false">c) 1540</li>
-                    <li data-correct="false">d) 1555</li>
+                    <li class="option"><input type="radio" name="q1" value="a"> a) 1526 ई.</li>
+                    <li class="option"><input type="radio" name="q1" value="b"> b) 1530 ई.</li>
+                    <li class="option"><input type="radio" name="q1" value="c"> c) 1540 ई.</li>
+                    <li class="option"><input type="radio" name="q1" value="d"> d) 1555 ई.</li>
                 </ul>
             </div>
 
-            <div class="question" data-question="2">
-                <h3>2. हुमायूँ के पिता का नाम क्या था?</h3>
+            <div class="question">
+                <div class="question-number">2</div>
+                <div class="question-text">देवरा का युद्ध कब लड़ा गया?</div>
                 <ul class="options">
-                    <li data-correct="true">b) बाबर</li>
-                    <li data-correct="false">a) अकबर</li>
-                    <li data-correct="false">c) शेरशाह</li>
-                    <li data-correct="false">d) बहादुर शाह</li>
+                    <li class="option"><input type="radio" name="q2" value="a"> a) 1531 ई.</li>
+                    <li class="option"><input type="radio" name="q2" value="b"> b) 1539 ई.</li>
+                    <li class="option"><input type="radio" name="q2" value="c"> c) 1540 ई.</li>
+                    <li class="option"><input type="radio" name="q2" value="d"> d) 1555 ई.</li>
                 </ul>
             </div>
 
-            <div class="question" data-question="3">
-                <h3>3. हुमायूँ का पहला अभियान किसके विरुद्ध था?</h3>
+            <div class="question">
+                <div class="question-number">3</div>
+                <div class="question-text">देवरा के युद्ध में हुमायूँ का विरोधी कौन था?</div>
                 <ul class="options">
-                    <li data-correct="false">a) शेरशाह</li>
-                    <li data-correct="true">b) कालिंजर</li>
-                    <li data-correct="false">c) गुजरात</li>
-                    <li data-correct="false">d) बंगाल</li>
+                    <li class="option"><input type="radio" name="q3" value="a"> a) शेर शाह सूरी</li>
+                    <li class="option"><input type="radio" name="q3" value="b"> b) बहादुर शाह</li>
+                    <li class="option"><input type="radio" name="q3" value="c"> c) महमूद लोदी</li>
+                    <li class="option"><input type="radio" name="q3" value="d"> d) सिकंदर सूरी</li>
                 </ul>
             </div>
 
-            <div class="question" data-question="4">
-                <h3>4. हुमायूँ के भाइयों में से काबुल का जागीरदार कौन था?</h3>
+            <div class="question">
+                <div class="question-number">4</div>
+                <div class="question-text">चौसा का युद्ध कब हुआ?</div>
                 <ul class="options">
-                    <li data-correct="false">a) अस्करी</li>
-                    <li data-correct="false">b) हिंदल</li>
-                    <li data-correct="true">c) कामरान</li>
-                    <li data-correct="false">d) अकबर</li>
+                    <li class="option"><input type="radio" name="q4" value="a"> a) 1531 ई.</li>
+                    <li class="option"><input type="radio" name="q4" value="b"> b) 1535 ई.</li>
+                    <li class="option"><input type="radio" name="q4" value="c"> c) 1539 ई.</li>
+                    <li class="option"><input type="radio" name="q4" value="d"> d) 1540 ई.</li>
                 </ul>
             </div>
 
-            <div class="question" data-question="5">
-                <h3>5. जौनपुर से किसे हुमायूँ ने खदेड़ा?</h3>
+            <div class="question">
+                <div class="question-number">5</div>
+                <div class="question-text">चौसा युद्ध में हुमायूँ को किसने हराया?</div>
                 <ul class="options">
-                    <li data-correct="false">a) शेरशाह</li>
-                    <li data-correct="true">b) सुल्तान महमूद लोदी</li>
-                    <li data-correct="false">c) बहादुर शाह</li>
-                    <li data-correct="false">d) प्रतापरुद्र</li>
+                    <li class="option"><input type="radio" name="q5" value="a"> a) बहादुर शाह</li>
+                    <li class="option"><input type="radio" name="q5" value="b"> b) शेर खाँ (शेर शाह)</li>
+                    <li class="option"><input type="radio" name="q5" value="c"> c) सिकंदर सूरी</li>
+                    <li class="option"><input type="radio" name="q5" value="d"> d) महमूद लोदी</li>
                 </ul>
             </div>
 
-            <div class="question" data-question="6">
-                <h3>6. गुजरात अभियान कब हुआ?</h3>
+            <div class="question">
+                <div class="question-number">6</div>
+                <div class="question-text">बिलग्राम या कन्नौज युद्ध कब लड़ा गया?</div>
                 <ul class="options">
-                    <li data-correct="false">a) 1530</li>
-                    <li data-correct="true">b) 1535</li>
-                    <li data-correct="false">c) 1539</li>
-                    <li data-correct="false">d) 1540</li>
+                    <li class="option"><input type="radio" name="q6" value="a"> a) 1535 ई.</li>
+                    <li class="option"><input type="radio" name="q6" value="b"> b) 1539 ई.</li>
+                    <li class="option"><input type="radio" name="q6" value="c"> c) 1540 ई.</li>
+                    <li class="option"><input type="radio" name="q6" value="d"> d) 1555 ई.</li>
                 </ul>
             </div>
 
-            <div class="question" data-question="7">
-                <h3>7. बहादुर शाह कहाँ भाग गया?</h3>
-                <ul class="options">
-                    <li data-correct="false">a) दिल्ली</li>
-                    <li data-correct="true">b) दीव के पुर्तगालियों के पास</li>
-                    <li data-correct="false">c) ईरान</li>
-                    <li data-correct="false">d) बंगाल</li>
-                </ul>
-            </div>
-
-            <div class="question" data-question="8">
-                <h3>8. चौसा की लड़ाई कब लड़ी गई?</h3>
-                <ul class="options">
-                    <li data-correct="false">a) 1535</li>
-                    <li data-correct="true">b) 1539</li>
-                    <li data-correct="false">c) 1540</li>
-                    <li data-correct="false">d) 1555</li>
-                </ul>
-            </div>
-
-            <div class="question" data-question="9">
-                <h3>9. चौसा की लड़ाई में हुमायूँ कैसे बचे?</h3>
-                <ul class="options">
-                    <li data-correct="false">a) युद्ध जीतकर</li>
-                    <li data-correct="true">b) गंगा में कूदकर</li>
-                    <li data-correct="false">c) भागकर आगरा</li>
-                    <li data-correct="false">d) ईरान जाकर</li>
-                </ul>
-            </div>
-
-            <div class="question" data-question="10">
-                <h3>10. कन्नौज की लड़ाई का दूसरा नाम क्या है?</h3>
-                <ul class="options">
-                    <li data-correct="false">a) चौसा</li>
-                    <li data-correct="true">b) बिलग्राम</li>
-                    <li data-correct="false">c) चंपानेर</li>
-                    <li data-correct="false">d) मांडू</li>
-                </ul>
-            </div>
-
-            <!-- Questions 11-25 continue similarly -->
-            <div class="question" data-question="11">
-                <h3>11. कन्नौज की लड़ाई कब हुई?</h3>
-                <ul class="options">
-                    <li data-correct="false">a) 1539</li>
-                    <li data-correct="true">b) 1540</li>
-                    <li data-correct="false">c) 1545</li>
-                    <li data-correct="false">d) 1555</li>
-                </ul>
-            </div>
-
-            <div class="question" data-question="12">
-                <h3>12. हुमायूँ को कितने वर्ष निर्वासन में रहना पड़ा?</h3>
-                <ul class="options">
-                    <li data-correct="false">a) 10</li>
-                    <li data-correct="true">b) 15</li>
-                    <li data-correct="false">c) 20</li>
-                    <li data-correct="false">d) 25</li>
-                </ul>
-            </div>
-
-            <div class="question" data-question="13">
-                <h3>13. निर्वासन के दौरान हुमायूँ कहाँ शरण मिली?</h3>
-                <ul class="options">
-                    <li data-correct="false">a) अफगानिस्तान</li>
-                    <li data-correct="true">b) ईरान (शाह तहमास्प)</li>
-                    <li data-correct="false">c) गुजरात</li>
-                    <li data-correct="false">d) बंगाल</li>
-                </ul>
-            </div>
-
-            <div class="question" data-question="14">
-                <h3>14. हुमायूँ ने कंधार कब जीता?</h3>
-                <ul class="options">
-                    <li data-correct="false">a) 1539</li>
-                    <li data-correct="true">b) 1545</li>
-                    <li data-correct="false">c) 1550</li>
-                    <li data-correct="false">d) 1555</li>
-                </ul>
-            </div>
-
-            <div class="question" data-question="15">
-                <h3>15. अस्करी मिर्जा को हुमायूँ ने गुजरात का कौन-सा पद दिया?</h3>
-                <ul class="options">
-                    <li data-correct="false">a) सम्राट</li>
-                    <li data-correct="true">b) सूबेदार</li>
-                    <li data-correct="false">c) सेनापति</li>
-                    <li data-correct="false">d) वजीर</li>
-                </ul>
-            </div>
-
-            <div class="question" data-question="16">
-                <h3>16. हुमायूँ ने दिल्ली कब पुनः प्राप्त की?</h3>
-                <ul class="options">
-                    <li data-correct="false">a) 1540</li>
-                    <li data-correct="false">b) 1545</li>
-                    <li data-correct="true">c) 1555</li>
-                    <li data-correct="false">d) 1556</li>
-                </ul>
-            </div>
-
-            <div class="question" data-question="17">
-                <h3>17. शेरशाह ने चौसा युद्ध के बाद कौन-सा उपाधि ग्रहण किया?</h3>
-                <ul class="options">
-                    <li data-correct="false">a) हुमायूँ</li>
-                    <li data-correct="true">b) शेरशाह</li>
-                    <li data-correct="false">c) सिकंदर शाह</li>
-                    <li data-correct="false">d) इस्लाम शाह</li>
-                </ul>
-            </div>
-
-            <div class="question" data-question="18">
-                <h3>18. हुमायूँ के सबसे छोटे भाई का नाम क्या था?</h3>
-                <ul class="options">
-                    <li data-correct="false">a) कामरान</li>
-                    <li data-correct="false">b) अस्करी</li>
-                    <li data-correct="true">c) हिंदल</li>
-                    <li data-correct="false">d) अकबर</li>
-                </ul>
-            </div>
-
-            <div class="question" data-question="19">
-                <h3>19. चंपानेर का किला किस अभियान में जीता गया?</h3>
-                <ul class="options">
-                    <li data-correct="false">a) कालिंजर</li>
-                    <li data-correct="true">b) गुजरात</li>
-                    <li data-correct="false">c) चौसा</li>
-                    <li data-correct="false">d) कन्नौज</li>
-                </ul>
-            </div>
-
-            <div class="question" data-question="20">
-                <h3>20. मांडू का किला किसने जीता?</h3>
-                <ul class="options">
-                    <li data-correct="false">a) शेरशाह</li>
-                    <li data-correct="true">b) हुमायूँ</li>
-                    <li data-correct="false">c) बहादुर शाह</li>
-                    <li data-correct="false">d) कामरान</li>
-                </ul>
-            </div>
-
-            <div class="question" data-question="21">
-                <h3>21. हुमायूँ के भाइयों ने किन क्षेत्रों पर दावा किया?</h3>
-                <ul class="options">
-                    <li data-correct="false">a) केवल दिल्ली</li>
-                    <li data-correct="true">b) काबुल, सिंध, पंजाब</li>
-                    <li data-correct="false">c) गुजरात</li>
-                    <li data-correct="false">d) बंगाल</li>
-                </ul>
-            </div>
-
-            <div class="question" data-question="22">
-                <h3>22. सूर साम्राज्य का पतन कब हुआ?</h3>
-                <ul class="options">
-                    <li data-correct="false">a) 1539</li>
-                    <li data-correct="false">b) 1540</li>
-                    <li data-correct="true">c) 1555</li>
-                    <li data-correct="false">d) 1556</li>
-                </ul>
-            </div>
-
-            <div class="question" data-question="23">
-                <h3>23. हुमायूँ ने लाहौर कब जीता?</h3>
-                <ul class="options">
-                    <li data-correct="false">a) 1535</li>
-                    <li data-correct="false">b) 1540</li>
-                    <li data-correct="true">c) 1555</li>
-                    <li data-correct="false">d) 1556</li>
-                </ul>
-            </div>
-
-            <div class="question" data-question="24">
-                <h3>24. हुमायूँ की निर्वासन अवधि में कौन-सा भाई सबसे अधिक बागी रहा?</h3>
-                <ul class="options">
-                    <li data-correct="false">a) हिंदल</li>
-                    <li data-correct="false">b) अस्करी</li>
-                    <li data-correct="true">c) कामरान</li>
-                    <li data-correct="false">d) सभी</li>
-                </ul>
-            </div>
-
-            <div class="question" data-question="25">
-                <h3>25. हुमायूँ के गुजरात अभियान का प्रमुख परिणाम क्या था?</h3>
-                <ul class="options">
-                    <li data-correct="false">a) स्थायी विजय</li>
-                    <li data-correct="true">b) अस्थायी विजय, शेरशाह मजबूत</li>
-                    <li data-correct="false">c) हार</li>
-                    <li data-correct="false">d) संधि</li>
-                </ul>
-            </div>
-
-            <button type="submit">📊 परिणाम देखें & स्कोर जमा करें</button>
-        </form>
-
-        <div class="result" id="result">
-            <h2>🎉 आपका परिणाम</h2>
-            <div class="score" id="score">0/25</div>
-            <div id="message"></div>
-            <button onclick="resetQuiz()" style="background: #27ae60; width: auto; margin-top: 20px;">🔄 फिर से क्विज दें</button>
-        </div>
-    </div>
-
-    <script>
-        const form = document.getElementById('quizForm');
-        const result = document.getElementById('result');
-        const scoreElement = document.getElementById('score');
-        const messageElement = document.getElementById('message');
-        const progressBar = document.getElementById('progressBar');
-        let score = 0;
-        let totalAnswered = 0;
-
-        // Handle option selection
-        document.querySelectorAll('.options li').forEach(option => {
-            option.addEventListener('click', function() {
-                const question = this.closest('.question');
-                const options = question.querySelectorAll('.options li');
-                
-                // Remove previous selections
-                options.forEach(opt => {
-                    opt.classList.remove('selected', 'correct', 'incorrect');
-                });
-                
-                // Add selected class
-                this.classList.add('selected');
-                
-                // Mark correct/incorrect immediately
-                if (this.dataset.correct === 'true') {
-                    this.classList.add('correct');
-                } else {
-                    this.classList.add('incorrect');
-                }
-                
-                // Mark the correct one if wrong answer selected
-                const correctOption = question.querySelector('.options li[data-correct="true"]');
-                if (correctOption && this !== correctOption) {
-                    correctOption.classList.add('correct');
-                }
-                
-                question.classList.add('answered');
-                updateProgress();
-            });
-        });
-
-        function updateProgress() {
-            totalAnswered = document.querySelectorAll('.answered').length;
-            const progress = (totalAnswered / 25) * 100;
-            progressBar.style.width = progress + '%';
-        }
-
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Calculate final score
-            document.querySelectorAll('.question').forEach(question => {
-                const selected = question.querySelector('.selected');
-                if (selected && selected.dataset.correct === 'true') {
-                    score++;
-                }
-            });
-            
-            // Show result
-            scoreElement.textContent = `${score}/25`;
-            const percentage = (score / 25) * 100;
-            
-            if (percentage >= 90) {
-                messageElement.innerHTML = '🏆 उत्कृष्ट! इतिहासकार स्तर!';
-            } else if (percentage >= 80) {
-                messageElement.innerHTML = '⭐ बहुत अच्छा! शानदार प्रदर्शन!';
-            } else if (percentage >= 70) {
-                messageElement.innerHTML = '👍 अच्छा प्रयास! और अभ्यास करें!';
-            } else {
-                messageElement.innerHTML = '📚 थोड़ा और पढ़ाई करें! आप कर सकते हैं!';
-            }
-            
-            form.style.display = 'none';
-            result.style.display = 'block';
-        });
-
-        function resetQuiz() {
-            location.reload();
-        }
-    </script>
-</body>
-</html>
+            <div class="
