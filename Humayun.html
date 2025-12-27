@@ -1,138 +1,103 @@
 <!DOCTYPE html>
-<html>
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Mughal Empire Test (1530–1555)</title>
+<title>मुगल साम्राज्य टेस्ट (1530–1555)</title>
 <style>
-body{
-    font-family: Arial;
-    background:#eef2f5;
-}
-.container{
-    max-width:750px;
-    margin:20px auto;
-    background:#fff;
-    padding:20px;
-    border-radius:8px;
-}
+body{font-family:Arial;background:#f2f2f2;}
+.box{max-width:900px;margin:20px auto;background:#fff;padding:20px;border-radius:6px;}
 h2{text-align:center;}
-#timer{
-    text-align:center;
-    color:red;
-    font-size:18px;
-    margin-bottom:10px;
-}
-.option{
-    border:1px solid #ccc;
-    padding:10px;
-    margin:8px 0;
-    border-radius:5px;
-    cursor:pointer;
-}
-.option.selected{
-    background:#dbeafe;
-}
-.correct{
-    background:#c8f7c5;
-    border-color:green;
-}
-.wrong{
-    background:#f7c5c5;
-    border-color:red;
-}
-button{
-    padding:10px 15px;
-    margin:10px 5px 0 0;
-    font-size:16px;
-}
-#score{
-    text-align:center;
-    font-size:20px;
-    margin-top:20px;
-}
+#timer{text-align:center;color:red;font-size:18px;margin-bottom:15px;}
+.question{margin-bottom:18px;padding:10px;border:1px solid #ddd;border-radius:5px;}
+.correct{background:#c8f7c5;}
+.wrong{background:#f7c5c5;}
+button{padding:10px 20px;font-size:16px;}
 </style>
 </head>
 
 <body>
 
-<div class="container">
-<h2>Mughal Empire (1530–1555)</h2>
-<div id="timer">Time Left: 15:00</div>
-<div id="quiz"></div>
+<div class="box">
+<h2>मुगल साम्राज्य (1530–1555) – MCQ टेस्ट</h2>
+<div id="timer">15:00</div>
 
-<button onclick="prev()">Previous</button>
-<button onclick="next()">Next</button>
-<button onclick="submitQuiz()">Submit</button>
-
-<div id="score"></div>
-</div>
+<form id="quiz">
 
 <script>
 const questions = [
-{q:"Humayun ascended the Mughal throne in?", o:["1526","1530","1540","1555"], a:1},
-{q:"Humayun was the son of?", o:["Akbar","Babur","Sher Shah","Ibrahim Lodi"], a:1},
-{q:"Full name of Humayun?", o:["Nasiruddin Muhammad","Jalaluddin Muhammad","Shamsuddin","Firoz"], a:0},
-{q:"Battle of Chausa was fought in?", o:["1535","1537","1539","1540"], a:2},
-{q:"Humayun was defeated by Sher Shah at?", o:["Panipat","Chausa","Kannauj","Delhi"], a:1},
-{q:"Battle of Kannauj fought in?", o:["1539","1540","1545","1555"], a:1},
-{q:"After defeat, Humayun?", o:["Won","Captured","Left India","Died"], a:2},
-{q:"Humayun took refuge in?", o:["Turkey","Iran","China","Arab"], a:1},
-{q:"Iran ruler who helped Humayun?", o:["Shah Abbas","Shah Ismail","Shah Tahmasp","Nadir Shah"], a:2},
-{q:"Humayun recaptured Delhi in?", o:["1545","1550","1555","1556"], a:2}
+["हुमायूँ गद्दी पर कब बैठा?","1526","1530","1540","1555",1],
+["हुमायूँ किसका पुत्र था?","अकबर","बाबर","शेरशाह","इब्राहिम लोदी",1],
+["हुमायूँ का पूरा नाम क्या था?","नसीरुद्दीन मुहम्मद","जलालुद्दीन","शम्सुद्दीन","फिरोज",0],
+["चौसा का युद्ध कब हुआ?","1535","1537","1539","1540",2],
+["चौसा के युद्ध में हुमायूँ को किसने हराया?","अकबर","बाबर","शेरशाह सूरी","हेमू",2],
+["कन्नौज का युद्ध कब हुआ?","1539","1540","1545","1555",1],
+["कन्नौज के बाद हुमायूँ ने क्या किया?","जीत हासिल की","बंदी बना","भारत छोड़ा","मृत्यु",2],
+["हुमायूँ ने किस देश में शरण ली?","तुर्की","ईरान","चीन","अरब",1],
+["हुमायूँ की सहायता किस ईरानी शासक ने की?","शाह अब्बास","शाह इस्माइल","शाह तहमास्प","नादिर शाह",2],
+["हुमायूँ कितने वर्ष निर्वासन में रहा?","5","10","15","20",2],
+["हुमायूँ ने दोबारा दिल्ली पर कब अधिकार किया?","1545","1550","1555","1556",2],
+["हुमायूँ का सेनापति कौन था?","बैरम खाँ","हेमू","शेरशाह","अली मर्दान",0],
+["हुमायूँ की मृत्यु कब हुई?","1555","1556","1557","1560",1],
+["हुमायूँ की मृत्यु कैसे हुई?","युद्ध","बीमारी","सीढ़ी से गिरकर","हत्या",2],
+["हुमायूँ का मकबरा कहाँ है?","आगरा","दिल्ली","लाहौर","सीकरी",1],
+["हुमायूँ के बाद सम्राट कौन बना?","जहाँगीर","अकबर","बाबर","शाहजहाँ",1],
+["सूरी वंश का संस्थापक कौन था?","बाबर","अकबर","शेरशाह सूरी","हेमू",2],
+["हुमायूँ को किसमें रुचि थी?","युद्ध","ज्योतिष","व्यापार","कृषि",1],
+["हुमायूँ की बहन का नाम?","नूरजहाँ","गुलबदन बेगम","रजिया","जोधाबाई",1],
+["गुलबदन बेगम ने कौन-सी पुस्तक लिखी?","बाबरनामा","हुमायूँनामा","अकबरनामा","तारीख",1],
+["हुमायूँ को कैसा शासक माना जाता है?","महान","भाग्यशाली","भाग्यहीन","क्रूर",2],
+["हुमायूँ के समय दिल्ली पर किसका शासन था?","अकबर","शेरशाह","बाबर","हेमू",1],
+["हुमायूँ ने सत्ता किसकी मदद से पाई?","अकबर","बैरम खाँ","हेमू","शाह अब्बास",1],
+["हुमायूँ का शासनकाल किस काल में आता है?","बाबर काल","अकबर काल","मध्य मुगल काल","उत्तर मुगल काल",2],
+["मुगल सत्ता की पुनः स्थापना कब हुई?","1540","1555","1556","1560",1]
 ];
 
-let index=0;
-let answers=new Array(questions.length).fill(null);
-let score=0;
+for(let i=0;i<questions.length;i++){
+document.write(`<div class="question"><b>${i+1}. ${questions[i][0]}</b><br>`);
+for(let j=1;j<=4;j++){
+document.write(`<label>
+<input type="radio" name="q${i}" value="${j-1}"> ${questions[i][j]}
+</label><br>`);
+}
+document.write(`</div>`);
+}
+</script>
 
-function loadQuestion(){
-    let q=questions[index];
-    let html=`<h3>Q${index+1}. ${q.q}</h3>`;
-    q.o.forEach((opt,i)=>{
-        let cls= answers[index]===i ? "option selected" : "option";
-        html+=`<div class="${cls}" onclick="select(${i})">${opt}</div>`;
-    });
-    document.getElementById("quiz").innerHTML=html;
-}
-function select(i){
-    answers[index]=i;
-    loadQuestion();
-}
-function next(){
-    if(index<questions.length-1){index++;loadQuestion();}
-}
-function prev(){
-    if(index>0){index--;loadQuestion();}
-}
-function submitQuiz(){
-    clearInterval(timerInt);
-    let html="";
-    score=0;
-    questions.forEach((q,i)=>{
-        html+=`<h4>Q${i+1}. ${q.q}</h4>`;
-        q.o.forEach((opt,j)=>{
-            let cls="option";
-            if(j===q.a) cls+=" correct";
-            if(j===answers[i] && j!==q.a) cls+=" wrong";
-            html+=`<div class="${cls}">${opt}</div>`;
-        });
-        if(answers[i]===q.a) score++;
-    });
-    document.getElementById("quiz").innerHTML=html;
-    document.getElementById("score").innerHTML=`Score: ${score} / ${questions.length}`;
-}
+<button type="button" onclick="check()">Submit Test</button>
+</form>
 
+<h3 id="result"></h3>
+</div>
+
+<script>
 let time=900;
-let timerInt=setInterval(()=>{
-    let m=Math.floor(time/60);
-    let s=time%60;
-    document.getElementById("timer").innerText=
-        `Time Left: ${m}:${s<10?"0"+s:s}`;
-    if(time<=0) submitQuiz();
-    time--;
+let t=setInterval(()=>{
+let m=Math.floor(time/60);
+let s=time%60;
+document.getElementById("timer").innerHTML=m+":"+(s<10?"0"+s:s);
+if(time<=0){check();}
+time--;
 },1000);
 
-loadQuestion();
+function check(){
+clearInterval(t);
+let score=0;
+questions.forEach((q,i)=>{
+let opts=document.getElementsByName("q"+i);
+opts.forEach(o=>{
+if(o.checked){
+if(o.value==q[5]){
+o.parentElement.parentElement.className="question correct";
+score++;
+}else{
+o.parentElement.parentElement.className="question wrong";
+}
+}
+});
+});
+document.getElementById("result").innerHTML=
+"आपका स्कोर : "+score+" / 25";
+}
 </script>
 
 </body>
