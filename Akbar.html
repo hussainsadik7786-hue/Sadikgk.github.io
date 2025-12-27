@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>महान अकबर MCQ टेस्ट (1555–1605)</title>
+
+<style>
+body{
+    font-family: Arial;
+    background:#f2f2f2;
+}
+.box{
+    max-width:900px;
+    margin:20px auto;
+    background:#fff;
+    padding:20px;
+    border-radius:6px;
+}
+h2{text-align:center;}
+#timer{
+    text-align:center;
+    font-size:18px;
+    color:red;
+    margin-bottom:15px;
+}
+.question{
+    margin-bottom:15px;
+    padding:10px;
+    border:1px solid #ccc;
+    border-radius:5px;
+}
+.correct{background:#c8f7c5;}
+.wrong{background:#f7c5c5;}
+button{
+    padding:10px 20px;
+    font-size:16px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+<h2>महान अकबर (1555–1605) : MCQ टेस्ट</h2>
+<div id="timer">15:00</div>
+
+<form id="quiz"></form>
+
+<button onclick="check()">Submit Test</button>
+
+<h3 id="result"></h3>
+</div>
+
+<script>
+const questions = [
+["अकबर गद्दी पर कब बैठा?","1555","1556","1560","1565",1],
+["अकबर के पिता कौन थे?","बाबर","हुमायूँ","शेरशाह","हेमू",1],
+["अकबर का संरक्षक कौन था?","टोडरमल","बीरबल","बैरम खाँ","मानसिंह",2],
+["पानीपत का द्वितीय युद्ध कब हुआ?","1526","1555","1556","1576",2],
+["पानीपत के द्वितीय युद्ध में अकबर ने किसे हराया?","राणा प्रताप","हेमू","शेरशाह","इब्राहिम",1],
+["अकबर की राजधानी कहाँ थी?","आगरा","दिल्ली","फतेहपुर सीकरी","लाहौर",2],
+["अकबर ने कौन-सा कर समाप्त किया?","लगान","जजिया","खराज","चुंगी",1],
+["अकबर की धार्मिक नीति क्या थी?","असहिष्णु","कट्टर","सहिष्णु","क्रूर",2],
+["अकबर ने कौन-सा धर्म चलाया?","इस्लाम","हिंदू","दीन-ए-इलाही","सूफी",2],
+["दीन-ए-इलाही कब शुरू हुआ?","1560","1575","1582","1600",2],
+["अकबर के नवरत्नों में कौन था?","हेमू","बीरबल","बैरम खाँ","राणा प्रताप",1],
+["अकबर का वित्त मंत्री कौन था?","बीरबल","टोडरमल","अबुल फज़ल","मानसिंह",1],
+["अकबरनामा किसने लिखा?","फैज़ी","बदायूँनी","अबुल फज़ल","गुलबदन",2],
+["अकबरनामा किस भाषा में है?","हिंदी","संस्कृत","फारसी","अरबी",2],
+["हल्दीघाटी का युद्ध किसके बीच हुआ?","अकबर–राणा सांगा","अकबर–राणा प्रताप","अकबर–हेमू","अकबर–शेरशाह",1],
+["हल्दीघाटी का युद्ध कब हुआ?","1556","1568","1576","1582",2],
+["अकबर की राजपूत नीति कैसी थी?","दमनकारी","शत्रुतापूर्ण","सहयोगात्मक","क्रूर",2],
+["इबादतखाना कहाँ बना?","आगरा","दिल्ली","फतेहपुर सीकरी","लाहौर",2],
+["इबादतखाना का उद्देश्य क्या था?","पूजा","कर","धार्मिक चर्चा","सेना",2],
+["अकबर की मृत्यु कब हुई?","1600","1603","1605","1610",2],
+["अकबर की समाधि कहाँ है?","आगरा","दिल्ली","सिकंदरा","लाहौर",2],
+["अकबर के बाद कौन सम्राट बना?","शाहजहाँ","जहाँगीर","औरंगज़ेब","बाबर",1],
+["अकबर को महान क्यों कहा जाता है?","युद्ध","धन","प्रशासन व सहिष्णुता","क्रूरता",2],
+["अकबर का शासनकाल किस काल में आता है?","प्रारंभिक","मध्य मुगल","उत्तर मुगल","आधुनिक",1],
+["अकबर ने कौन-सी नीति अपनाई?","दमन","धार्मिक सहिष्णुता","कट्टरता","भेदभाव",1]
+];
+
+const form=document.getElementById("quiz");
+
+questions.forEach((q,i)=>{
+let div=document.createElement("div");
+div.className="question";
+div.innerHTML=`<b>${i+1}. ${q[0]}</b><br>
+<label><input type="radio" name="q${i}" value="0"> ${q[1]}</label><br>
+<label><input type="radio" name="q${i}" value="1"> ${q[2]}</label><br>
+<label><input type="radio" name="q${i}" value="2"> ${q[3]}</label><br>
+<label><input type="radio" name="q${i}" value="3"> ${q[4]}</label>`;
+form.appendChild(div);
+});
+
+function check(){
+let score=0;
+questions.forEach((q,i)=>{
+let opts=document.getElementsByName("q"+i);
+opts.forEach(o=>{
+if(o.checked){
+if(o.value==q[5]){
+o.parentElement.parentElement.className="question correct";
+score++;
+}else{
+o.parentElement.parentElement.className="question wrong";
+}
+}
+});
+});
+document.getElementById("result").innerHTML=
+"आपका स्कोर : "+score+" / 25";
+}
+
+// timer
+let time=900;
+setInterval(()=>{
+let m=Math.floor(time/60);
+let s=time%60;
+document.getElementById("timer").innerHTML=
+m+":"+(s<10?"0"+s:s);
+time--;
+},1000);
+</script>
+
+</body>
+</html>
