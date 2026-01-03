@@ -13,318 +13,153 @@ h1{
     text-align:center;
     color:#2c3e50;
 }
+.timer{
+    font-size:18px;
+    font-weight:bold;
+    color:#c0392b;
+    text-align:center;
+    margin-bottom:20px;
+}
 .question{
     background:#ffffff;
-    padding:12px;
-    margin-bottom:10px;
-    border-radius:6px;
+    padding:15px;
+    margin-bottom:15px;
+    border-radius:8px;
     box-shadow:0 0 5px rgba(0,0,0,0.1);
 }
-.options{
-    margin-left:15px;
+.options label{
+    display:block;
+    margin:5px 0;
+    cursor:pointer;
 }
-.answer{
-    background:#e8f6ef;
-    padding:15px;
+.correct{
+    color:green;
+    font-weight:bold;
+}
+.wrong{
+    color:red;
+    font-weight:bold;
+}
+button{
+    display:block;
+    margin:20px auto;
+    padding:10px 25px;
+    font-size:16px;
+    background:#2c3e50;
+    color:white;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+}
+#score{
+    text-align:center;
+    font-size:20px;
+    font-weight:bold;
     margin-top:20px;
-    border-radius:6px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>Root Words – 35 MCQ Test</h1>
+<h1>ROOT WORDS – MCQ TEST</h1>
+<div class="timer">Time Left: <span id="time">20:00</span></div>
 
-<div class="question">
-<b>Q1.</b> “Amiable” means:  
-<div class="options">
-A. Angry <br>
-B. Friendly <br>
-C. Cruel <br>
-D. Silent
-</div>
-</div>
+<form id="quiz">
 
-<div class="question"><b>Q2.</b> “Amicable” means:  
-<div class="options">
-A. Hostile <br>
-B. Friendly and cooperative <br>
-C. Careless <br>
-D. Weak
-</div></div>
+<script>
+const questions = [
+["Amiable means", ["Angry","Friendly","Cruel","Silent"], 1],
+["Amicable means", ["Hostile","Friendly","Careless","Weak"], 1],
+["Amicide means", ["Love of friend","Killing of enemy","Killing of a friend","Helping friend"], 2],
+["Amicus Curiae means", ["Enemy of court","Judge","Friend of court","Lawyer"], 2],
+["One who can use both hands equally", ["Ambiguous","Ambidextrous","Ambivert","Introvert"], 1],
+["Ambiguous means", ["Clear","Certain","Doubtful","Honest"], 2],
+["An introvert is one who", ["Likes crowd","Very social","Prefers solitude","Aggressive"], 2],
+["An extrovert is one who", ["Shy","Social","Silent","Lonely"], 1],
+["Person having introvert & extrovert qualities", ["Ambiguous","Ambivert","Ambidextrous","Introvert"], 1],
+["Acrid means", ["Sweet","Pleasant","Bitter","Soft"], 2],
+["Acrimony means", ["Happiness","Bitterness","Fear","Love"], 1],
+["Acrimonious behaviour is", ["Sweet","Bitter","Polite","Calm"], 1],
+["To make situation worse", ["Mollify","Ameliorate","Exacerbate","Improve"], 2],
+["Acerbic means", ["Soft","Bitter","Sweet","Calm"], 1],
+["Sophisticated means", ["Foolish","Worldly wise","Uneducated","Careless"], 1],
+["Government by all", ["Monarchy","Biarchy","Panarchy","Anarchy"], 2],
+["Absence of government", ["Panarchy","Anarchy","Monarchy","Patriarchy"], 1],
+["Government by two", ["Biarchy","Monarchy","Oligarchy","Democracy"], 0],
+["Rule by one king", ["Republic","Democracy","Monarchy","Biarchy"], 2],
+["Matriarchy means", ["Rule by father","Rule by mother","Rule by king","Rule by priest"], 1],
+["Patriarch means", ["Female ruler","Male head","Minister","Judge"], 1],
+["More than one marriage", ["Bigamy","Polygamy","Monogamy","Polyandry"], 1],
+["Introspect means", ["Look outside","Look back","Self analysis","Look around"], 2],
+["Mollycoddle means", ["Scold","Ignore","Pamper","Punish"], 2],
+["Mellifluous means", ["Bitter","Pleasant sound","Harsh","Loud"], 1],
+["To make better", ["Exacerbate","Ameliorate","Malpractice","Damage"], 1],
+["Fear of dead bodies", ["Necrophile","Necromania","Necrophobia","Necropolis"], 2],
+["City of dead", ["Morgue","Mortuary","Necropolis","Cemetery"], 2],
+["Immortal means", ["Mortal","Dying","Cannot die","Sad"], 2],
+["Moribund means", ["Healthy","Dying","Immortal","Happy"], 1],
+["Place where dead bodies kept", ["Cemetery","Necropolis","Mortuary","Catacomb"], 2],
+["Catastrophe means", ["Celebration","Improvement","Disaster","Peace"], 2],
+["Cataract means", ["Rhythm","Waterfall","Speech","Mountain"], 1],
+["Cadence means", ["Waterfall","Rhythm of speech","City","Disaster"], 1],
+["Ambilateral means", ["One hand","Both sides","One sided","Weak"], 1]
+];
 
-<div class="question"><b>Q3.</b> “Amicide” means:  
-<div class="options">
-A. Love of friend <br>
-B. Killing of enemy <br>
-C. Killing of a friend <br>
-D. Helping a friend
-</div></div>
+questions.forEach((q,i)=>{
+    document.write(`<div class="question">
+    <p><b>Q${i+1}. ${q[0]}</b></p>
+    <div class="options">`);
+    q[1].forEach((opt,j)=>{
+        document.write(`
+        <label>
+        <input type="radio" name="q${i}" value="${j}"> ${opt}
+        </label>`);
+    });
+    document.write(`</div></div>`);
+});
+</script>
 
-<div class="question"><b>Q4.</b> “Amicus Curiae” means:  
-<div class="options">
-A. Enemy of court <br>
-B. Judge of court <br>
-C. Friend of court <br>
-D. Lawyer of court
-</div></div>
+<button type="button" onclick="submitQuiz()">Submit Test</button>
+</form>
 
-<div class="question"><b>Q5.</b> A person who can use both hands equally well is called:  
-<div class="options">
-A. Ambiguous <br>
-B. Ambidextrous <br>
-C. Ambivert <br>
-D. Ambilateral
-</div></div>
+<div id="score"></div>
 
-<div class="question"><b>Q6.</b> “Ambiguous” means:  
-<div class="options">
-A. Clear <br>
-B. Certain <br>
-C. Doubtful <br>
-D. Honest
-</div></div>
+<script>
+let time = 1200;
+const timer = setInterval(()=>{
+    let min = Math.floor(time/60);
+    let sec = time%60;
+    document.getElementById("time").innerText =
+        `${min}:${sec<10?"0"+sec:sec}`;
+    time--;
+    if(time<0){
+        clearInterval(timer);
+        submitQuiz();
+    }
+},1000);
 
-<div class="question"><b>Q7.</b> “Ambiguity” refers to:  
-<div class="options">
-A. Clarity <br>
-B. Certainty <br>
-C. Unclear situation <br>
-D. Intelligence
-</div></div>
-
-<div class="question"><b>Q8.</b> An introvert is a person who:  
-<div class="options">
-A. Likes crowds <br>
-B. Is very social <br>
-C. Prefers to be alone <br>
-D. Is aggressive
-</div></div>
-
-<div class="question"><b>Q9.</b> An extrovert is someone who:  
-<div class="options">
-A. Is shy <br>
-B. Enjoys being with people <br>
-C. Avoids society <br>
-D. Is silent
-</div></div>
-
-<div class="question"><b>Q10.</b> A person having both introvert and extrovert qualities is called:  
-<div class="options">
-A. Ambiguous <br>
-B. Ambivert <br>
-C. Ambidextrous <br>
-D. Ambilateral
-</div></div>
-
-<div class="question"><b>Q11.</b> “Acrid” means:  
-<div class="options">
-A. Sweet <br>
-B. Pleasant <br>
-C. Bitter or unpleasant <br>
-D. Soft
-</div></div>
-
-<div class="question"><b>Q12.</b> “Acrimony” means:  
-<div class="options">
-A. Happiness <br>
-B. Bitterness <br>
-C. Fear <br>
-D. Kindness
-</div></div>
-
-<div class="question"><b>Q13.</b> “Acrimonious” refers to:  
-<div class="options">
-A. Sweet behaviour <br>
-B. Bitter behaviour <br>
-C. Honest behaviour <br>
-D. Polite behaviour
-</div></div>
-
-<div class="question"><b>Q14.</b> To make a bad situation worse is to:  
-<div class="options">
-A. Mollify <br>
-B. Ameliorate <br>
-C. Exacerbate <br>
-D. Mellow
-</div></div>
-
-<div class="question"><b>Q15.</b> “Acerbic” means:  
-<div class="options">
-A. Soft <br>
-B. Bitter or harsh <br>
-C. Calm <br>
-D. Sweet
-</div></div>
-
-<div class="question"><b>Q16.</b> “Sophisticated” means:  
-<div class="options">
-A. Foolish <br>
-B. Worldly wise <br>
-C. Uneducated <br>
-D. Careless
-</div></div>
-
-<div class="question"><b>Q17.</b> Government by all is called:  
-<div class="options">
-A. Monarchy <br>
-B. Biarchy <br>
-C. Panarchy <br>
-D. Anarchy
-</div></div>
-
-<div class="question"><b>Q18.</b> A state without government is called:  
-<div class="options">
-A. Panarchy <br>
-B. Anarchy <br>
-C. Monarchy <br>
-D. Patriarchy
-</div></div>
-
-<div class="question"><b>Q19.</b> Government by two persons is known as:  
-<div class="options">
-A. Biarchy <br>
-B. Monarchy <br>
-C. Oligarchy <br>
-D. Panarchy
-</div></div>
-
-<div class="question"><b>Q20.</b> Rule by a single king is called:  
-<div class="options">
-A. Republic <br>
-B. Democracy <br>
-C. Monarchy <br>
-D. Biarchy
-</div></div>
-
-<div class="question"><b>Q21.</b> “Matriarchy” means:  
-<div class="options">
-A. Rule by father <br>
-B. Rule by mother <br>
-C. Rule by king <br>
-D. Rule by priest
-</div></div>
-
-<div class="question"><b>Q22.</b> “Patriarch” refers to:  
-<div class="options">
-A. Female ruler <br>
-B. Male ruler (father) <br>
-C. King <br>
-D. Minister
-</div></div>
-
-<div class="question"><b>Q23.</b> The custom of more than one marriage is called:  
-<div class="options">
-A. Bigamy <br>
-B. Polygamy <br>
-C. Monogamy <br>
-D. Polyandry
-</div></div>
-
-<div class="question"><b>Q24.</b> “Introspect” means:  
-<div class="options">
-A. Look outside <br>
-B. Look back <br>
-C. Self-analysis <br>
-D. Look around
-</div></div>
-
-<div class="question"><b>Q25.</b> To show excessive love and care is called:  
-<div class="options">
-A. Mollify <br>
-B. Mollycoddle <br>
-C. Mellow <br>
-D. Mellifluous
-</div></div>
-
-<div class="question"><b>Q26.</b> “Mellifluous” means:  
-<div class="options">
-A. Bitter <br>
-B. Pleasant sounding <br>
-C. Loud <br>
-D. Rough
-</div></div>
-
-<div class="question"><b>Q27.</b> To make something better is called:  
-<div class="options">
-A. Exacerbate <br>
-B. Ameliorate <br>
-C. Malpractice <br>
-D. Malefaction
-</div></div>
-
-<div class="question"><b>Q28.</b> Fear of dead bodies is known as:  
-<div class="options">
-A. Necrophile <br>
-B. Necromania <br>
-C. Necrophobia <br>
-D. Necropolis
-</div></div>
-
-<div class="question"><b>Q29.</b> A city of the dead is called:  
-<div class="options">
-A. Morgue <br>
-B. Mortuary <br>
-C. Necropolis <br>
-D. Cemetery
-</div></div>
-
-<div class="question"><b>Q30.</b> A person who cannot die is called:  
-<div class="options">
-A. Mortal <br>
-B. Moribund <br>
-C. Immortal <br>
-D. Morose
-</div></div>
-
-<div class="question"><b>Q31.</b> “Moribund” means:  
-<div class="options">
-A. Healthy <br>
-B. Dying stage <br>
-C. Immortal <br>
-D. Happy
-</div></div>
-
-<div class="question"><b>Q32.</b> A place where dead bodies are kept for examination is called:  
-<div class="options">
-A. Necropolis <br>
-B. Mortuary <br>
-C. Cemetery <br>
-D. Catacomb
-</div></div>
-
-<div class="question"><b>Q33.</b> “Catastrophe” means:  
-<div class="options">
-A. Celebration <br>
-B. Improvement <br>
-C. Destruction <br>
-D. Peace
-</div></div>
-
-<div class="question"><b>Q34.</b> A large waterfall is called:  
-<div class="options">
-A. Cascade <br>
-B. Cataract <br>
-C. Cadence <br>
-D. Acropolis
-</div></div>
-
-<div class="question"><b>Q35.</b> “Cadence” refers to:  
-<div class="options">
-A. Waterfall <br>
-B. Rhythm of speech <br>
-C. Mountain city <br>
-D. Destruction
-</div></div>
-
-<div class="answer">
-<b>ANSWERS:</b><br>
-1-B, 2-B, 3-C, 4-C, 5-B, 6-C, 7-C, 8-C, 9-B, 10-B,<br>
-11-C, 12-B, 13-B, 14-C, 15-B, 16-B, 17-C, 18-B, 19-A, 20-C,<br>
-21-B, 22-B, 23-B, 24-C, 25-B, 26-B, 27-B, 28-C, 29-C, 30-C,<br>
-31-B, 32-B, 33-C, 34-B, 35-B
-</div>
+function submitQuiz(){
+    clearInterval(timer);
+    let score = 0;
+    questions.forEach((q,i)=>{
+        const options = document.getElementsByName("q"+i);
+        options.forEach(opt=>{
+            if(opt.checked){
+                if(parseInt(opt.value) === q[2]){
+                    opt.parentElement.classList.add("correct");
+                    score++;
+                } else {
+                    opt.parentElement.classList.add("wrong");
+                    options[q[2]].parentElement.classList.add("correct");
+                }
+            }
+        });
+    });
+    document.getElementById("score").innerText =
+        `Your Score: ${score} / 35`;
+}
+</script>
 
 </body>
 </html>
