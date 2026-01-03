@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Root Words MCQ Test – LEC 2</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f6f8;
+    padding:20px;
+}
+h1{
+    text-align:center;
+    color:#2c3e50;
+}
+.timer{
+    text-align:center;
+    font-size:18px;
+    font-weight:bold;
+    color:#c0392b;
+    margin-bottom:20px;
+}
+.question{
+    background:#ffffff;
+    padding:15px;
+    margin-bottom:15px;
+    border-radius:8px;
+    box-shadow:0 0 5px rgba(0,0,0,0.1);
+}
+.options label{
+    display:block;
+    margin:5px 0;
+    cursor:pointer;
+}
+.correct{
+    color:green;
+    font-weight:bold;
+}
+.wrong{
+    color:red;
+    font-weight:bold;
+}
+button{
+    display:block;
+    margin:20px auto;
+    padding:10px 25px;
+    font-size:16px;
+    background:#2c3e50;
+    color:#fff;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+}
+#score{
+    text-align:center;
+    font-size:20px;
+    font-weight:bold;
+    margin-top:20px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>ROOT WORDS MCQ TEST – LEC 2</h1>
+<div class="timer">Time Left: <span id="time">20:00</span></div>
+
+<form id="quiz">
+
+<script>
+const questions = [
+["Breviflorous means",["Long flowered","Short flowered","Seasonal","Colourful"],1],
+["Brevilingual refers to",["Long tongue","Short tongue","Sharp tongue","Sweet tongue"],1],
+["Breviloquence means",["Loud speaking","Brief speaking","Rude speaking","Continuous speaking"],1],
+["One who speaks briefly",["Verbose","Breviloquent","Recluse","Orator"],1],
+["Breviped means",["Long legged","Short footed","One armed","Tall"],1],
+["Brevity means",["Length","Shortness","Silence","Loudness"],1],
+["Abbreviation means",["Expansion","Short form","Explanation","Translation"],1],
+["Abridge means",["To lengthen","To shorten","To repeat","To explain"],1],
+["Science of population",["Geography","Demography","Biology","Sociology"],1],
+["Fear of people",["Claustrophobia","Demophobia","Agoraphobia","Xenophobia"],1],
+["Government by people",["Monarchy","Democracy","Autocracy","Oligarchy"],1],
+["Believer in democracy",["Democrat","Demographer","Demophile","Demology"],0],
+["One who studies population",["Democrat","Demographer","Demologist","Demophile"],1],
+["One who lives away from society",["Extrovert","Recluse","Verbose","Orator"],1],
+["Seclude means",["Join","Shut away","Announce","Discuss"],1],
+["Fear of closed space",["Hydrophobia","Claustrophobia","Demophobia","Xenophobia"],1],
+["One who eats flesh",["Herbivore","Omnivore","Carnivore","Insectivore"],2],
+["Carnage means",["Peace","Mass killing","Celebration","Disease"],1],
+["One who eats everything",["Carnivore","Herbivore","Omnivore","Granivore"],2],
+["Omnipresent means",["Present once","Present everywhere","Present sometimes","Nearby"],1],
+["One who knows everything",["Omnipotent","Omnipresent","Omniscient","Omnivorous"],2],
+["Having unlimited power",["Omniscient","Omnipotent","Omnipresent","Omnibus"],1],
+["More than one husband",["Polygamy","Polyandry","Bigamy","Monogamy"],1],
+["Killing of men",["Androphobia","Androcide","Androphile","Androcracy"],1],
+["Rule by men",["Patriarchy","Androcracy","Democracy","Oligarchy"],1],
+["Fear of men",["Misandry","Androphobia","Demophobia","Claustrophobia"],1],
+["Hatred of men",["Misandry","Androphobia","Androphile","Polyandry"],0],
+["Study of time",["Biography","Chronology","Geography","Psychology"],1],
+["Instrument to record time",["Chronograph","Barometer","Thermometer","Speedometer"],0],
+["Arranged according to time",["Chronic","Synchronous","Chronological","Omniscient"],2],
+["Chronic disease means",["Seasonal","Sudden","Long lasting","Minor"],2],
+["Benediction means",["Curse","Warning","Blessing","Punishment"],2],
+["Benevolent means",["Cruel","Kind","Greedy","Proud"],1],
+["Verbose means",["Silent","Full of words","Brief","Angry"],1],
+["Word for word",["Verbatim","Verbose","Verbosity","Verbicide"],0],
+["Palm reading",["Calligraphy","Chiromancy","Chronology","Demography"],1],
+["Beautiful handwriting",["Cacography","Calligraphy","Chiropody","Chirography"],1],
+["Bad handwriting",["Calligraphy","Cacography","Chiromancy","Calliphony"],1],
+["Pleasant sound",["Cacophony","Calliphony","Dysphonia","Verbosity"],1]
+];
+
+questions.forEach((q,i)=>{
+    document.write(`<div class="question">
+    <p><b>Q${i+1}. ${q[0]}</b></p>
+    <div class="options">`);
+    q[1].forEach((opt,j)=>{
+        document.write(`
+        <label>
+        <input type="radio" name="q${i}" value="${j}"> ${opt}
+        </label>`);
+    });
+    document.write(`</div></div>`);
+});
+</script>
+
+<button type="button" onclick="submitQuiz()">Submit Test</button>
+</form>
+
+<div id="score"></div>
+
+<script>
+let time = 1200;
+const timer = setInterval(()=>{
+    let min = Math.floor(time/60);
+    let sec = time%60;
+    document.getElementById("time").innerText =
+        `${min}:${sec<10?"0"+sec:sec}`;
+    time--;
+    if(time < 0){
+        clearInterval(timer);
+        submitQuiz();
+    }
+},1000);
+
+function submitQuiz(){
+    clearInterval(timer);
+    let score = 0;
+    questions.forEach((q,i)=>{
+        const options = document.getElementsByName("q"+i);
+        options.forEach(opt=>{
+            if(opt.checked){
+                if(parseInt(opt.value) === q[2]){
+                    opt.parentElement.classList.add("correct");
+                    score++;
+                }else{
+                    opt.parentElement.classList.add("wrong");
+                    options[q[2]].parentElement.classList.add("correct");
+                }
+            }
+        });
+    });
+    document.getElementById("score").innerText =
+        `Your Score: ${score} / 40`;
+}
+</script>
+
+</body>
+</html>
