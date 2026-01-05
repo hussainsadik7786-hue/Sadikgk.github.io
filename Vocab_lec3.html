@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ROOT WORDS MCQ – LEC 3</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f2f5f9;
+    padding:20px;
+}
+h1{
+    text-align:center;
+    color:#2c3e50;
+}
+.timer{
+    text-align:center;
+    font-size:18px;
+    font-weight:bold;
+    color:#c0392b;
+    margin-bottom:20px;
+}
+.question{
+    background:#fff;
+    padding:15px;
+    margin-bottom:15px;
+    border-radius:8px;
+    box-shadow:0 0 6px rgba(0,0,0,0.1);
+}
+.options label{
+    display:block;
+    margin:6px 0;
+    cursor:pointer;
+}
+.correct{
+    color:green;
+    font-weight:bold;
+}
+.wrong{
+    color:red;
+    font-weight:bold;
+}
+button{
+    display:block;
+    margin:25px auto;
+    padding:12px 30px;
+    font-size:16px;
+    background:#2c3e50;
+    color:white;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+#score{
+    text-align:center;
+    font-size:22px;
+    font-weight:bold;
+    margin-top:20px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>ROOT WORDS MCQ TEST – LEC 3</h1>
+<div class="timer">Time Left: <span id="time">20:00</span></div>
+
+<form id="quiz">
+
+<script>
+const questions = [
+["Aggregate means",["Separate","Combine","Destroy","Divide"],1],
+["Segregate means",["Mix","Unite","Separate","Gather"],2],
+["Gregarious means",["Living alone","Living in groups","Silent","Angry"],1],
+["Congregation is",["Business group","Religious gathering","Political party","Court"],1],
+["Believer of segregation",["Anti-segregationist","Segregationist","Gregarious","Congregant"],1],
+["Mala fide means",["Good faith","Bad faith","Honest","Legal"],1],
+["Bona fide means",["Fake","Genuine","Dishonest","Illegal"],1],
+["Infidel is one who",["Faithful","Has no true faith","Religious","Honest"],1],
+["Somnambulist is one who",["Talks in sleep","Walks in sleep","Sleeps much","No sleep"],1],
+["Insomnia is disease of",["Excess sleep","No sleep","Sleep walking","Sleep talking"],1],
+["Somnolent means",["Active","Sleepy","Angry","Healthy"],1],
+["Euphony means",["Bad sound","Loud sound","Pleasant sound","Confusing sound"],2],
+["Euphemism means",["Harsh words","Pleasant expression","Praise","Abuse"],1],
+["Eulogy is",["Criticism speech","Praise speech","Debate","Argument"],1],
+["Euthanasia means",["Sudden death","Natural death","Mercy killing","Accident"],2],
+["Novelty means",["Oldness","Newness","Sadness","Thickness"],1],
+["Novice is",["Expert","Experienced","Inexperienced","Professional"],2],
+["Renovate means",["Destroy","Repair & make new","Leave","Sell"],1],
+["De novo means",["Slowly","Repeatedly","From beginning","At end"],2],
+["Synchronization means",["Different time","Same time","Future","Past"],1],
+["Synagogue is",["Temple","Church","Jewish worship place","Mosque"],2],
+["Symmetry means",["Unequal","Balanced shape","Broken","Irregular"],1],
+["Sympathy means",["Hatred","Same feelings","Anger","Fear"],1],
+["Logomania means",["Love of silence","Excessive talking","Fear of words","Hatred of words"],1],
+["Logophile is",["Word hater","Word lover","Word fear","Silent person"],1],
+["Neologism means",["Old word","New coined word","Foreign word","Wrong word"],1],
+["Dialogue is",["One speech","Group speech","Conversation","Debate"],2],
+["Monologue means",["Conversation","Speech by one","Discussion","Debate"],1],
+["Epidermis is",["Inner skin","Outer skin","Bone","Muscle"],1],
+["Skin specialist is",["Dentist","Dermatologist","Neurologist","Pathologist"],1],
+["Xenophobia means",["Love of foreigners","Fear of foreigners","Killing foreigners","Rule of foreigners"],1],
+["Cenotaph is",["Temple","Empty tomb","Church","Palace"],1],
+["Taphophobia means",["Love of tomb","Fear of tomb","Writing tomb","Building tomb"],1],
+["Andropagous means",["Flower-eating","Man-eating","Fruit-eating","Spider-eating"],1],
+["Phagophobia is fear of",["Sleep","Eating","Walking","Flying"],1],
+["Aviator is one who",["Drives ship","Drives train","Flies aircraft","Repairs aircraft"],2],
+["Aviary is place for",["Animals","Birds","Fish","Reptiles"],1],
+["Lucid means",["Dark","Clear","Confusing","Dull"],1],
+["Elucidate means",["Hide","Confuse","Explain clearly","Destroy"],2],
+["Translucent means",["No light","Transparent","Partly transparent","Reflective"],2]
+];
+
+questions.forEach((q,i)=>{
+document.write(`<div class="question">
+<p><b>Q${i+1}. ${q[0]}</b></p><div class="options">`);
+q[1].forEach((opt,j)=>{
+document.write(`<label>
+<input type="radio" name="q${i}" value="${j}"> ${opt}
+</label>`);
+});
+document.write(`</div></div>`);
+});
+</script>
+
+<button type="button" onclick="submitQuiz()">Submit Test</button>
+</form>
+
+<div id="score"></div>
+
+<script>
+let time = 1200;
+const timer = setInterval(()=>{
+let m=Math.floor(time/60), s=time%60;
+document.getElementById("time").innerText=`${m}:${s<10?"0"+s:s}`;
+time--;
+if(time<0){clearInterval(timer);submitQuiz();}
+},1000);
+
+function submitQuiz(){
+clearInterval(timer);
+let score=0;
+questions.forEach((q,i)=>{
+let opts=document.getElementsByName("q"+i);
+opts.forEach(o=>{
+if(o.checked){
+if(+o.value===q[2]){o.parentElement.classList.add("correct");score++;}
+else{o.parentElement.classList.add("wrong");
+opts[q[2]].parentElement.classList.add("correct");}
+}
+});
+});
+document.getElementById("score").innerText=`Your Score: ${score} / 40`;
+}
+</script>
+
+</body>
+</html>
