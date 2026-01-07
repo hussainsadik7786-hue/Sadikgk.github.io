@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ROOT WORDS MCQ – LEC 4</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f6f8;
+    padding:20px;
+}
+h1{
+    text-align:center;
+    color:#2c3e50;
+}
+.timer{
+    text-align:center;
+    font-size:18px;
+    font-weight:bold;
+    color:#c0392b;
+    margin-bottom:20px;
+}
+.question{
+    background:#ffffff;
+    padding:15px;
+    margin-bottom:15px;
+    border-radius:8px;
+    box-shadow:0 0 6px rgba(0,0,0,0.1);
+}
+.options label{
+    display:block;
+    margin:6px 0;
+    cursor:pointer;
+}
+.correct{
+    color:green;
+    font-weight:bold;
+}
+.wrong{
+    color:red;
+    font-weight:bold;
+}
+button{
+    display:block;
+    margin:25px auto;
+    padding:12px 30px;
+    font-size:16px;
+    background:#2c3e50;
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+#score{
+    text-align:center;
+    font-size:22px;
+    font-weight:bold;
+    margin-top:20px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>ROOT WORDS MCQ TEST – LEC 4</h1>
+<div class="timer">Time Left: <span id="time">20:00</span></div>
+
+<form id="quiz">
+
+<script>
+const questions = [
+["Bibulous means",["Hungry","Drunkard","Angry","Silent"],1],
+["Imbibe means",["Reject","Drink / absorb","Destroy","Divide"],1],
+["A habitual drinker is",["Bibulous","Bibber","Imbiber","Drunk"],1],
+["Bellicose means",["Peaceful","War-like","Religious","Fearful"],1],
+["Casus belli means",["End of war","Cause of war","Result of war","Place of war"],1],
+["Goddess of war is",["Athena","Bellona","Hera","Diana"],1],
+["Rebellious means",["Obedient","Law-abiding","Tending to fight","Calm"],2],
+["Perimeter means",["Centre","Measurement around","Height","Depth"],1],
+["Periphery means",["Centre","Surroundings","Height","Depth"],1],
+["Epigraph is",["Tomb writing","Quotation at chapter head","Religious book","Story"],1],
+["Epitaph is written on",["Wall","Book","Tomb","Temple"],2],
+["Ocular relates to",["Ear","Eye","Nose","Skin"],1],
+["A lens for one eye is",["Binocular","Monocle","Microscope","Spectacle"],1],
+["Glasses for two eyes",["Monocular","Binoculars","Telescope","Microscope"],1],
+["Genesis means",["End","Origin","Growth","Death"],1],
+["Family history specialist",["Geneticist","Genealogist","Genarch","Progeny"],1],
+["Indigenous means",["Foreign","Inborn","Imported","Artificial"],1],
+["Equinox means",["Long night","Long day","Equal day & night","Midnight"],2],
+["Nocturnal means",["Active in day","Active at night","Lazy","Always sleeping"],1],
+["Music inspired by night",["Sonata","Nocturne","Opera","Lyric"],1],
+["Vocabulary means",["Grammar","Collection of words","Sentence","Paragraph"],1],
+["Panacea means",["Disease","Cure for all","Poison","Medicine shop"],1],
+["Pandemic relates to",["One area","All people","Village","City"],1],
+["Pantheon is",["Palace","Temple of all gods","Court","Market"],1],
+["Ridiculous means",["Serious","Laughable","Dangerous","Angry"],1],
+["Deride means",["Praise","Mock","Help","Support"],1],
+["Monandry means",["One wife","One husband","Many husbands","Many wives"],1],
+["Monarchy is rule by",["All","Few","One ruler","People"],2],
+["Monogamy means",["Many marriages","One marriage","No marriage","Forced marriage"],1],
+["Monochromatic means",["Many colours","One colour","Bright","Dark"],1],
+["Bifurcate means",["Unite","Divide into two","Destroy","Rotate"],1],
+["Biped means",["Four legs","Two legs","No legs","Many legs"],1],
+["Bilateral means",["One side","Two sides","Many sides","No side"],1],
+["Theology is study of",["Science","God","History","Language"],1],
+["One who disbelieves God",["Theist","Monotheist","Atheist","Pantheist"],2],
+["Monotheist believes in",["Many gods","One god","No god","Strange gods"],1],
+["Natal relates to",["Death","Birth","Marriage","War"],1],
+["Innate means",["Learned","Inborn","Artificial","Foreign"],1],
+["Nascent means",["Fully grown","Growing stage","Old","Dead"],1],
+["Clamour means",["Silence","Noisy shouting","Soft voice","Song"],1],
+["Proclamation is",["Personal letter","Official statement","Poem","Story"],1],
+["Fortitude means",["Fear","Courage in pain","Weakness","Laziness"],1],
+["Progress means",["Move backward","Move ahead","Stop","Rotate"],1],
+["Retrogress means",["Move ahead","Move backward","Jump","Fly"],1],
+["Transgress means",["Obey rules","Go beyond limits","Follow law","Help"],1],
+["Creed means",["Law","Set of beliefs","Punishment","Habit"],1],
+["Credulous means",["Distrustful","Ready to believe","Angry","Silent"],1],
+["Incredulous means",["Trusting","Not ready to believe","Foolish","Honest"],1],
+["Credence means",["Proof","Belief","Lie","Fear"],1],
+["Discreditable means",["Honourable","Worthy of belief","Not worthy of belief","Praiseworthy"],2]
+];
+
+questions.forEach((q,i)=>{
+document.write(`<div class="question">
+<p><b>Q${i+1}. ${q[0]}</b></p><div class="options">`);
+q[1].forEach((opt,j)=>{
+document.write(`<label>
+<input type="radio" name="q${i}" value="${j}"> ${opt}
+</label>`);
+});
+document.write(`</div></div>`);
+});
+</script>
+
+<button type="button" onclick="submitQuiz()">Submit Test</button>
+</form>
+
+<div id="score"></div>
+
+<script>
+let time = 1200;
+const timer = setInterval(()=>{
+let m=Math.floor(time/60), s=time%60;
+document.getElementById("time").innerText=`${m}:${s<10?"0"+s:s}`;
+time--;
+if(time<0){clearInterval(timer);submitQuiz();}
+},1000);
+
+function submitQuiz(){
+clearInterval(timer);
+let score=0;
+questions.forEach((q,i)=>{
+let opts=document.getElementsByName("q"+i);
+opts.forEach(o=>{
+if(o.checked){
+if(+o.value===q[2]){
+o.parentElement.classList.add("correct"); score++;
+}else{
+o.parentElement.classList.add("wrong");
+opts[q[2]].parentElement.classList.add("correct");
+}
+}
+});
+});
+document.getElementById("score").innerText=`Your Score: ${score} / 50`;
+}
+</script>
+
+</body>
+</html>
