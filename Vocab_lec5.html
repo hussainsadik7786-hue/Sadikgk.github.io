@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Root Words – 50 MCQ Test</title>
+<style>
+body{font-family:Arial;background:#eef2f3;padding:20px}
+h2{text-align:center}
+.timer{text-align:center;color:#c0392b;font-size:18px;font-weight:bold}
+.question{background:#fff;padding:12px;margin:12px 0;border-radius:8px}
+label{display:block;margin:5px 0}
+.correct{color:green;font-weight:bold}
+.wrong{color:red;font-weight:bold}
+button{padding:10px 25px;font-size:16px;background:#2c3e50;color:#fff;border:none;border-radius:5px;cursor:pointer}
+#score{text-align:center;font-size:22px;font-weight:bold;margin-top:20px}
+</style>
+</head>
+
+<body>
+
+<h2>ROOT WORDS – 50 MCQ TEST</h2>
+<div class="timer">Time Left: <span id="time">20:00</span></div>
+
+<form id="quiz"></form>
+
+<button onclick="submitQuiz()">Submit</button>
+<div id="score"></div>
+
+<script>
+const questions=[
+["Bibulous means",["Hungry","Drunkard","Angry","Silent"],1],
+["Imbibe means",["Reject","Drink / absorb","Destroy","Divide"],1],
+["A habitual drinker is",["Bibulous","Bibber","Imbiber","Drunk"],1],
+["Bellicose means",["Peaceful","War-like","Religious","Fearful"],1],
+["Casus belli means",["End of war","Cause of war","Result of war","Place of war"],1],
+["Goddess of war is",["Athena","Bellona","Hera","Diana"],1],
+["Perimeter means",["Centre","Boundary length","Height","Depth"],1],
+["Epigraph is",["Tomb writing","Quotation at chapter start","Novel","Drama"],1],
+["Epitaph is written on",["Wall","Book","Tomb","Temple"],2],
+["Ocular relates to",["Ear","Eye","Nose","Skin"],1],
+
+["Monocle is for",["Two eyes","One eye","Blind","Microscope"],1],
+["Genesis means",["End","Origin","Growth","Death"],1],
+["Genealogist studies",["Genes","Family history","Plants","Diseases"],1],
+["Indigenous means",["Foreign","Native","Imported","Artificial"],1],
+["Equinox means",["Long day","Long night","Equal day & night","Darkness"],2],
+["Nocturnal animals are active at",["Day","Night","Evening","Noon"],1],
+["Nocturne is related to",["Morning","Night","War","Dance"],1],
+["Panacea means",["Poison","Cure-all","Disease","Pain"],1],
+["Pandemic affects",["One city","One country","All people","Village"],2],
+["Pantheon is",["Market","Temple of all gods","Court","School"],1],
+
+["Deride means",["Praise","Mock","Help","Support"],1],
+["Ridiculous means",["Serious","Funny","Dangerous","Angry"],1],
+["Monarchy is rule by",["People","One ruler","Few","All"],1],
+["Monogamy means",["One marriage","Many marriages","No marriage","Illegal"],0],
+["Monochrome means",["Many colours","One colour","Bright","Dark"],1],
+["Biped means",["Two-footed","Four-footed","Winged","No legs"],0],
+["Bifurcate means",["Unite","Divide into two","Break","Destroy"],1],
+["Theology is study of",["Science","God","Plants","Law"],1],
+["Atheist believes in",["God","No God","Many Gods","Nature"],1],
+["Monotheist believes in",["Many gods","One god","No god","Spirits"],1],
+
+["Natal means",["Death","Birth","Marriage","War"],1],
+["Innate means",["Learned","Inborn","Artificial","Foreign"],1],
+["Nascent means",["Old","Beginning","Dead","Finished"],1],
+["Clamour means",["Silence","Loud noise","Soft sound","Music"],1],
+["Proclamation means",["Private letter","Official announcement","Novel","Poem"],1],
+["Fortitude means",["Fear","Courage","Weakness","Laziness"],1],
+["Progress means",["Move forward","Move back","Stop","Rotate"],0],
+["Retrogress means",["Advance","Move backward","Jump","Fly"],1],
+["Transgress means",["Obey","Go beyond limits","Follow rules","Help"],1],
+
+["Creed means",["Belief","Punishment","Habit","Law"],0],
+["Credulous means",["Suspicious","Ready to believe","Angry","Silent"],1],
+["Incredulous means",["Trusting","Doubting","Honest","Foolish"],1],
+["Credence means",["Proof","Belief","Lie","Fear"],1],
+["Discreditable means",["Honourable","Untrustworthy","Praiseworthy","Famous"],1],
+["Mortuary is a place for",["Birth","Dead bodies","Marriage","Study"],1],
+["Necropolis means",["City of dead","Grave","Temple","House"],0],
+["Immortal means",["Mortal","Undying","Weak","Old"],1]
+];
+
+const quiz=document.getElementById("quiz");
+questions.forEach((q,i)=>{
+let div=document.createElement("div");
+div.className="question";
+div.innerHTML=`<b>Q${i+1}. ${q[0]}</b>`;
+q[1].forEach((op,j)=>{
+div.innerHTML+=`<label><input type="radio" name="q${i}" value="${j}"> ${op}</label>`;
+});
+quiz.appendChild(div);
+});
+
+let time=1200;
+let timer=setInterval(()=>{
+let m=Math.floor(time/60),s=time%60;
+document.getElementById("time").innerText=`${m}:${s<10?"0"+s:s}`;
+time--; if(time<0){clearInterval(timer);submitQuiz();}
+},1000);
+
+function submitQuiz(){
+clearInterval(timer);
+let score=0;
+questions.forEach((q,i)=>{
+let opts=document.getElementsByName("q"+i);
+opts.forEach(o=>{
+if(o.checked){
+if(+o.value===q[2]){o.parentElement.classList.add("correct");score++;}
+else{
+o.parentElement.classList.add("wrong");
+opts[q[2]].parentElement.classList.add("correct");
+}
+}
+});
+});
+document.getElementById("score").innerText=`Score : ${score} / 50`;
+}
+</script>
+
+</body>
+</html>
