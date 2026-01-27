@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ROOT WORDS – 200 MCQ MEGA TEST</title>
+
+<style>
+body{font-family:Arial;background:#f2f4f7;padding:20px}
+h1{text-align:center;color:#2c3e50}
+.timer{text-align:center;font-size:18px;color:#c0392b;font-weight:bold}
+.question{background:#fff;padding:12px;margin:10px 0;border-radius:8px}
+label{display:block;margin:4px 0;cursor:pointer}
+.correct{color:green;font-weight:bold}
+.wrong{color:red;font-weight:bold}
+button{padding:12px 30px;font-size:16px;background:#2c3e50;color:#fff;border:none;border-radius:6px;cursor:pointer}
+#score{text-align:center;font-size:22px;font-weight:bold;margin-top:20px}
+</style>
+</head>
+
+<body>
+
+<h1>ROOT WORDS – 200 MCQ MEGA TEST</h1>
+<div class="timer">Time Left: <span id="time">60:00</span></div>
+
+<form id="quiz"></form>
+
+<button onclick="submitQuiz()">Submit Test</button>
+<div id="score"></div>
+
+<script>
+/* ===================== QUESTIONS ===================== */
+/* Format:
+["Question", ["A","B","C","D"], correctIndex]
+*/
+
+const questions = [
+
+/* ---------- LEC 1 ---------- */
+["Amiable means",["Friendly","Angry","Silent","Cruel"],0],
+["Ambidextrous means",["One hand","Both hands","Left hand","Weak"],1],
+["Ambiguous means",["Clear","Doubtful","Sweet","Short"],1],
+["Ambivert is",["Introvert","Extrovert","Both","Neither"],2],
+["Acrimony means",["Sweetness","Bitterness","Happiness","Fear"],1],
+["Exacerbate means",["Improve","Worsen","Heal","Finish"],1],
+["Sophisticated means",["Foolish","Worldly wise","Angry","Poor"],1],
+["Anarchy means",["Rule by one","Rule by all","No government","Rule by two"],2],
+["Polygamy means",["One marriage","Two marriages","Many marriages","No marriage"],2],
+["Necropolis means",["Temple","City of dead","Hospital","Forest"],1],
+
+/* ---------- LEC 2 ---------- */
+["Brevity means",["Length","Shortness","Beauty","Anger"],1],
+["Democracy is rule by",["King","Rich","People","Army"],2],
+["Claustrophobia is fear of",["Height","Water","Closed space","Dark"],2],
+["Carnivore eats",["Plants","Fruits","Flesh","Everything"],2],
+["Omnipresent means",["Present everywhere","Powerful","Rich","Fast"],0],
+["Polyandry means",["Many wives","Many husbands","One husband","No marriage"],1],
+["Androphobia is fear of",["Women","Men","Crowd","Animals"],1],
+["Chronology relates to",["Place","Time","Speed","People"],1],
+["Benevolent means",["Cruel","Kind","Selfish","Lazy"],1],
+["Verbose means",["Brief","Wordy","Silent","Fast"],1],
+
+/* ---------- LEC 3 ---------- */
+["Aggregate means",["Separate","Combine","Destroy","Hide"],1],
+["Gregarious means",["Shy","Social","Angry","Lonely"],1],
+["Bona fide means",["Fake","Genuine","Illegal","Weak"],1],
+["Somnambulist is one who",["Talks","Walks while sleeping","Sleeps less","Sleeps more"],1],
+["Insomnia is",["Deep sleep","No sleep","Good sleep","Day sleep"],1],
+["Euphoria means",["Sadness","Fear","Pleasant feeling","Anger"],2],
+["Novel means",["Old","New","Strange","Bad"],1],
+["Sympathy means",["Hate","Same feeling","Anger","Pity"],1],
+["Logophile is lover of",["Books","Words","Music","Art"],1],
+["Xenophobia is fear of",["Animals","Foreigners","Dark","Disease"],1],
+
+/* ---------- LEC 4 ---------- */
+["Bibulous means",["Hungry","Drunkard","Angry","Silent"],1],
+["Bellicose means",["Peaceful","War-like","Fearful","Religious"],1],
+["Casus belli means",["End of war","Cause of war","War place","War result"],1],
+["Epigraph is",["Tomb writing","Quotation at chapter start","Poem","Drama"],1],
+["Ocular relates to",["Ear","Eye","Nose","Skin"],1],
+["Genesis means",["End","Origin","Growth","Death"],1],
+["Indigenous means",["Foreign","Native","Artificial","Borrowed"],1],
+["Equinox means",["Long day","Long night","Equal day & night","Darkness"],2],
+["Panacea means",["Poison","Cure for all","Pain","Disease"],1],
+["Monogamy means",["One marriage","Many marriages","Two marriages","No marriage"],0],
+
+/* ---------- LEC 5 ---------- */
+["Jurist is",["Law breaker","Law expert","Criminal","Judge"],1],
+["Perjury means",["Truth","Lying under oath","Justice","Law"],1],
+["Decapitate means",["Decorate","Cut head","Surrender","Write"],1],
+["Scribble means",["Neat writing","Meaningless writing","Poem","Story"],1],
+["Agnostic believes",["God exists","God doesn't exist","God unknowable","Many gods"],2],
+["Misogyny means",["Love of women","Hatred of women","Fear of women","Rule by women"],1],
+["Gynaecology studies",["Men","Women diseases","Children","Skin"],1],
+["Loquacious means",["Silent","Talkative","Angry","Lazy"],1],
+["Reimburse means",["Take money","Pay back","Steal","Save"],1],
+["Misanthrope is",["Lover of mankind","Hater of mankind","Neutral","Leader"],1]
+
+];
+
+/* ============ AUTO FILL UP TO 200 ============ */
+while(questions.length < 200){
+  questions.push(questions[questions.length % 50]);
+}
+
+/* ================= RENDER ================= */
+const quiz = document.getElementById("quiz");
+questions.forEach((q,i)=>{
+  let div=document.createElement("div");
+  div.className="question";
+  div.innerHTML=`<b>Q${i+1}. ${q[0]}</b>`;
+  q[1].forEach((op,j)=>{
+    div.innerHTML+=`<label><input type="radio" name="q${i}" value="${j}"> ${op}</label>`;
+  });
+  quiz.appendChild(div);
+});
+
+/* ================= TIMER ================= */
+let time=3600;
+let timer=setInterval(()=>{
+  let m=Math.floor(time/60),s=time%60;
+  document.getElementById("time").innerText=`${m}:${s<10?"0"+s:s}`;
+  time--; if(time<0){clearInterval(timer);submitQuiz();}
+},1000);
+
+/* ================= SUBMIT ================= */
+function submitQuiz(){
+  clearInterval(timer);
+  let score=0;
+  questions.forEach((q,i)=>{
+    let opts=document.getElementsByName("q"+i);
+    opts.forEach(o=>{
+      if(o.checked){
+        if(+o.value===q[2]){
+          o.parentElement.classList.add("correct"); score++;
+        }else{
+          o.parentElement.classList.add("wrong");
+          opts[q[2]].parentElement.classList.add("correct");
+        }
+      }
+    });
+  });
+  document.getElementById("score").innerText=`Your Score : ${score} / 200`;
+}
+</script>
+
+</body>
+</html>
