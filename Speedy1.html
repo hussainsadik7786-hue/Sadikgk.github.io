@@ -1,175 +1,144 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-<meta charset="UTF-8">
-<title>Sadik GS Practice Test</title>
-
-<style>
-
-body{
-font-family:Arial;
-background:#f3f3f3;
-padding:20px;
-}
-
-.watermark{
-position:fixed;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-font-size:120px;
-color:rgba(0,0,0,0.05);
-z-index:-1;
-}
-
-#timer{
-font-size:22px;
-color:red;
-font-weight:bold;
-margin-bottom:20px;
-}
-
-.question{
-background:white;
-padding:15px;
-margin-bottom:10px;
-border-radius:8px;
-}
-
-.correct{
-background:#c8f7c5;
-}
-
-.wrong{
-background:#f7c5c5;
-}
-
-button{
-padding:10px 20px;
-font-size:16px;
-margin-top:20px;
-cursor:pointer;
-}
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sadik's 50 MCQ Quiz</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; padding: 20px; line-height: 1.6; }
+        .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 100px; color: rgba(0, 0, 0, 0.05); z-index: -1; white-space: nowrap; pointer-events: none; font-weight: bold; }
+        .quiz-container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); position: relative; }
+        h1 { text-align: center; color: #1a73e8; border-bottom: 2px solid #1a73e8; padding-bottom: 10px; }
+        #timer { text-align: center; font-size: 22px; font-weight: bold; color: #d93025; background: #feefee; padding: 10px; border-radius: 8px; position: sticky; top: 0; z-index: 10; margin-bottom: 20px; border: 1px solid #fad2cf; }
+        .question-box { margin-bottom: 25px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 10px; background: #fff; transition: 0.3s; }
+        .question-text { font-size: 18px; font-weight: 600; color: #202124; margin-bottom: 15px; }
+        .options { list-style: none; padding: 0; }
+        .options li { margin: 8px 0; padding: 12px; background: #f8f9fa; border: 1px solid #dadce0; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+        .options li:hover { background: #e8f0fe; border-color: #1a73e8; }
+        .selected { background-color: #d2e3fc !important; border-color: #1a73e8 !important; }
+        .correct { background-color: #c6f6d5 !important; border-color: #38a169 !important; color: #1c4532; font-weight: bold; }
+        .wrong { background-color: #fed7d7 !important; border-color: #e53e3e !important; color: #742a2a; }
+        #submit-btn { display: block; width: 100%; padding: 18px; background: #1a73e8; color: white; border: none; border-radius: 8px; font-size: 20px; cursor: pointer; font-weight: bold; margin-top: 30px; }
+        #submit-btn:hover { background: #1557b0; }
+        #result-card { display: none; text-align: center; font-size: 26px; margin-bottom: 20px; color: #1a73e8; background: #e8f0fe; padding: 20px; border-radius: 10px; border: 2px solid #1a73e8; }
+    </style>
 </head>
-
 <body>
 
-<div class="watermark">Sadik</div>
+<div class="watermark">Sadik Sadik Sadik</div>
 
-<h2>GS Practice Test</h2>
+<div class="quiz-container">
+    <h1>रेलवे सामान्य अध्ययन (50 प्रश्न)</h1>
+    <div id="timer">समय शेष: 10:00</div>
+    <div id="result-card"></div>
+    
+    <div id="quiz-content"></div>
 
-<div id="timer">Time Left: 15:00</div>
-
-<form id="quizForm"></form>
-
-<button onclick="submitQuiz()">Submit Test</button>
-
-<h3 id="result"></h3>
+    <button id="submit-btn" onclick="submitQuiz()">टेस्ट सबमिट करें</button>
+</div>
 
 <script>
-
-const questions = [
-
-{
-q:"भारत का संविधान भारत को किस रूप में वर्णित करता है?",
-options:["राज्य संघ","संघ राज्य","लोकतांत्रिक गणराज्य","समाजवादी राज्य"],
-answer:1
-},
-
-{
-q:"मछलियों के यकृत तेल में कौन-सा विटामिन अधिक होता है?",
-options:["विटामिन A","विटामिन B","विटामिन C","विटामिन D"],
-answer:3
-},
-
-{
-q:"पृथ्वी का एकमात्र उपग्रह कौन है?",
-options:["मंगल","शुक्र","चंद्रमा","बुध"],
-answer:2
-}
-
+const quizData = [
+    { q: "जनगणना किस सूची के अंतर्गत वर्णित है?", a: "संघ सूची", opts: ["राज्य सूची", "समवर्ती सूची", "संघ सूची", "अवशिष्ट सूची"] },
+    { q: "भारत का संविधान भारत को किस रूप में वर्णित करता है?", a: "राज्यों का संघ", opts: ["राज्यों का संघ", "एकात्मक", "संघीय", "महासंघ"] },
+    { q: "मछलियों के यकृत तेल में किसकी प्रचुरता होती है?", a: "विटामिन D", opts: ["विटामिन A", "विटामिन B", "विटामिन C", "विटामिन D"] },
+    { q: "क्षुद्र ग्रह किनके बीच देखे जाते हैं?", a: "मंगल और बृहस्पति", opts: ["बुध और शुक्र", "मंगल और बृहस्पति", "शनि और अरुण", "पृथ्वी और मंगल"] },
+    { q: "तुलबुल परियोजना किस नदी पर है?", a: "झेलम", opts: ["चिनाब", "झेलम", "रावी", "सिंधु"] },
+    { q: "बाबरनामा के लेखक कौन हैं?", a: "बाबर", opts: ["अकबर", "हुमायूँ", "बाबर", "गुलबदन बेगम"] },
+    { q: "अंतर्राष्ट्रीय महिला दिवस कब मनाया जाता है?", a: "8 मार्च", opts: ["8 मार्च", "5 जून", "10 दिसंबर", "15 अगस्त"] },
+    { q: "प्रकाश वर्ष किसका मात्रक है?", a: "दूरी का", opts: ["समय", "प्रकाश की तीव्रता", "दूरी का", "द्रव्यमान"] },
+    { q: "मानव शरीर का सामान्य ताप कितना होता है?", a: "37°C", opts: ["32°C", "37°C", "40°C", "98.6°C"] },
+    { q: "अंतिम मुगल सम्राट कौन था?", a: "बहादुरशाह द्वितीय", opts: ["औरंगजेब", "बहादुरशाह द्वितीय", "शाह आलम", "जहांगीर"] },
+    { q: "भारत छोड़ो आंदोलन का नारा किसने दिया था?", a: "महात्मा गांधी", opts: ["भगत सिंह", "सुभाष चंद्र बोस", "महात्मा गांधी", "नेहरू"] },
+    { q: "राशियों की कुल संख्या कितनी है?", a: "12", opts: ["10", "12", "14", "16"] },
+    { q: "एंजाइम मूल रूप से क्या होते हैं?", a: "प्रोटीन", opts: ["वसा", "विटामिन", "प्रोटीन", "कार्बोहाइड्रेट"] },
+    { q: "सौरमंडल का सबसे चमकीला ग्रह कौन सा है?", a: "शुक्र", opts: ["बुध", "मंगल", "शुक्र", "बृहस्पति"] },
+    { q: "बिन्दुसार किस वंश का शासक था?", a: "मौर्य वंश", opts: ["गुप्त वंश", "मौर्य वंश", "नंद वंश", "शुंग वंश"] },
+    { q: "लिंगराज मंदिर कहाँ स्थित है?", a: "भुवनेश्वर", opts: ["पुरी", "भुवनेश्वर", "कोणार्क", "कटक"] },
+    { q: "मकाऊ की मुद्रा को क्या कहा जाता है?", a: "पटाका", opts: ["येन", "पटाका", "डॉलर", "पाउंड"] },
+    { q: "सिनेमा का आविष्कार किसने किया था?", a: "निकोलस और जीन लुथिए", opts: ["एडिसन", "निकोलस और जीन लुथिए", "ग्राहम बेल", "वाट्सन"] },
+    { q: "पृथ्वी का एकमात्र उपग्रह है?", a: "चंद्रमा", opts: ["टाइटन", "डीमॉस", "चंद्रमा", "फोबोस"] },
+    { q: "हर्ष का राजकवि कौन था?", a: "बाणभट्ट", opts: ["कालिदास", "बाणभट्ट", "रवि कीर्ति", "तुलसीदास"] },
+    { q: "हाइड्रोजन बम का आविष्कार किसने किया?", a: "एडवर्ड टेलर", opts: ["न्यूटन", "एडवर्ड टेलर", "ओपेनहाइमर", "क्यूरी"] },
+    { q: "विश्व स्वास्थ्य दिवस कब मनाया जाता है?", a: "7 अप्रैल", opts: ["7 अप्रैल", "11 जुलाई", "1 दिसंबर", "5 जून"] },
+    { q: "दक्षिण अमेरिका के चारागाह को क्या कहते हैं?", a: "पंपास", opts: ["प्रेयरी", "सवाना", "पंपास", "वेल्ड"] },
+    { q: "भारत में प्रथम स्वर्ण मुद्राएँ किसने चलाई?", a: "यूनानियों", opts: ["शकों", "कुषाणों", "यूनानियों", "गुप्तों"] },
+    { q: "भारतीय राष्ट्रीय कांग्रेस के प्रथम मुस्लिम अध्यक्ष?", a: "बदरुद्दीन तैयबजी", opts: ["मौलाना आजाद", "बदरुद्दीन तैयबजी", "जिन्ना", "अहमद खान"] },
+    { q: "राज्य अपहरण नीति को किसने लागू किया?", a: "लॉर्ड डलहौजी", opts: ["कर्जन", "डलहौजी", "लिटन", "वेलेजली"] },
+    { q: "आर्थिक अपक्षय सिद्धांत के प्रतिपादक कौन थे?", a: "दादाभाई नौरोजी", opts: ["गांधी", "नेहरू", "दादाभाई नौरोजी", "तिलक"] },
+    { q: "राज्यसभा में मनोनीत सदस्यों की अधिकतम संख्या?", a: "12", opts: ["2", "10", "12", "15"] },
+    { q: "सुंडा जलडमरूमध्य किनके बीच स्थित है?", a: "जावा तथा सुमात्रा", opts: ["जावा तथा सुमात्रा", "भारत और लंका", "मलेशिया", "अंडमान"] },
+    { q: "राष्ट्रीय आय का आकलन कौन करता है?", a: "केंद्रीय सांख्यिकीय संगठन", opts: ["वित्त मंत्रालय", "RBI", "केंद्रीय सांख्यिकीय संगठन", "नीति आयोग"] },
+    { q: "गांधी-इरविन समझौता कब हुआ था?", a: "5 मार्च 1931", opts: ["1930", "5 मार्च 1931", "1932", "1942"] },
+    { q: "विश्व बैंक का मुख्यालय कहाँ है?", a: "वाशिंगटन डी.सी.", opts: ["न्यूयॉर्क", "जेनेवा", "वाशिंगटन डी.सी.", "पेरिस"] },
+    { q: "योजना आयोग का अध्यक्ष कौन होता है?", a: "प्रधानमंत्री", opts: ["राष्ट्रपति", "प्रधानमंत्री", "वित्त मंत्री", "RBI गवर्नर"] },
+    { q: "शिक्षा किस सूची के अंतर्गत आती है?", a: "समवर्ती सूची", opts: ["संघ सूची", "राज्य सूची", "समवर्ती सूची", "कोई नहीं"] },
+    { q: "इंडिया हाउस कहाँ स्थित है?", a: "लंदन", opts: ["दिल्ली", "लंदन", "पेरिस", "न्यूयॉर्क"] },
+    { q: "लाफिंग गैस का रासायनिक नाम?", a: "नाइट्रस ऑक्साइड", opts: ["नाइट्रिक ऑक्साइड", "नाइट्रस ऑक्साइड", "नाइट्रोजन", "मिथेन"] },
+    { q: "मुद्राराक्षस के लेखक कौन हैं?", a: "विशाखदत्त", opts: ["कौटिल्य", "विशाखदत्त", "कालिदास", "कल्हण"] },
+    { q: "रूसी क्रांति किस वर्ष हुई?", a: "1917", opts: ["1915", "1917", "1921", "1945"] },
+    { q: "मोनाजाइट किसका अयस्क है?", a: "थोरियम", opts: ["लोहा", "तांबा", "थोरियम", "कोयला"] },
+    { q: "आजाद हिंद फौज का गठन कब हुआ?", a: "1942", opts: ["1939", "1942", "1945", "1947"] },
+    { q: "जोग प्रपात किस नदी पर है?", a: "शरावती", opts: ["कृष्णा", "कावेरी", "शरावती", "नर्मदा"] },
+    { q: "राज्यसभा का पदेन अध्यक्ष कौन होता है?", a: "उपराष्ट्रपति", opts: ["राष्ट्रपति", "उपराष्ट्रपति", "प्रधानमंत्री", "स्पीकर"] },
+    { q: "थल सेना दिवस कब मनाया जाता है?", a: "15 जनवरी", opts: ["15 जनवरी", "8 अक्टूबर", "4 दिसंबर", "26 जनवरी"] },
+    { q: "चक्रवात किस कारण से आता है?", a: "निम्न दाब", opts: ["उच्च दाब", "निम्न दाब", "उच्च ताप", "वर्षा"] },
+    { q: "पानीपत की दूसरी लड़ाई (1556) किसके बीच हुई?", a: "अकबर और हेमू", opts: ["बाबर और लोधी", "अकबर और हेमू", "मराठा", "हुमायूँ"] },
+    { q: "विजयनगर किस नदी के तट पर स्थित है?", a: "तुंगभद्रा", opts: ["कृष्णा", "कावेरी", "तुंगभद्रा", "गोदावरी"] },
+    { q: "शहद में मुख्यत: क्या होता है?", a: "कार्बोहाइड्रेट", opts: ["प्रोटीन", "वसा", "कार्बोहाइड्रेट", "विटामिन"] },
+    { q: "रजिया सुल्तान किसकी बेटी थी?", a: "इल्तुतमिश", opts: ["ऐबक", "इल्तुतमिश", "बलबन", "खिलजी"] },
+    { q: "सूर्य की ऊर्जा का मुख्य कारण क्या है?", a: "नाभिकीय संलयन", opts: ["विखंडन", "संलयन", "दहन", "घर्षण"] },
+    { q: "चोल राजाओं की राजधानी कहाँ थी?", a: "तंजौर", opts: ["मदुराई", "तंजौर", "कांची", "मैसूर"] }
 ];
 
-const form=document.getElementById("quizForm");
+const quizContent = document.getElementById('quiz-content');
+let timeLeft = 600; 
 
-questions.forEach((item,index)=>{
+const timerInterval = setInterval(() => {
+    let min = Math.floor(timeLeft / 60);
+    let sec = timeLeft % 60;
+    document.getElementById('timer').innerText = `समय शेष: ${min}:${sec < 10 ? '0' : ''}${sec}`;
+    if (timeLeft <= 0) { clearInterval(timerInterval); submitQuiz(); }
+    timeLeft--;
+}, 1000);
 
-let div=document.createElement("div");
-div.className="question";
-
-let html="<p>"+(index+1)+". "+item.q+"</p>";
-
-item.options.forEach((opt,i)=>{
-html+=`<label>
-<input type="radio" name="q${index}" value="${i}">
-${opt}
-</label><br>`;
+quizData.forEach((data, i) => {
+    let div = document.createElement('div');
+    div.className = 'question-box';
+    div.innerHTML = `<div class="question-text">${i+1}. ${data.q}</div>
+        <ul class="options" id="q${i}">
+            ${data.opts.map(o => `<li onclick="selectOption(this, ${i})">${o}</li>`).join('')}
+        </ul>`;
+    quizContent.appendChild(div);
 });
 
-div.innerHTML=html;
-form.appendChild(div);
+let selectedAnswers = {};
 
-});
-
-let time=900;
-
-let timer=setInterval(()=>{
-
-let m=Math.floor(time/60);
-let s=time%60;
-
-document.getElementById("timer").innerHTML=
-"Time Left: "+m+":"+(s<10?"0":"")+s;
-
-time--;
-
-if(time<0){
-clearInterval(timer);
-submitQuiz();
+function selectOption(el, i) {
+    let lis = document.querySelectorAll(`#q${i} li`);
+    lis.forEach(l => l.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedAnswers[i] = el.innerText;
 }
 
-},1000);
-
-function submitQuiz(){
-
-clearInterval(timer);
-
-let score=0;
-
-questions.forEach((q,i)=>{
-
-let selected=document.querySelector(`input[name="q${i}"]:checked`);
-let div=document.getElementsByClassName("question")[i];
-
-if(selected){
-
-if(Number(selected.value)===q.answer){
-
-score++;
-div.classList.add("correct");
-
-}else{
-
-div.classList.add("wrong");
-
+function submitQuiz() {
+    clearInterval(timerInterval);
+    let score = 0;
+    quizData.forEach((data, i) => {
+        let lis = document.querySelectorAll(`#q${i} li`);
+        lis.forEach(l => {
+            if(l.innerText === data.a) l.classList.add('correct');
+            if(selectedAnswers[i] === l.innerText && selectedAnswers[i] !== data.a) l.classList.add('wrong');
+        });
+        if(selectedAnswers[i] === data.a) score++;
+    });
+    
+    let res = document.getElementById('result-card');
+    res.style.display = "block";
+    res.innerHTML = `Sadik, आपका टेस्ट पूरा हुआ! <br> स्कोर: ${score} / 50`;
+    document.getElementById('submit-btn').style.display = "none";
+    window.scrollTo(0,0);
 }
-
-}else{
-
-div.classList.add("wrong");
-
-}
-
-});
-
-document.getElementById("result").innerHTML=
-"Your Score: "+score+" / "+questions.length;
-
-}
-
 </script>
-
 </body>
 </html>
