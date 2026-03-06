@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sadik GS Test</title>
+<title>Sadik GS Practice Test</title>
 
 <style>
 
 body{
-font-family: Arial;
-margin:20px;
-background:#f5f5f5;
+font-family:Arial;
+background:#f3f3f3;
+padding:20px;
 }
 
 .watermark{
@@ -23,9 +23,9 @@ z-index:-1;
 }
 
 #timer{
-font-size:20px;
-font-weight:bold;
+font-size:22px;
 color:red;
+font-weight:bold;
 margin-bottom:20px;
 }
 
@@ -47,6 +47,7 @@ background:#f7c5c5;
 button{
 padding:10px 20px;
 font-size:16px;
+margin-top:20px;
 cursor:pointer;
 }
 
@@ -61,49 +62,66 @@ cursor:pointer;
 
 <div id="timer">Time Left: 15:00</div>
 
-<form id="quizForm">
+<form id="quizForm"></form>
 
-<div class="question">
-<p>1. भारत का संविधान भारत को किस रूप में वर्णित करता है?</p>
-
-<input type="radio" name="q1" value="A"> राज्य संघ<br>
-<input type="radio" name="q1" value="B"> संघ राज्य<br>
-<input type="radio" name="q1" value="C"> लोकतांत्रिक गणराज्य<br>
-<input type="radio" name="q1" value="D"> समाजवादी राज्य
-
-</div>
-
-<div class="question">
-<p>2. मछलियों के यकृत तेल में कौन-सा विटामिन अधिक होता है?</p>
-
-<input type="radio" name="q2" value="A"> विटामिन A<br>
-<input type="radio" name="q2" value="B"> विटामिन B<br>
-<input type="radio" name="q2" value="C"> विटामिन C<br>
-<input type="radio" name="q2" value="D"> विटामिन D
-
-</div>
-
-<!-- Isi pattern me Q3 se Q65 paste kar dena -->
-
-<br>
-
-<button type="button" onclick="submitQuiz()">Submit Test</button>
-
-</form>
+<button onclick="submitQuiz()">Submit Test</button>
 
 <h3 id="result"></h3>
 
 <script>
 
-let time = 900;
+const questions = [
 
-let timer = setInterval(function(){
+{
+q:"भारत का संविधान भारत को किस रूप में वर्णित करता है?",
+options:["राज्य संघ","संघ राज्य","लोकतांत्रिक गणराज्य","समाजवादी राज्य"],
+answer:1
+},
 
-let minutes = Math.floor(time/60);
-let seconds = time%60;
+{
+q:"मछलियों के यकृत तेल में कौन-सा विटामिन अधिक होता है?",
+options:["विटामिन A","विटामिन B","विटामिन C","विटामिन D"],
+answer:3
+},
 
-document.getElementById("timer").innerHTML =
-"Time Left: "+minutes+":"+(seconds<10?"0":"")+seconds;
+{
+q:"पृथ्वी का एकमात्र उपग्रह कौन है?",
+options:["मंगल","शुक्र","चंद्रमा","बुध"],
+answer:2
+}
+
+];
+
+const form=document.getElementById("quizForm");
+
+questions.forEach((item,index)=>{
+
+let div=document.createElement("div");
+div.className="question";
+
+let html="<p>"+(index+1)+". "+item.q+"</p>";
+
+item.options.forEach((opt,i)=>{
+html+=`<label>
+<input type="radio" name="q${index}" value="${i}">
+${opt}
+</label><br>`;
+});
+
+div.innerHTML=html;
+form.appendChild(div);
+
+});
+
+let time=900;
+
+let timer=setInterval(()=>{
+
+let m=Math.floor(time/60);
+let s=time%60;
+
+document.getElementById("timer").innerHTML=
+"Time Left: "+m+":"+(s<10?"0":"")+s;
 
 time--;
 
@@ -114,47 +132,40 @@ submitQuiz();
 
 },1000);
 
-
 function submitQuiz(){
 
 clearInterval(timer);
 
-let answers = {
-q1:"B",
-q2:"D"
-};
+let score=0;
 
-let score = 0;
+questions.forEach((q,i)=>{
 
-for(let q in answers){
-
-let selected = document.querySelector('input[name="'+q+'"]:checked');
-
-let questionDiv = document.querySelector('input[name="'+q+'"]').closest(".question");
+let selected=document.querySelector(`input[name="q${i}"]:checked`);
+let div=document.getElementsByClassName("question")[i];
 
 if(selected){
 
-if(selected.value === answers[q]){
+if(Number(selected.value)===q.answer){
 
 score++;
-questionDiv.classList.add("correct");
+div.classList.add("correct");
 
 }else{
 
-questionDiv.classList.add("wrong");
+div.classList.add("wrong");
 
 }
 
 }else{
 
-questionDiv.classList.add("wrong");
+div.classList.add("wrong");
 
 }
 
-}
+});
 
-document.getElementById("result").innerHTML =
-"Your Score: "+score+" / 65";
+document.getElementById("result").innerHTML=
+"Your Score: "+score+" / "+questions.length;
 
 }
 
