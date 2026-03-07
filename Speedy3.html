@@ -3,88 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Railway Quiz - Sadik Page 35</title>
+    <title>Sadik's Railway Quiz - Page 35</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; padding: 20px; }
-        .container { max-width: 850px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; }
-        h1 { text-align: center; color: #1a73e8; border-bottom: 3px solid #1a73e8; padding-bottom: 10px; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f4f8; padding: 20px; }
+        .main-container { max-width: 800px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; }
         
-        /* टाइमर बॉक्स */
-        #timer-box { position: sticky; top: 10px; z-index: 1000; background: #d93025; color: white; padding: 12px; text-align: center; font-size: 24px; font-weight: bold; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        /* नाम दर्ज करने की स्क्रीन */
+        #start-screen { text-align: center; padding: 40px 10px; }
+        #user-name { padding: 12px; font-size: 18px; width: 80%; max-width: 300px; border: 2px solid #1a73e8; border-radius: 8px; margin-bottom: 20px; }
+        
+        #timer { position: sticky; top: 10px; z-index: 1000; background: #e53935; color: white; padding: 10px; text-align: center; font-size: 22px; font-weight: bold; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
 
-        /* हर प्रश्न का बॉक्स */
-        .question-card { position: relative; background: #fff; border: 1px solid #ddd; padding: 25px; margin-bottom: 30px; border-radius: 12px; overflow: hidden; }
-        
-        /* वॉटरमार्क - लाल रंग का, हल्का ताकि शब्द साफ दिखें */
-        .question-card::before {
+        .q-card { 
+            position: relative; 
+            border: 1px solid #e0e6ed; 
+            padding: 20px; 
+            margin-bottom: 25px; 
+            border-radius: 12px; 
+            background: #fff;
+            overflow: hidden;
+        }
+
+        /* लाल वॉटरमार्क - साफ़ दिखने वाला */
+        .q-card::before {
             content: "Sadik";
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) rotate(-30deg);
-            font-size: 80px;
-            color: rgba(255, 0, 0, 0.05); /* लाल रंग, बहुत हल्का (5% opacity) */
-            font-weight: 900;
-            pointer-events: none;
+            transform: translate(-50%, -50%) rotate(-25deg);
+            font-size: 85px;
+            color: rgba(255, 0, 0, 0.06); /* हल्का लाल रंग - शब्द साफ़ दिखेंगे */
+            font-weight: 800;
             z-index: 0;
-            white-space: nowrap;
+            pointer-events: none;
+            letter-spacing: 5px;
         }
 
-        .q-text { position: relative; z-index: 1; font-size: 20px; font-weight: bold; color: #202124; margin-bottom: 15px; }
+        .q-text { position: relative; z-index: 1; font-size: 19px; font-weight: bold; color: #2c3e50; margin-bottom: 15px; }
+        .options-list { position: relative; z-index: 1; list-style: none; padding: 0; }
+        .options-list li { 
+            background: rgba(255, 255, 255, 0.85); 
+            border: 1px solid #d1d9e6; 
+            padding: 14px; 
+            margin: 10px 0; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            transition: 0.3s;
+        }
+        .options-list li:hover { background: #f1f7ff; border-color: #1a73e8; }
         
-        .options-list { position: relative; z-index: 1; list-style: none; padding: 0; margin-top: 10px; }
-        .options-list li { padding: 15px; margin: 10px 0; border: 1px solid #ced4da; border-radius: 8px; cursor: pointer; transition: 0.2s; background: rgba(255, 255, 255, 0.9); }
-        .options-list li:hover { background: #e8f0fe; border-color: #1a73e8; }
-        
-        .selected { border: 2px solid #1a73e8 !important; background-color: #e8f0fe !important; font-weight: bold; }
-        .correct { background-color: #c6f6d5 !important; border-color: #38a169 !important; color: #1c4532 !important; }
-        .wrong { background-color: #fed7d7 !important; border-color: #e53e3e !important; color: #742a2a !important; }
-        
-        #submit-btn { width: 100%; padding: 20px; background: #1a73e8; color: white; border: none; border-radius: 10px; font-size: 22px; font-weight: bold; cursor: pointer; }
-        #submit-btn:hover { background: #1557b0; }
-        #result-display { display: none; text-align: center; padding: 25px; font-size: 30px; color: #1a73e8; border: 4px dashed #1a73e8; margin-bottom: 30px; border-radius: 15px; background: #f1f8ff; font-weight: bold; }
-        
-        /* नाम दर्ज करने की स्क्रीन */
-        #name-screen { text-align: center; padding: 60px; }
-        #name-screen h2 { color: #2c3e50; margin-bottom: 20px; }
-        #user-name-input { padding: 15px; font-size: 20px; width: 300px; border-radius: 8px; border: 2px solid #ccc; margin-bottom: 20px; }
+        .selected { background-color: #e8f0fe !important; border: 2px solid #1a73e8 !important; }
+        .correct { background-color: #c6f6d5 !important; border-color: #38a169 !important; color: #1c4532; font-weight: bold; }
+        .wrong { background-color: #fed7d7 !important; border-color: #e53e3e !important; color: #742a2a; }
+
+        .btn { width: 100%; padding: 18px; background: #1a73e8; color: white; border: none; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn:hover { background: #1557b0; }
+        #score-result { display: none; text-align: center; font-size: 26px; color: #1a73e8; padding: 20px; border: 3px dashed #1a73e8; border-radius: 12px; margin-bottom: 25px; background: #f8faff; }
     </style>
 </head>
 <body>
 
-<div class="container" id="quiz-main" style="display:none;">
-    <h1>रेलवे सामान्य अध्ययन (पेज-35)</h1>
-    <div id="timer-box">समय शेष: 10:00</div>
-    <div id="result-display"></div>
-    <div id="quiz-wrap"></div>
-    <button id="submit-btn" onclick="processResult()">टेस्ट सबमिट करें</button>
+<div class="main-container" id="start-screen">
+    <h2 style="color: #1a73e8;">Sadik's Quiz - Page 35</h2>
+    <p>कृपया अपना नाम लिखें:</p>
+    <input type="text" id="user-name" placeholder="आपका नाम...">
+    <br>
+    <button class="btn" style="width: auto; padding: 12px 50px;" onclick="beginTest()">टेस्ट शुरू करें</button>
 </div>
 
-<div class="container" id="name-screen">
-    <h2>स्वागत है! अपना नाम दर्ज करें</h2>
-    <p>पेज 35 के 50 प्रश्नों का टेस्ट देने के लिए तैयार हो जाएं।</p>
-    <input type="text" id="user-name-input" placeholder="यहाँ नाम लिखें...">
-    <br>
-    <button id="submit-btn" style="width: auto; padding: 12px 40px;" onclick="startQuiz()">टेस्ट शुरू करें</button>
+<div class="main-container" id="quiz-box" style="display: none;">
+    <div id="timer">समय: 10:00</div>
+    <div id="score-result"></div>
+    <div id="questions-area"></div>
+    <button class="btn" id="finish-btn" onclick="showResults()">टेस्ट सबमिट करें</button>
 </div>
 
 <script>
-let userName = "";
-const quizSource = [
-    { q: "सांची का स्तूप (मध्य प्रदेश) को किसने बनवाया था?", o: ["बिन्दुसार", "अशोक", "कनिष्क", "चंद्रगुप्त"], a: 1 },
-    { q: "गुलाम वंश का संस्थापक कौन था?", o: ["बलबन", "इल्तुतमिश", "कुतुबुद्दीन ऐबक", "रजिया"], a: 2 },
-    { q: "पूर्वी घाट और पश्चिमी घाट का मिलन स्थल क्या कहलाता है?", o: ["पालघाट", "विंध्याचल", "नीलगिरी", "अन्नामलाई"], a: 2 },
-    { q: "लावणी तथा तमाशा किस राज्य का लोकनृत्य है?", o: ["केरल", "गुजरात", "उत्तर प्रदेश", "महाराष्ट्र"], a: 3 },
-    { q: "यूनिसेफ (UNICEF) का मुख्यालय कहाँ है?", o: ["जिनेवा", "लंदन", "पेरिस", "न्यूयॉर्क"], a: 3 },
-    { q: "प्रसिद्ध चीनी यात्री फाह्यान ने किसके शासनकाल में भारत की यात्रा की?", o: ["अकबर", "चंद्रगुप्त द्वितीय", "हर्षवर्धन", "अशोक"], a: 1 },
-    { q: "मनसबदारी प्रथा की शुरुआत किसने की थी?", o: ["बाबर", "शाहजहाँ", "अकबर", "जहाँगीर"], a: 2 },
-    { q: "एलोरा और एलीफेंटा में शैलकृत चैत्य किस काल के हैं?", o: ["गुप्त", "पल्लव", "चोल", "राष्ट्रकूट"], a: 3 },
-    { q: "महात्मा गांधी ने 'करो या मरो' का नारा किस आंदोलन में दिया था?", o: ["असहयोग आंदोलन", "भारत छोड़ो आंदोलन", "सविनय अवज्ञा", "खिलाफत"], a: 1 },
-    { q: "चोल वंश किस शक्ति के लिए प्रसिद्ध था?", o: ["पैदल सेना", "घुड़सवार सेना", "नौसैनिक शक्ति", "हाथी सेना"], a: 2 },
-    { q: "ग्रैंड स्लैम का संबंध किस खेल से है?", o: ["क्रिकेट", "फुटबॉल", "लॉन टेनिस", "हॉकी"], a: 2 },
-    { q: "विद्युत चुम्बक बनाने के लिए किसका प्रयोग होता है?", o: ["कठोर लोहा", "मृदु लोहा", "स्टील", "तांबा"], a: 1 },
-    { q: "माइक्रोफोन का आविष्कारक कौन है?", o: ["एडिसन", "ग्राहम बेल", "न्यूटन", "फैराडे"], a: 1 },
-    { q: "विटामिन A किसके लिए अच्छा होता है?", o: ["त्वचा", "हड्डियों", "आँखों", "बालों"], a: 2 },
-    { q: "गीत सेठी का संबंध किस खेल से है?", o: ["स्नूकर", "बिलियर्ड्स", "शतरंज", "गोल्फ"], a: 1 },
-    { q: "विटामिन $B_{12}$ में क्या पाया जाता है?", o: ["लोहा", "तांबा", "कोबाल्ट", "मैग्नीशियम
-  
+let currentUserName = "";
+const db = [
+    { q: "सांची का स्तूप (मध्य प्रदेश) किसने बनवाया था?", o: ["बिन्दुसार", "अशोक", "हर्षवर्धन", "कनिष्क"], a: 1 },
+    { q: "गुलाम वंश का संस्थापक कौन था?", o: ["इल्तुतमिश", "बलबन", "कुतुबुद्दीन ऐबक", "रजिया"], a: 2 },
+    { q: "लावणी तथा तमाशा किस राज्य का लोकनृत्य है?", o: ["महाराष्ट्र", "केरल", "गुजरात", "पंजाब"], a: 0 },
+    { q: "यूनिसेफ (UNICEF) का मुख्यालय कहाँ स्थित है?", o: ["पेरिस", "जिनेवा", "न्यूयॉर्क", "लंदन"], a: 2 },
+    { q: "चीनी यात्री फाह्यान ने किसके शासनकाल में भारत की यात्रा की?", o: ["चंद्रगुप्त प्रथम", "चंद्रगुप्त द्वितीय", "अशोक", "अकबर"], a: 1 },
+    { q: "मनसबदारी प्रथा की शुरुआत किसने की थी?", o: ["बाबर", "हुमायूँ", "अकबर", "जहाँगीर"], a: 2 },
+    { q: "महात्मा गांधी ने 'करो या मरो' का नारा कब दिया था?", o: ["1920", "1930", "1942", "1947"], a: 2 },
+    { q: "चोल वंश किस शक्ति के लिए प्रसिद्ध था?", o: ["नौसैनिक शक्ति", "पैदल सेना", "हाथी सेना", "घुड़सवार"], a: 0 },
+    { q: "विश्व का सबसे छोटा देश कौन सा है?", o: ["मोनाको", "वेटिकन सिटी", "नाउरु", "मालदीव"], a: 1 },
+    { q: "लखनऊ से पहले अवध की राजधानी कहाँ थी?", o: ["इलाहाबाद", "फैजाबाद", "कानपुर", "वाराणसी"], a: 1 },
+    { q: "इराक की मुद्रा का नाम क्या है?", o: ["रियाल", "दिनार", "लीरा", "टका"], a: 1 },
+    { q: "ध्वनि तरंगें कहाँ से होकर नहीं गुजर सकतीं?", o: ["जल", "वायु", "निर्वात", "लोहा"], a: 2 },
+    { q: "ग्रामीण विकास संस्थान (RDI) कहाँ स्थित है?", o: ["दिल्ली", "हैदराबाद", "पटना", "जयपुर"], a: 1 },
+    { q: "बल्ब का तंतु (Filament) किसका बना होता है?", o: ["लोहा", "तांबा", "टंगस्टन", "नाइक्रोम"], a: 2 },
+    { q: "कपास के लिए आदर्श मिट्टी कौन सी है?", o: ["लाल मिट्टी", "काली मिट्टी", "जलोढ़ मिट्टी", "रेतीली"], a: 1 },
+    { q: "भारतीय संविधान में संसदीय स्वरूप कहाँ से लिया गया है?", o: ["अमेरिका", "ब्रिटेन", "कनाडा", "आयरलैंड"], a: 1 },
+    { q: "टेस्ट क्रिकेट में प्रयोग होने वाली गेंद का वजन कितना होता है?", o: ["5.00 औंस", "5.50 औंस", "6.00 औंस", "4.50 औंस"], a: 1 },
+    { q: "विश्व में मीठे पानी की सबसे बड़ी झील कौन सी है?", o: ["बैकाल", "कैस्पियन", "सुपीरियर झील", "वुलर झील"], a: 2 },
+    { q: "सिकंदर की मृत्यु कहाँ हुई थी?", o: ["मिस्र", "बेबीलोन", "यूनान", "भारत"], a: 1 },
+    { q: "विटामिन A किसके लिए अच्छा होता है?", o: ["हड्डियों", "आँखों", "त्वचा", "बालों"], a: 1 },
+    { q: "कोबाल्ट किस विटामिन में पाया जाता है?", o: ["विटामिन C", "विटामिन B12", "विटामिन D", "विटामिन A"], a: 1 },
+    { q: "विश्व एड्स दिवस कब मनाया जाता है?", o: ["1 दिसंबर", "5 जून", "11 जुलाई", "10 दिसंबर"], a: 0 },
+    { q: "आयरन (लौह तत्व) की कमी से कौन सा रोग होता है?", o: ["घेघा", "एनीमिया", "स्कर्वी", "रिकेट्स"], a: 1 },
+    { q: "चमगादड़ एक ______ है।", o: ["पक्षी", "सरीसृप", "स्तनधारी", "कीट"], a: 2 },
+    { q: "केरल का गठन कब हुआ था?", o: ["1947", "1950", "1956", "1960"], a: 2 },
+    { q: "केरल की राजकीय भाषा क्या है?", o: ["तमिल", "कन्नड़", "मलयालम", "तेलुगु"], a: 2 },
+    { q: "केरल की साक्षरता दर कितनी है?", o: ["90.0%", "94.0%", "91.5%", "85.0%"], a: 1 },
+    { q: "मसालों के उत्पादन में भारत का अग्रणी राज्य कौन सा है?", o: ["केरल", "कर्नाटक", "आंध्र प्रदेश", "तमिलनाडु"], a: 0 },
+    { q: "अरब सागर की रानी किसे कहा जाता है?", o: ["मुंबई", "कोचीन", "त्रिवेंद्रम", "मंगलोर"], a: 1 },
+    { q: "शुंग वंश की स्थापना किसने की थी?", o: ["पुष्यमित्र शुंग", "अग्निमित्र", "देवभूति", "चंद्रगुप्त"], a: 0 },
+    { q: "राजतरंगिणी के लेखक कौन हैं?", o: ["कौटिल्य", "कल्हण", "बाणभट्ट", "कालिदास"], a: 1 },
+    { q: "ध्वनि की इकाई क्या है?", o: ["डेसीबल", "हर्ट्ज़", "वाट", "जूल"], a: 0 },
+    { q: "मूँगफली में कौन सा विटामिन सबसे अधिक होता है?", o: ["विटामिन C", "विटामिन B1", "विटामिन D", "विटामिन A"], a: 1 },
+    { q: "काला पैगोडा कहाँ स्थित है?", o: ["मदुराई", "कोणार्क", "पुरी", "खजुराहो"], a: 1 },
+    { q: "भारत का मुख्य लड़ाकू टैंक का नाम क्या है?", o: ["अग्नि", "अर्जुन", "भीष्म", "आकाश"], a: 1 },
+    { q: "गुगली (Googly) शब्द किस खेल से संबंधित है?", o: ["फुटबॉल", "हॉकी", "क्रिकेट", "टेनिस"], a: 2 },
+    { q: "इंसुलिन की खोज किसने की थी?", o: ["बैटिंग एवं बेस्ट", "जेनर", "पाश्चर", "फ्लेमिंग"], a: 0 },
+    { q: "विश्व पर्यटन दिवस कब मनाया जाता है?", o: ["27 सितंबर", "5 जून", "15 जनवरी", "8 मार्च"], a: 0 },
+    { q: "संसद के दोनों सदनों की संयुक्त बैठक की अध्यक्षता कौन करता है?", o: ["राष्ट्रपति", "लोकसभा अध्यक्ष", "उपराष्ट्रपति", "प्रधानमंत्री"], a: 1 },
+    { q: "ओजोन गैस किन धातुओं को प्रभावित करती है?", o: ["लोहा", "पारे एवं चाँदी", "तांबा", "सोना"], a: 1 },
+    { q: "पंचतंत्र के लेखक कौन हैं?", o: ["तुलसीदास", "विष्णु शर्मा", "प्रेमचन्द", "व्यास"], a: 1 },
+    { q: "विटामिन C का सबसे अच्छा स्रोत क्या है?", o: ["सेब", "केला", "आंवला", "दूध"], a: 2 },
+    { q: "एलोरा की गुफाएँ किस राज्य में हैं?", o: ["गुजरात", "मध्य प्रदेश", "महाराष्ट्र", "कर्नाटक"], a: 2 },
+    { q: "भाखड़ा नांगल बाँध किस नदी पर है?", o: ["सतलज", "रावी", "चिनाब", "झेलम"], a: 0 },
+    { q: "हर्षचरित के लेखक कौन थे?", o: ["अश्वघोष", "बाणभट्ट", "हरिषेण", "कालिदास"], a: 1 },
+    { q: "द मेकिंग ऑफ द महात्मा फिल्म के निर्देशक कौन हैं?", o: ["सत्यजीत रे", "श्याम बेनेगल", "गुलजार", "राजकुमार हिरानी"], a: 1 },
+    { q: "राज्यसभा का पदेन अध्यक्ष कौन होता है?", o: ["प्रधानमंत्री", "उपराष्ट्रपति", "राष्ट्रपति", "लोकसभा अध्यक्ष"], a: 1 },
+    { q: "चीन में लाल क्रांति किस वर्ष हुई थी?", o: ["1911", "1947", "1949", "1952"], a: 2 },
+    { q: "मछलियों के यकृत तेल में किसकी प्रचुरता होती है?", o: ["विटामिन C", "विटामिन D", "विटामिन B", "विटामिन K"], a: 1 },
+    { q: "पोंगल किस राज्य का प्रमुख त्योहार है?", o: ["केरल", "तमिलनाडु", "कर्नाटक", "ओडिशा"], a: 1 }
+];
+
+const area = document.getElementById('questions-area');
+const userAnswers = new Array(db.length).fill(null);
+
+function beginTest() {
+    currentUserName = document.getElementById('user-name').value;
+    if(!currentUserName.trim()) { alert("कृपया अपना नाम लिखें!"); return; }
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('quiz-box').style.display = 'block';
+    renderQuiz();
+    startClock();
+}
+
+function renderQuiz() {
+    db.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.className = 'q-card';
+        div.innerHTML = `<div class="q-text">${i + 1}. ${item.q}</div>
+            <ul class="options-list" id="grp-${i}">
+                ${item.o.map((opt, idx) => `<li onclick="choose(${i}, ${idx})">${opt}</li>`).join('')}
+            </ul>`;
+        area.appendChild(div);
+    });
+}
+
+function choose(qI, oI) {
+    userAnswers[qI] = oI;
+    const items = document.querySelectorAll(`#grp-${qI} li`);
+    items.forEach(li => li.classList.remove('selected'));
+    items[oI].classList.add('selected');
+}
+
+function showResults() {
+    clearInterval(clockId);
+    let score = 0;
+    db.forEach((item, i) => {
+        const items = document.querySelectorAll(`#grp-${i} li`);
+        items[item.a].classList.add('correct');
+        if (userAnswers[i] !== null) {
+            if (userAnswers[i] === item.a) score++;
+            else items[userAnswers[i]].classList.add('wrong');
+        }
+    });
+    document.getElementById('finish-btn').style.display = 'none';
+    const res = document.getElementById('score-result');
+    res.style.display = 'block';
+    res.innerHTML = `बधाई हो ${currentUserName}!<br>आपका स्कोर: ${score} / ${db.length}`;
+    window.scrollTo(0, 0);
+}
+
+let timeLeft = 600;
+let clockId;
+function startClock() {
+    clockId = setInterval(() => {
+        timeLeft--;
+        let m = Math.floor(timeLeft / 60);
+        let s = timeLeft % 60;
+        document.getElementById('timer').innerText = `समय: ${m}:${s < 10 ? '0' + s : s}`;
+        if (timeLeft <= 0) { clearInterval(clockId); showResults(); }
+    }, 1000);
+}
+</script>
+</body>
+</html>
