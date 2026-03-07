@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sadik - Page 34 Special Quiz</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; padding: 20px; }
+        .container { max-width: 850px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); position: relative; }
+        h1 { text-align: center; color: #1a73e8; border-bottom: 3px solid #1a73e8; padding-bottom: 10px; }
+        
+        #timer-display { 
+            position: sticky; top: 10px; z-index: 100;
+            background: #d93025; color: white; padding: 12px; 
+            text-align: center; font-size: 22px; font-weight: bold; 
+            border-radius: 10px; margin-bottom: 25px;
+        }
+
+        .question-box {
+            position: relative;
+            background: #ffffff;
+            border: 1px solid #dee2e6;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        /* हर प्रश्न के बीच में Sadik वॉटरमार्क */
+        .question-box::after {
+            content: "Sadik";
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-25deg);
+            font-size: 80px;
+            color: rgba(0, 0, 0, 0.04);
+            font-weight: 900;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .q-text { position: relative; z-index: 1; font-size: 18px; font-weight: bold; color: #202124; margin-bottom: 15px; }
+        
+        .opt-list { position: relative; z-index: 1; list-style: none; padding: 0; }
+        .opt-list li { 
+            padding: 14px; margin: 10px 0; border: 1px solid #ced4da;
+            border-radius: 8px; cursor: pointer; transition: 0.2s; background: rgba(255, 255, 255, 0.9);
+        }
+        .opt-list li:hover { background: #e8f0fe; border-color: #1a73e8; }
+        
+        .active { border: 2px solid #1a73e8 !important; background: #e8f0fe !important; font-weight: bold; }
+        .is-correct { background: #d4edda !important; border-color: #28a745 !important; color: #155724; font-weight: bold; }
+        .is-wrong { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+
+        #submit-test { width: 100%; padding: 20px; background: #1a73e8; color: white; border: none; border-radius: 10px; font-size: 22px; font-weight: bold; cursor: pointer; }
+        #final-score { display: none; text-align: center; padding: 25px; font-size: 28px; color: #1a73e8; border: 4px double #1a73e8; margin-bottom: 30px; border-radius: 15px; background: #f1f8ff; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>रेलवे सामान्य अध्ययन (पेज-34 Special)</h1>
+    <div id="timer-display">समय शेष: 10:00</div>
+    <div id="final-score"></div>
+    <div id="quiz-container"></div>
+    <button id="submit-test" onclick="calculateResult()">टेस्ट सबमिट करें</button>
+</div>
+
+<script>
+const quizData = [
+    { q: "भारत में अंतरिक्ष आयोग एवं अंतरिक्ष विभाग की स्थापना कब हुई थी?", o: ["1969", "1972", "1975", "1980"], a: 1 },
+    { q: "पूरी स्थित जगन्नाथ मंदिर को किस वंश के शासकों ने बनवाया था?", o: ["चोल वंश", "गुप्त वंश", "गंग वंश", "मौर्य वंश"], a: 2 },
+    { q: "बांग्लादेश में गंगा नदी को किस नाम से जाना जाता है?", o: ["जमुना", "मेघना", "पद्मा", "सांगपो"], a: 2 },
+    { q: "हैदराबाद तथा सिकंदराबाद को किन शहरों के नाम से जाना जाता है?", o: ["जुड़वाँ शहर", "गुलाबी शहर", "मसालों का शहर", "सफेद शहर"], a: 0 },
+    { q: "महाभारत का प्राचीन नाम क्या है?", o: ["भारत कथा", "जय संहिता", "विजय गाथा", "पुराण"], a: 1 },
+    { q: "सबसे प्राचीन वेद कौन सा है?", o: ["सामवेद", "यजुर्वेद", "अथर्ववेद", "ऋग्वेद"], a: 3 },
+    { q: "राष्ट्रपति अपना त्यागपत्र किसे सौंपता है?", o: ["प्रधानमंत्री", "मुख्य न्यायाधीश", "उपराष्ट्रपति", "लोकसभा अध्यक्ष"], a: 2 },
+    { q: "हजामती दर्पण (Shaving mirror) के रूप में किस दर्पण का प्रयोग होता है?", o: ["उत्तल", "अवतल", "समतल", "बेलनाकार"], a: 1 },
+    { q: "तानसेन का असली नाम क्या था?", o: ["महेश दास", "रामतनु पाण्डे", "मकरंद पाण्डे", "रामदास"], a: 1 },
+    { q: "खजुराहो मंदिर लगभग कितने वर्ष पुराना है?", o: ["500 वर्ष", "800 वर्ष", "1000 वर्ष", "1200 वर्ष"], a: 2 },
+    { q: "हाथी गुम्फा (ओडिशा) को किस राजा ने बनवाया था?", o: ["अशोक", "खारवेल", "कनिष्क", "हर्षवर्धन"], a: 1 },
+    { q: "गोकक झरना कहाँ स्थित है?", o: ["मैसूर", "बेलगाँव (कर्नाटक)", "जबलपुर", "रांची"], a: 1 },
+    { q: "अम्लीय वर्षा का मुख्य कारण क्या है?", o: ["CO2", "SO2 तथा NO2", "CH4", "O3"], a: 1 },
+    { q: "भारत की प्रथम युद्धक मिसाइल कौन सी है?", o: ["अग्नि", "आकाश", "पृथ्वी", "नाग"], a: 2 },
+    { q: "ट्रांजिस्टर का आविष्कार किस वर्ष हुआ था?", o: ["1945", "1948", "1950", "1952"], a: 1 },
+    { q: "अकबर का राजस्व मंत्री कौन था?", o: ["बीरबल", "मानसिंह", "टोडरमल", "अबुल फजल"], a: 2 },
+    { q: "पृथ्वी का ध्रुवीय व्यास कितना है?", o: ["12,756 किमी", "12,714 किमी", "13,000 किमी", "12,500 किमी"], a: 1 },
+    { q: "लोहे का निष्कर्षण किस अयस्क से किया जाता है?", o: ["सिनेबार", "हेमेटाइट", "बॉक्साइट", "क्यूप्राइट"], a: 1 },
+    { q: "देश का सबसे बड़ा बंदरगाह कौन सा है?", o: ["कांडला", "चेन्नई", "मुंबई", "कोलकाता"], a: 2 },
+    { q: "14 बैंकों का राष्ट्रीयकरण कब हुआ था?", o: ["15 अगस्त 1969", "19 जुलाई 1969", "26 जनवरी 1970", "1 अप्रैल 1969"], a: 1 },
+    { q: "संविधान सभा का गठन किसकी सिफारिश पर हुआ था?", o: ["क्रिप्स मिशन", "कैबिनेट मिशन", "माउंटबेटन योजना", "हंटर आयोग"], a: 1 },
+    { q: "भारत का प्रथम नागरिक कौन होता है?", o: ["प्रधानमंत्री", "उपराष्ट्रपति", "राष्ट्रपति", "मुख्य न्यायाधीश"], a: 2 },
+    { q: "ध्वनि को किस इकाई में मापा जाता है?", o: ["हर्ट्ज़", "डेसीबल", "वाट", "जूल"], a: 1 },
+    { q: "गांधी जी का जन्म 2 अक्टूबर 1869 को कहाँ हुआ था?", o: ["राजकोट", "पोरबंदर", "सूरत", "अहमदाबाद"], a: 1 },
+    { q: "सिनेबार किसका अयस्क है?", o: ["लोहा", "तांबा", "पारा (Mercury)", "एल्युमीनियम"], a: 2 },
+    { q: "दिल्ली भारत की राजधानी कब बनी?", o: ["1911", "1912", "1905", "1947"], a: 1 },
+    { q: "जापान की करेंसी (मुद्रा) क्या है?", o: ["डॉलर", "युआन", "येन", "टका"], a: 2 },
+    { q: "चीन अभ्रक का सबसे बड़ा उत्पादक देश है? (सत्य/असत्य)", o: ["सत्य", "असत्य", "कह नहीं सकते", "डाटा अपूर्ण है"], a: 0 },
+    { q: "बेसिन की संधि (1802) अंग्रेजों ने किसके साथ की थी?", o: ["मराठों", "पेशवा", "निज़ाम", "सिक्ख"], a: 1 },
+    { q: "फलों का अध्ययन क्या कहलाता है?", o: ["ओलेरीकल्चर", "पोमोलॉजी", "पीसीकल्चर", "सेरीकल्चर"], a: 1 },
+    { q: "दिल्ली चलो का नारा किसने दिया था?", o: ["गांधी जी", "नेहरू", "सुभाष चंद्र बोस", "भगत सिंह"], a: 2 },
+    { q: "बिहु किस राज्य का प्रमुख त्योहार है?", o: ["असम", "ओडिशा", "बिहार", "मेघालय"], a: 0 },
+    { q: "भाखड़ा नांगल बाँध किस नदी पर स्थित है?", o: ["व्यास", "सतलज", "रावी", "चिनाब"], a: 1 },
+    { q: "अर्जुन पुरस्कार कब प्रारंभ किया गया था?", o: ["1951", "1961", "1971", "1981"], a: 1 },
+    { q: "ध्यानचंद स्टेडियम कहाँ स्थित है?", o: ["दिल्ली", "मुंबई", "लखनऊ", "कोलकाता"], a: 2 },
+    { q: "टीपू सुल्तान कहाँ का शासक था?", o: ["हैदराबाद", "मैसूर", "बीजापुर", "मदुराई"], a: 1 },
+    { q: "नाटो (NATO) का मुख्यालय कहाँ है?", o: ["पेरिस", "जिनेवा", "ब्रुसेल्स", "न्यूयॉर्क"], a: 2 },
+    { q: "बटरफ्लाई शब्द का संबंध किस खेल से है?", o: ["टेनिस", "तैराकी", "क्रिकेट", "हॉकी"], a: 1 },
+    { q: "1 अश्व शक्ति कितने वाट के बराबर होती है?", o: ["500", "1000", "746", "750"], a: 2 },
+    { q: "आगरा के किले के अंदर मोती मस्जिद किसने बनवाई?", o: ["अकबर", "शाहजहाँ", "औरंगजेब", "जहाँगीर"], a: 1 },
+    { q: "शेरशाह का मकबरा कहाँ स्थित है?", o: ["सासाराम", "दिल्ली", "आगरा", "लाहौर"], a: 0 },
+    { q: "इंग्लिश चैनल पार करने वाला पहला भारतीय कौन था?", o: ["आरती साहा", "मिहिर सेन", "लियंडर पेस", "विजेंदर सिंह"], a: 1 },
+    { q: "गौतम बुद्ध को क्या कहा जाता है?", o: ["एशिया की रोशनी", "शांति का दूत", "महात्मा", "गुरु"], a: 0 },
+    { q: "बजट (Budget) शब्द का शाब्दिक अर्थ क्या है?", o: ["पैसा", "चमड़े का थैला", "वित्तीय विवरण", "हिसाब-किताब"], a: 1 },
+    { q: "सरदार सरोवर परियोजना किस राज्य में है?", o: ["मध्य प्रदेश", "राजस्थान", "गुजरात", "महाराष्ट्र"], a: 2 },
+    { q: "सार्क (SAARC) का मुख्यालय कहाँ है?", o: ["नई दिल्ली", "काठमांडू", "ढाका", "इस्लामाबाद"], a: 1 },
+    { q: "कच्चे फलों को पकाने के लिए किस गैस का प्रयोग होता है?", o: ["मीथेन", "एसीटलीन", "ईथेन", "ऑक्सीजन"], a: 1 },
+    { q: "विद्युत चुम्बक बनाने के लिए किसका प्रयोग होता है?", o: ["कठोर लोहा", "मृदु लोहा", "स्टील", "तांबा"], a: 1 },
+    { q: "टी (Tea) शब्द का संबंध किस खेल से है?", o: ["क्रिकेट", "गोल्फ", "पोलो", "हॉकी"], a: 1 },
+    { q: "माइक्रोफोन का आविष्कारक किसे माना जाता है?", o: ["एडिसन", "ग्राहम बेल", "न्यूटन", "फैराडे"], a: 1 }
+];
+
+const quizWrapper = document.getElementById('quiz-container');
+const userPicks = new Array(quizData.length).fill(null);
+
+function buildQuiz() {
+    quizData.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.className = 'question-box';
+        div.innerHTML = `<div class="q-text">${i + 1}. ${item.q}</div>
+            <ul class="opt-list" id="q-grp-${i}">
+                ${item.o.map((opt, idx) => `<li onclick="makeSelection(${i}, ${idx})">${opt}</li>`).join('')}
+            </ul>`;
+        quizWrapper.appendChild(div);
+    });
+}
+
+function makeSelection(qIdx, oIdx) {
+    userPicks[qIdx] = oIdx;
+    const items = document.querySelectorAll(`#q-grp-${qIdx} li`);
+    items.forEach(li => li.classList.remove('active'));
+    items[oIdx].classList.add('active');
+}
+
+function calculateResult() {
+    clearInterval(timerTicker);
+    let totalScore = 0;
+    quizData.forEach((item, i) => {
+        const items = document.querySelectorAll(`#q-grp-${i} li`);
+        items[item.a].classList.add('is-correct');
+        if (userPicks[i] !== null) {
+            if (userPicks[i] === item.a) totalScore++;
+            else items[userPicks[i]].classList.add('is-wrong');
+        }
+    });
+    
+    document.getElementById('submit-test').style.display = 'none';
+    const scoreBox = document.getElementById('final-score');
+    scoreBox.style.display = 'block';
+    scoreBox.innerHTML = `Sadik, आपका टेस्ट पूरा हुआ!<br>पेज-34 स्कोर: ${totalScore} / ${quizData.length}`;
+    window.scrollTo(0, 0);
+}
+
+let timerSecs = 600;
+const timerTicker = setInterval(() => {
+    timerSecs--;
+    let m = Math.floor(timerSecs / 60);
+    let s = timerSecs % 60;
+    document.getElementById('timer-display').innerText = `समय शेष: ${m}:${s < 10 ? '0' + s : s}`;
+    if (timerSecs <= 0) {
+        clearInterval(timerTicker);
+        calculateResult();
+    }
+}, 1000);
+
+buildQuiz();
+</script>
+</body>
+</html>
+
