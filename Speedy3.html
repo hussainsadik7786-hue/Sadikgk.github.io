@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Railway Quiz - Sadik Page 35</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; padding: 20px; }
+        .container { max-width: 850px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; }
+        h1 { text-align: center; color: #1a73e8; border-bottom: 3px solid #1a73e8; padding-bottom: 10px; }
+        
+        /* टाइमर बॉक्स */
+        #timer-box { position: sticky; top: 10px; z-index: 1000; background: #d93025; color: white; padding: 12px; text-align: center; font-size: 24px; font-weight: bold; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+
+        /* हर प्रश्न का बॉक्स */
+        .question-card { position: relative; background: #fff; border: 1px solid #ddd; padding: 25px; margin-bottom: 30px; border-radius: 12px; overflow: hidden; }
+        
+        /* वॉटरमार्क - लाल रंग का, हल्का ताकि शब्द साफ दिखें */
+        .question-card::before {
+            content: "Sadik";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 80px;
+            color: rgba(255, 0, 0, 0.05); /* लाल रंग, बहुत हल्का (5% opacity) */
+            font-weight: 900;
+            pointer-events: none;
+            z-index: 0;
+            white-space: nowrap;
+        }
+
+        .q-text { position: relative; z-index: 1; font-size: 20px; font-weight: bold; color: #202124; margin-bottom: 15px; }
+        
+        .options-list { position: relative; z-index: 1; list-style: none; padding: 0; margin-top: 10px; }
+        .options-list li { padding: 15px; margin: 10px 0; border: 1px solid #ced4da; border-radius: 8px; cursor: pointer; transition: 0.2s; background: rgba(255, 255, 255, 0.9); }
+        .options-list li:hover { background: #e8f0fe; border-color: #1a73e8; }
+        
+        .selected { border: 2px solid #1a73e8 !important; background-color: #e8f0fe !important; font-weight: bold; }
+        .correct { background-color: #c6f6d5 !important; border-color: #38a169 !important; color: #1c4532 !important; }
+        .wrong { background-color: #fed7d7 !important; border-color: #e53e3e !important; color: #742a2a !important; }
+        
+        #submit-btn { width: 100%; padding: 20px; background: #1a73e8; color: white; border: none; border-radius: 10px; font-size: 22px; font-weight: bold; cursor: pointer; }
+        #submit-btn:hover { background: #1557b0; }
+        #result-display { display: none; text-align: center; padding: 25px; font-size: 30px; color: #1a73e8; border: 4px dashed #1a73e8; margin-bottom: 30px; border-radius: 15px; background: #f1f8ff; font-weight: bold; }
+        
+        /* नाम दर्ज करने की स्क्रीन */
+        #name-screen { text-align: center; padding: 60px; }
+        #name-screen h2 { color: #2c3e50; margin-bottom: 20px; }
+        #user-name-input { padding: 15px; font-size: 20px; width: 300px; border-radius: 8px; border: 2px solid #ccc; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="quiz-main" style="display:none;">
+    <h1>रेलवे सामान्य अध्ययन (पेज-35)</h1>
+    <div id="timer-box">समय शेष: 10:00</div>
+    <div id="result-display"></div>
+    <div id="quiz-wrap"></div>
+    <button id="submit-btn" onclick="processResult()">टेस्ट सबमिट करें</button>
+</div>
+
+<div class="container" id="name-screen">
+    <h2>स्वागत है! अपना नाम दर्ज करें</h2>
+    <p>पेज 35 के 50 प्रश्नों का टेस्ट देने के लिए तैयार हो जाएं।</p>
+    <input type="text" id="user-name-input" placeholder="यहाँ नाम लिखें...">
+    <br>
+    <button id="submit-btn" style="width: auto; padding: 12px 40px;" onclick="startQuiz()">टेस्ट शुरू करें</button>
+</div>
+
+<script>
+let userName = "";
+const quizSource = [
+    { q: "सांची का स्तूप (मध्य प्रदेश) को किसने बनवाया था?", o: ["बिन्दुसार", "अशोक", "कनिष्क", "चंद्रगुप्त"], a: 1 },
+    { q: "गुलाम वंश का संस्थापक कौन था?", o: ["बलबन", "इल्तुतमिश", "कुतुबुद्दीन ऐबक", "रजिया"], a: 2 },
+    { q: "पूर्वी घाट और पश्चिमी घाट का मिलन स्थल क्या कहलाता है?", o: ["पालघाट", "विंध्याचल", "नीलगिरी", "अन्नामलाई"], a: 2 },
+    { q: "लावणी तथा तमाशा किस राज्य का लोकनृत्य है?", o: ["केरल", "गुजरात", "उत्तर प्रदेश", "महाराष्ट्र"], a: 3 },
+    { q: "यूनिसेफ (UNICEF) का मुख्यालय कहाँ है?", o: ["जिनेवा", "लंदन", "पेरिस", "न्यूयॉर्क"], a: 3 },
+    { q: "प्रसिद्ध चीनी यात्री फाह्यान ने किसके शासनकाल में भारत की यात्रा की?", o: ["अकबर", "चंद्रगुप्त द्वितीय", "हर्षवर्धन", "अशोक"], a: 1 },
+    { q: "मनसबदारी प्रथा की शुरुआत किसने की थी?", o: ["बाबर", "शाहजहाँ", "अकबर", "जहाँगीर"], a: 2 },
+    { q: "एलोरा और एलीफेंटा में शैलकृत चैत्य किस काल के हैं?", o: ["गुप्त", "पल्लव", "चोल", "राष्ट्रकूट"], a: 3 },
+    { q: "महात्मा गांधी ने 'करो या मरो' का नारा किस आंदोलन में दिया था?", o: ["असहयोग आंदोलन", "भारत छोड़ो आंदोलन", "सविनय अवज्ञा", "खिलाफत"], a: 1 },
+    { q: "चोल वंश किस शक्ति के लिए प्रसिद्ध था?", o: ["पैदल सेना", "घुड़सवार सेना", "नौसैनिक शक्ति", "हाथी सेना"], a: 2 },
+    { q: "ग्रैंड स्लैम का संबंध किस खेल से है?", o: ["क्रिकेट", "फुटबॉल", "लॉन टेनिस", "हॉकी"], a: 2 },
+    { q: "विद्युत चुम्बक बनाने के लिए किसका प्रयोग होता है?", o: ["कठोर लोहा", "मृदु लोहा", "स्टील", "तांबा"], a: 1 },
+    { q: "माइक्रोफोन का आविष्कारक कौन है?", o: ["एडिसन", "ग्राहम बेल", "न्यूटन", "फैराडे"], a: 1 },
+    { q: "विटामिन A किसके लिए अच्छा होता है?", o: ["त्वचा", "हड्डियों", "आँखों", "बालों"], a: 2 },
+    { q: "गीत सेठी का संबंध किस खेल से है?", o: ["स्नूकर", "बिलियर्ड्स", "शतरंज", "गोल्फ"], a: 1 },
+    { q: "विटामिन $B_{12}$ में क्या पाया जाता है?", o: ["लोहा", "तांबा", "कोबाल्ट", "मैग्नीशियम
+  
