@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sadik's Railway Quiz - Page 36</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f9; padding: 20px; }
+        .quiz-container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); position: relative; }
+        h1 { text-align: center; color: #d32f2f; border-bottom: 3px solid #d32f2f; padding-bottom: 10px; }
+        
+        #timer-box { position: sticky; top: 10px; z-index: 1000; background: #d32f2f; color: white; padding: 12px; text-align: center; font-size: 24px; font-weight: bold; border-radius: 10px; margin-bottom: 25px; }
+
+        .question-card { position: relative; background: #fff; border: 1px solid #e0e0e0; padding: 25px; margin-bottom: 30px; border-radius: 12px; overflow: hidden; }
+        
+        /* साफ़ दिखने वाला लाल वॉटरमार्क */
+        .question-card::before {
+            content: "Sadik";
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-25deg);
+            font-size: 85px;
+            color: rgba(211, 47, 47, 0.07); /* हल्का लाल रंग - टेक्स्ट साफ़ दिखेगा */
+            font-weight: 900;
+            pointer-events: none;
+            z-index: 0;
+            white-space: nowrap;
+        }
+
+        .q-text { position: relative; z-index: 1; font-size: 19px; font-weight: bold; color: #333; margin-bottom: 15px; }
+        .options-list { position: relative; z-index: 1; list-style: none; padding: 0; }
+        .options-list li { padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: 0.2s; background: rgba(255, 255, 255, 0.9); }
+        .options-list li:hover { background: #ffebee; border-color: #d32f2f; }
+        
+        .selected { border: 2px solid #d32f2f !important; background: #ffebee !important; }
+        .correct { background: #c8e6c9 !important; border-color: #2e7d32 !important; color: #1b5e20; font-weight: bold; }
+        .wrong { background: #ffcdd2 !important; border-color: #c62828 !important; color: #b71c1c; }
+
+        .btn { width: 100%; padding: 18px; background: #d32f2f; color: white; border: none; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; }
+        #result-display { display: none; text-align: center; padding: 25px; font-size: 28px; color: #d32f2f; border: 4px dashed #d32f2f; margin-bottom: 25px; border-radius: 15px; background: #fff5f5; }
+        
+        #login-screen { text-align: center; padding: 50px 20px; }
+        #user-name-in { padding: 12px; font-size: 18px; width: 280px; border-radius: 8px; border: 2px solid #d32f2f; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container" id="quiz-app">
+    <div id="login-screen">
+        <h2 style="color: #d32f2f;">Sadik's Railway Test (पेज-36)</h2>
+        <p>अपना नाम लिखें:</p>
+        <input type="text" id="user-name-in" placeholder="यहाँ नाम लिखें...">
+        <br>
+        <button class="btn" style="width: auto; padding: 12px 40px;" onclick="initQuiz()">टेस्ट शुरू करें</button>
+    </div>
+
+    <div id="main-test" style="display:none;">
+        <h1>रेलवे सामान्य अध्ययन - पेज 36</h1>
+        <div id="timer-box">समय शेष: 10:00</div>
+        <div id="result-display"></div>
+        <div id="quiz-list"></div>
+        <button class="btn" id="submit-quiz" onclick="finishQuiz()">टेस्ट सबमिट करें</button>
+    </div>
+</div>
+
+<script>
+let activeUser = "";
+const quizData = [
+    { q: "महाराष्ट्र राज्य की स्थापना कब हुई थी?", o: ["1 मई 1960", "15 अगस्त 1947", "26 जनवरी 1950", "1 नवंबर 1956"], a: 0 },
+    { q: "महाराष्ट्र की साक्षरता दर कितनी है?", o: ["75.5%", "82.3%", "88.4%", "70.2%"], a: 1 },
+    { q: "महाराष्ट्र का राजकीय पशु कौन सा है?", o: ["बाघ", "हाथी", "गौर", "नीलगिरी तहर"], a: 2 },
+    { q: "मुंबई को कितने टापुओं का नगर कहा जाता है?", o: ["5", "7", "9", "11"], a: 1 },
+    { q: "गेटवे ऑफ इंडिया (मुंबई) का निर्माण किस वर्ष हुआ था?", o: ["1901", "1911", "1921", "1931"], a: 1 },
+    { q: "महाराष्ट्र का उच्च न्यायालय कहाँ स्थित है?", o: ["पुणे", "नागपुर", "मुंबई", "नासिक"], a: 2 },
+    { q: "क्षेत्रफल में महाराष्ट्र का सबसे बड़ा जिला कौन सा है?", o: ["मुंबई", "पुणे", "अहमदनगर", "ठाणे"], a: 2 },
+    { q: "शारदीय ओलंपिक खेल किस वर्ष आरंभ हुए थे?", o: ["1920", "1924", "1928", "1932"], a: 1 },
+    { q: "अंतर्राष्ट्रीय एटॉमिक एनर्जी एजेंसी का मुख्यालय कहाँ है?", o: ["जिनेवा", "वियना", "न्यूयॉर्क", "लंदन"], a: 1 },
+    { q: "संसार में सबसे बड़ी खाड़ी कौन सी है?", o: ["बंगाल की खाड़ी", "मैक्सिको की खाड़ी", "हडसन की खाड़ी", "फारस की खाड़ी"], a: 1 },
+    { q: "कांगो नदी की घाटी की लंबाई कितनी है?", o: ["4000 किमी", "4667 किमी", "5000 किमी", "3500 किमी"], a: 1 },
+    { q: "पृथ्वी की सबसे भीतरी परत क्या कहलाती है?", o: ["क्रस्ट", "मेंटल", "कोड (Core)", "सियाल"], a: 2 },
+    { q: "भारत किस वर्ष संयुक्त राष्ट्र संघ का सदस्य बना?", o: ["1945", "1947", "1950", "1952"], a: 0 },
+    { q: "पंचायती राज लोकतांत्रिक विकेंद्रीकरण के सिद्धांत पर आधारित है? (सत्य/असत्य)", o: ["सत्य", "असत्य", "कह नहीं सकते", "डेटा अधूरा है"], a: 0 },
+    { q: "द्वितीय सिख युद्ध किसके समय हुआ था?", o: ["लॉर्ड डलहौजी", "लॉर्ड कैनिंग", "लॉर्ड कर्जन", "लॉर्ड रिपन"], a: 0 },
+    { q: "ईस्ट इंडिया कंपनी की स्थापना कब हुई थी?", o: ["1500", "1600", "1650", "1700"], a: 1 },
+    { q: "'भारत का प्रत्येक नागरिक भ्रष्ट है' यह किसने कहा था?", o: ["लॉर्ड डलहौजी", "लॉर्ड कॉर्नवालिस", "लॉर्ड माउंटबेटन", "कर्जन"], a: 1 },
+    { q: "प्राचीन भारत में नौसेना का प्रयोग सर्वप्रथम किसने किया था?", o: ["गुप्तों ने", "चोलों ने", "मौर्यों ने", "मराठों ने"], a: 1 },
+    { q: "प्रोटीन क्या है?", o: ["विटामिन", "पॉलीपेप्टाइड्स", "वसा", "कार्बोहाइड्रेट"], a: 1 },
+    { q: "शीशे के सिक्के किस राजवंश ने चलाए थे?", o: ["गुप्त", "सातवाहन", "मौर्य", "चोल"], a: 1 },
+    { q: "इलाहाबाद स्तंभ लेख किसने लिखवाया था?", o: ["अशोक", "हरिषेण", "समुद्रगुप्त", "कालिदास"], a: 1 },
+    { q: "भारत में दलहीन जनतंत्र की वकालत सबसे पहले किसने की?", o: ["नेहरू", "एम. एन. राय", "गांधी", "लोहिया"], a: 1 },
+    { q: "संविधान के संशोधन में राज्यसभा और लोकसभा का अधिकार कैसा है?", o: ["राज्यसभा का अधिक", "बराबर", "लोकसभा का अधिक", "कोई नहीं"], a: 1 },
+    { q: "दामोदर नदी घाटी की स्थापना कब हुई थी?", o: ["1948", "1950", "1952", "1955"], a: 0 },
+    { q: "किस महाद्वीप में एक भी ज्वालामुखी नहीं है?", o: ["एशिया", "ऑस्ट्रेलिया", "यूरोप", "अफ्रीका"], a: 1 },
+    { q: "स्वेज नहर किन दो सागरों को जोड़ती है?", o: ["लाल सागर और अरब सागर", "भूमध्य सागर एवं लाल सागर", "काला सागर और लाल सागर", "कोई नहीं"], a: 1 },
+    { q: "किसी तरल पदार्थ के विशिष्ट गुरुत्व को मापने वाला यंत्र?", o: ["हाइग्रोमीटर", "हाइड्रोमीटर", "लैक्टोमीटर", "बैरोमीटर"], a: 1 },
+    { q: "चंद्रमा पर सबसे पहले मानव सहित अंतरिक्ष यान कौनसा उतरा?", o: ["अपोलो-10", "अपोलो-11", "स्पुतनिक", "चंद्रयान"], a: 1 },
+    { q: "चीन की प्रसिद्ध दीवार की लंबाई कितनी है?", o: ["8000 किमी", "8851 किमी", "10000 किमी", "7000 किमी"], a: 1 },
+    { q: "मिश्र देश का राष्ट्रीय ध्वज कैसा है?", o: ["सबसे पुराना", "सबसे नया", "रंगीन", "कोई नहीं"], a: 0 },
+    { q: "गैल्वेनाइज करने के लिए लोहे पर किस धातु की परत चढ़ाई जाती है?", o: ["तांबा", "जस्ता", "सोना", "निकल"], a: 1 },
+    { q: "डीगो-गार्सिया किस महासागर का द्वीप है?", o: ["प्रशांत", "हिन्द महासागर", "अटलांटिक", "आर्कटिक"], a: 1 },
+    { q: "कावेरी जल विवाद किन राज्यों के बीच है?", o: ["केरल-कर्नाटक", "तमिलनाडु एवं कर्नाटक", "आंध्र-तमिलनाडु", "कोई नहीं"], a: 1 },
+    { q: "कुतुबमीनार को किसने पूरा करवाया था?", o: ["कुतुबुद्दीन ऐबक", "इल्तुतमिश", "बलबन", "अलाउद्दीन"], a: 1 },
+    { q: "इक्तादारी व्यवस्था की शुरुआत किसने की थी?", o: ["ऐबक", "इल्तुतमिश", "अकबर", "हुमायूँ"], a: 1 },
+    { q: "'अंत्योदय' का विचार किसने दिया था?", o: ["गांधी", "जय प्रकाश नारायण", "लोहिया", "नेहरू"], a: 1 },
+    { q: "हेमावती किसकी सहायक नदी है?", o: ["कृष्णा", "कावेरी", "गोदावरी", "नर्मदा"], a: 1 },
+    { q: "वास्कोडिगामा 1498 में कहाँ पहुँचा था?", o: ["मुंबई", "कालीकट", "सूरत", "गोवा"], a: 1 },
+    { q: "बांग्लादेश ने स्वतंत्रता कब प्राप्त की थी?", o: ["1947", "1971", "1972", "1950"], a: 1 },
+    { q: "सबसे छोटा दिन कब होता है (उत्तरी गोलार्द्ध)?", o: ["21 जून", "22 दिसम्बर", "23 सितम्बर", "21 मार्च"], a: 1 },
+    { q: "महानदी कहाँ गिरती है?", o: ["अरब सागर", "बंगाल की खाड़ी", "हिन्द महासागर", "कच्छ के रन"], a: 1 },
+    { q: "होम्योपैथी का जन्म कहाँ हुआ था?", o: ["भारत", "जर्मनी", "फ्रांस", "इंग्लैंड"], a: 1 },
+    { q: "'लिबर्टी' की प्रतिमा कहाँ स्थित है?", o: ["पेरिस", "न्यूयॉर्क", "लंदन", "दिल्ली"], a: 1 },
+    { q: "राष्ट्रीय युवा दिवस कब मनाया जाता है?", o: ["10 जनवरी", "12 जनवरी", "15 जनवरी", "20 जनवरी"], a: 1 },
+    { q: "क्रिकेट खेल में 'पॉपिंग क्रीज' की माप कितनी होती है?", o: ["2 फुट", "4 फुट", "6 फुट", "8 फुट"], a: 1 },
+    { q: "रेबीज के इलाज की खोज किसने की थी?", o: ["एडवर्ड जेनर", "लुई पाश्चर", "फ्लेमिंग", "कोच"], a: 1 },
+    { q: "जल की कठोरता किसके कारण होती है?", o: ["कैल्शियम कार्बोनेट", "मैग्नीशियम बाईकार्बोनेट", "सोडियम", "पोटेशियम"], a: 1 },
+    { q: "गन धातु (Gun Metal) किसका मिश्रण है?", o: ["तांबा-जस्ता-टिन", "तांबा-लोहा", "पीतल-तांबा", "कोई नहीं"], a: 0 },
+    { q: "पृथ्वी की अपेक्षा चंद्रमा का द्रव्यमान कितना है?", o: ["1/50", "1/81", "1/100", "1/20"], a: 1 },
+    { q: "मौलिक कर्तव्यों का प्रावधान कहाँ के संविधान से लिया गया है?", o: ["अमेरिका", "रूस", "कनाडा", "आयरलैंड"], a: 1 }
+];
+
+const quizWrap = document.getElementById('quiz-list');
+const userPicks = new Array(quizData.length).fill(null);
+
+function initQuiz() {
+    activeUser = document.getElementById('user-name-in').value;
+    if(!activeUser.trim()) { alert("नाम लिखना जरूरी है भाई!"); return; }
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('main-test').style.display = 'block';
+    renderQuestions();
+    beginClock();
+}
+
+function renderQuestions() {
+    quizData.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.className = 'question-card';
+        div.innerHTML = `<div class="q-text">${i + 1}. ${item.q}</div>
+            <ul class="options-list" id="q-grp-${i}">
+                ${item.o.map((opt, idx) => `<li onclick="setPick(${i}, ${idx})">${opt}</li>`).join('')}
+            </ul>`;
+        quizWrap.appendChild(div);
+    });
+}
+
+function setPick(qI, oI) {
+    userPicks[qI] = oI;
+    const items = document.querySelectorAll(`#q-grp-${qI} li`);
+    items.forEach(li => li.classList.remove('selected'));
+    items[oI].classList.add('selected');
+}
+
+function finishQuiz() {
+    clearInterval(clockTicker);
+    let finalScore = 0;
+    quizData.forEach((item, i) => {
+        const items = document.querySelectorAll(`#q-grp-${i} li`);
+        items[item.a].classList.add('correct');
+        if (userPicks[i] !== null) {
+            if (userPicks[i] === item.a) finalScore++;
+            else items[userPicks[i]].classList.add('wrong');
+        }
+    });
+    document.getElementById('submit-quiz').style.display = 'none';
+    const report = document.getElementById('result-display');
+    report.style.display = 'block';
+    report.innerHTML = `शाबाश ${activeUser}!<br>आपका स्कोर: ${finalScore} / ${quizData.length}`;
+    window.scrollTo(0, 0);
+}
+
+let timeLimit = 600;
+let clockTicker;
+function beginClock() {
+    clockTicker = setInterval(() => {
+        timeLimit--;
+        let m = Math.floor(timeLimit / 60);
+        let s = timeLimit % 60;
+        document.getElementById('timer-box').innerText = `समय शेष: ${m}:${s < 10 ? '0' + s : s}`;
+        if (timeLimit <= 0) { clearInterval(clockTicker); finishQuiz(); }
+    }, 1000);
+}
+</script>
+</body>
+</html>
+
