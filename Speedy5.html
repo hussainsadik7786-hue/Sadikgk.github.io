@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sadik's Railway Quiz - Page 37</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #fdf2f2; padding: 20px; }
+        .quiz-container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); position: relative; }
+        
+        /* टाइमर */
+        #timer-display { position: sticky; top: 10px; z-index: 1000; background: #e63946; color: white; padding: 12px; text-align: center; font-size: 24px; font-weight: bold; border-radius: 10px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+
+        .question-card { position: relative; border: 1px solid #ffccd5; padding: 25px; margin-bottom: 30px; border-radius: 12px; background: #fff; overflow: hidden; }
+        
+        /* लाल वॉटरमार्क - साफ़ और स्पष्ट */
+        .question-card::before {
+            content: "Sadik";
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-25deg);
+            font-size: 90px;
+            color: rgba(230, 57, 70, 0.08); /* स्पष्ट लाल शेड */
+            font-weight: 900;
+            z-index: 0;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .q-text { position: relative; z-index: 1; font-size: 20px; font-weight: bold; color: #1d3557; margin-bottom: 15px; }
+        .option-item { position: relative; z-index: 1; background: rgba(255, 255, 255, 0.9); border: 1px solid #dee2e6; padding: 14px; margin: 10px 0; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .option-item:hover { background: #f1faee; border-color: #457b9d; }
+        
+        .selected { background-color: #a8dadc !important; border: 2px solid #457b9d !important; }
+        .correct { background-color: #caffbf !important; border-color: #2b9348 !important; color: #1b4332; font-weight: bold; }
+        .wrong { background-color: #ffadad !important; border-color: #c1121f !important; color: #660708; }
+
+        .action-btn { width: 100%; padding: 18px; background: #e63946; color: white; border: none; border-radius: 10px; font-size: 22px; font-weight: bold; cursor: pointer; }
+        #result-box { display: none; text-align: center; font-size: 28px; color: #1d3557; padding: 25px; border: 4px dashed #e63946; border-radius: 15px; margin-bottom: 30px; background: #fff; }
+        
+        #name-entry { text-align: center; padding: 50px 20px; }
+        #user-input { padding: 15px; font-size: 20px; width: 85%; max-width: 350px; border: 2px solid #e63946; border-radius: 8px; margin-bottom: 25px; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container" id="login-screen">
+    <h2 style="color: #e63946;">Railway General Study - Page 37</h2>
+    <p style="font-size: 18px;">नमस्ते! कृपया अपना नाम दर्ज करें:</p>
+    <input type="text" id="user-input" placeholder="आपका नाम यहाँ लिखें...">
+    <br>
+    <button class="action-btn" style="width: auto; padding: 12px 60px;" onclick="startTest()">शुरू करें</button>
+</div>
+
+<div class="quiz-container" id="test-screen" style="display: none;">
+    <div id="timer-display">समय शेष: 10:00</div>
+    <div id="result-box"></div>
+    <div id="questions-container"></div>
+    <button class="action-btn" id="submit-test" onclick="evaluateQuiz()">टेस्ट सबमिट करें</button>
+</div>
+
+<script>
+let userName = "";
+const questions = [
+    { q: "असोम राज्य की राजधानी कहाँ है?", o: ["गुवाहाटी", "दिसपुर", "सिलचर", "जोरहाट"], a: 1 },
+    { q: "असोम की साक्षरता दर कितनी है?", o: ["65.5%", "72.2%", "78.8%", "82.1%"], a: 1 },
+    { q: "असोम का प्राचीन नाम क्या है?", o: ["कामदेव", "कामरूप", "प्रयाग", "कलिंग"], a: 1 },
+    { q: "विश्व का सबसे बड़ा नदी द्वीप 'माजुली' किस राज्य में है?", o: ["पश्चिम बंगाल", "असोम", "बिहार", "ओडिशा"], a: 1 },
+    { q: "असोम का मुख्य त्योहार कौन सा है?", o: ["पोंगल", "ओणम", "बिहु", "लोहड़ी"], a: 2 },
+    { q: "भारत का सबसे प्राचीन तेल क्षेत्र कौन सा है?", o: ["बॉम्बे हाई", "डिगबोई", "अंकलेश्वर", "मथुरा"], a: 1 },
+    { q: "असोम का राजकीय पशु क्या है?", o: ["हाथी", "एक सींग वाला गेंडा", "शेर", "बाघ"], a: 1 },
+    { q: "डिगबोई क्षेत्र असोम के किस जिले में स्थित है?", o: ["कामयूप", "लखीमपुर", "तिनसुकिया", "डिब्रूगढ़"], a: 2 },
+    { q: "असोम में कुल कितने जिले हैं?", o: ["25", "30", "35", "40"], a: 2 },
+    { q: "मानस प्रोजेक्ट टाइगर किस राज्य में स्थित है?", o: ["पश्चिम बंगाल", "ओडिशा", "असोम", "मध्य प्रदेश"], a: 2 },
+    { q: "एक आवेशित खोखले गोलक के अंदर विद्युत क्षेत्र का मान क्या होता है?", o: ["अनंत", "शून्य", "एक", "स्थिर"], a: 1 },
+    { q: "भारत अभियान के समय महमूद गजनवी के साथ कौन सा विद्वान था?", o: ["इब्नबतूता", "अलबरूनी", "फाह्यान", "ह्वेनसांग"], a: 1 },
+    { q: "'व्हाइट हाउस' किस शहर में स्थित है?", o: ["लंदन", "पेरिस", "वाशिंगटन डी.सी.", "न्यूयॉर्क"], a: 2 },
+    { q: "शब्द 'फ्यूहरर' (Fuhrer) किसके लिए प्रयुक्त हुआ है?", o: ["मुसोलिनी", "हिटलर", "बिस्मार्क", "नेपोलियन"], a: 1 },
+    { q: "महाभाष्य का संबंध किससे है?", o: ["धर्म", "राजनीति", "व्याकरण", "इतिहास"], a: 2 },
+    { q: "विश्व जनसंख्या दिवस कब मनाया जाता है?", o: ["11 जुलाई", "5 जून", "1 दिसंबर", "15 अगस्त"], a: 0 },
+    { q: "कचारी जनजाति का संबंध किस राज्य से है?", o: ["मेघालय", "मिजोरम", "असोम", "नगालैंड"], a: 2 },
+    { q: "प्रसिद्ध मीनाक्षी मंदिर कहाँ स्थित है?", o: ["चेन्नई", "मदुराई", "तंजावुर", "रामेश्वरम"], a: 1 },
+    { q: "भारत की सबसे लंबी नदी कौन सी है?", o: ["यमुना", "ब्रह्मपुत्र", "गंगा", "गोदावरी"], a: 2 },
+    { q: "मौलिक अधिकारों का उल्लेख संविधान के किस भाग में है?", o: ["भाग-II", "भाग-III", "भाग-IV", "भाग-V"], a: 1 },
+    { q: "नासिक किस नदी के तट पर अवस्थित है?", o: ["कृष्णा", "कावेरी", "गोदावरी", "नर्मदा"], a: 2 },
+    { q: "बीबी का मकबरा किसकी पत्नी की कब्र है?", o: ["अकबर", "शाहजहाँ", "औरंगजेब", "जहाँगीर"], a: 2 },
+    { q: "लक्षद्वीप की राजधानी कहाँ है?", o: ["पोर्ट ब्लेयर", "कावारत्ती", "दीव", "सिलवासा"], a: 1 },
+    { q: "टमाटर क्या है?", o: ["सब्जी", "फल", "फूल", "जड़"], a: 1 },
+    { q: "स्विट्जरलैंड का उपनाम क्या है?", o: ["उगते सूर्य का देश", "प्लेग्राउंड ऑफ यूरोप", "सफेद हाथियों का देश", "कोई नहीं"], a: 1 },
+    { q: "सार्क (SAARC) का पहला अध्यक्ष कौन था?", o: ["एच. एम. इरशाद", "कोफी अन्नान", "नेहरू", "जियाउर्रहमान"], a: 0 },
+    { q: "चीन का प्रमुख उद्योग क्या है?", o: ["लोहा", "चाय", "रेशम", "कागज"], a: 1 },
+    { q: "नीति निर्देशक तत्वों में किसका विचार सम्मिलित किया गया है?", o: ["पूँजीवादी राज्य", "कल्याणकारी राज्य", "साम्यवादी राज्य", "कोई नहीं"], a: 1 },
+    { q: "भारत का नेपोलियन किसे कहा जाता है?", o: ["चंद्रगुप्त", "समुद्रगुप्त", "अकबर", "अशोक"], a: 1 },
+    { q: "पानीपत का तीसरा युद्ध (1761) किसके बीच लड़ा गया था?", o: ["अकबर-हेमू", "अहमदशाह अब्दाली एवं मराठा", "बाबर-लोदी", "शिवाजी-औरंगजेब"], a: 1 },
+    { q: "कुतुबशाही राजवंश ने कहाँ शासन किया था?", o: ["बीजापुर", "गोलकुंडा", "मैसूर", "दिल्ली"], a: 1 },
+    { q: "रणथम्भौर जीव-जन्तु अभयारण्य कहाँ स्थित है?", o: ["गुजरात", "मध्य प्रदेश", "राजस्थान", "उत्तर प्रदेश"], a: 2 },
+    { q: "सोना का आपेक्षिक घनत्व कितना होता है?", o: ["15.50", "19.30", "13.60", "10.50"], a: 1 },
+    { q: "ठोस कोण की इकाई क्या है?", o: ["रेडियन", "स्टेरेडियन", "डिग्री", "कैंडेला"], a: 1 },
+    { q: "बर्फ के लिए गलन का विशिष्ट ऊष्मा कितनी है?", o: ["50 कैलोरी/ग्राम", "80 कैलोरी/ग्राम", "100 कैलोरी/ग्राम", "540 कैलोरी/ग्राम"], a: 1 },
+    { q: "डायनेमो का आर्मेचर किसका बना होता है?", o: ["लोहा", "इस्पात", "तांबा", "पीतल"], a: 1 },
+    { q: "गेटवे ऑफ इंडिया का निर्माण कब हुआ था?", o: ["1901", "1911", "1921", "1931"], a: 1 },
+    { q: "भारतीय राष्ट्रीय कांग्रेस के पूर्वकालीन वर्षों के दौरान अध्यक्ष कौन थे?", o: ["गांधी", "दादाभाई नौरोजी", "नेहरू", "तिलक"], a: 1 },
+    { q: "गोडवाना कोयला क्षेत्र किस राज्य में स्थित है?", o: ["बिहार", "ओडिशा", "मध्य प्रदेश", "झारखंड"], a: 2 },
+    { q: "आँख के भीतरी सतह को क्या कहते हैं?", o: ["पुतली", "दृष्ट पटल (Retina)", "कॉर्निया", "लेंस"], a: 1 },
+    { q: "बिल गेट्स किसका स्वामित्व करता है?", o: ["एप्पल", "माइक्रोसॉफ्ट", "गूगल", "अमेज़न"], a: 1 },
+    { q: "संसार की सबसे लंबी नदी नील किस देश में है?", o: ["भारत", "चीन", "मिस्र", "ब्राजील"], a: 2 },
+    { q: "'रघुवंशम' के लेखक कौन हैं?", o: ["तुलसीदास", "कालिदास", "वाल्मीकि", "व्यास"], a: 1 },
+    { q: "'प्रेयरी' का संबंध किससे है?", o: ["अफ्रीका के जंगल", "उत्तरी अमेरिका के शीतोष्ण घास के मैदान", "एशिया के पर्वत", "कोई नहीं"], a: 1 },
+    { q: "एशिया के देशों में सर्वप्रथम औद्योगिकीकरण कहाँ हुआ?", o: ["भारत", "चीन", "जापान", "सिंगापुर"], a: 2 },
+    { q: "लाल सागर का लाल रंग किसकी उपस्थिति के कारण होता है?", o: ["कवक", "शैवाल", "जीवाणु", "मिट्टी"], a: 1 },
+    { q: "राष्ट्रीय विकास परिषद की अध्यक्षता कौन करता है?", o: ["राष्ट्रपति", "प्रधानमंत्री", "वित्त मंत्री", "राज्यपाल"], a: 1 },
+    { q: "भारत में सर्वप्रथम कागजी मुद्रा का चलन कब प्रारंभ हुआ?", o: ["1850", "1862", "1901", "1947"], a: 1 },
+    { q: "संविधान सभा का पहला अधिवेशन कहाँ हुआ था?", o: ["मुंबई", "कोलकाता", "नई दिल्ली", "चेन्नई"], a: 2 },
+    { q: "भारत का सबसे बड़ा (चौड़ा) जलप्रपात 'जोग' किस नदी पर है?", o: ["नर्मदा", "कावेरी", "शरावती", "कृष्णा"], a: 2 }
+];
+
+const container = document.getElementById('questions-container');
+const selectedAnswers = new Array(questions.length).fill(null);
+
+function startTest() {
+    userName = document.getElementById('user-input').value;
+    if(!userName.trim()) { alert("दोस्त, पहले अपना नाम तो लिखो!"); return; }
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('test-screen').style.display = 'block';
+    renderQuiz();
+    startTimer();
+}
+
+function renderQuiz() {
+    questions.forEach((q, i) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.innerHTML = `<div class="q-text">${i + 1}. ${q.q}</div>
+            <div id="options-grp-${i}">
+                ${q.o.map((opt, idx) => `<div class="option-item" onclick="handleSelect(${i}, ${idx})">${opt}</div>`).join('')}
+            </div>`;
+        container.appendChild(card);
+    });
+}
+
+function handleSelect(qIdx, oIdx) {
+    selectedAnswers[qIdx] = oIdx;
+    const items = document.querySelectorAll(`#options-grp-${qIdx} .option-item`);
+    items.forEach(el => el.classList.remove('selected'));
+    items[oIdx].classList.add('selected');
+}
+
+function evaluateQuiz() {
+    clearInterval(timerId);
+    let finalScore = 0;
+    questions.forEach((item, i) => {
+        const items = document.querySelectorAll(`#options-grp-${i} .option-item`);
+        items[item.a].classList.add('correct');
+        if (selectedAnswers[i] !== null) {
+            if (selectedAnswers[i] === item.a) finalScore++;
+            else items[selectedAnswers[i]].classList.add('wrong');
+        }
+    });
+    document.getElementById('submit-test').style.display = 'none';
+    const resBox = document.getElementById('result-box');
+    resBox.style.display = 'block';
+    resBox.innerHTML = `शानदार ${userName}!<br>आपका स्कोर: ${finalScore} / ${questions.length}`;
+    window.scrollTo(0, 0);
+}
+
+let secRemaining = 600;
+let timerId;
+function startTimer() {
+    timerId = setInterval(() => {
+        secRemaining--;
+        let min = Math.floor(secRemaining / 60);
+        let sec = secRemaining % 60;
+        document.getElementById('timer-display').innerText = `समय शेष: ${min}:${sec < 10 ? '0' + sec : sec}`;
+        if (secRemaining <= 0) { clearInterval(timerId); evaluateQuiz(); }
+    }, 1000);
+}
+</script>
+</body>
+</html>
+
