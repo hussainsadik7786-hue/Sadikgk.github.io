@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sadik's Quiz - Page 37</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #fff5f5; margin: 0; padding: 15px; }
+        .quiz-container { max-width: 750px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; }
+        
+        #timer-box { position: sticky; top: 10px; z-index: 1000; background: #c62828; color: white; padding: 12px; text-align: center; font-size: 22px; font-weight: bold; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+
+        .q-card { position: relative; border: 1px solid #ffcdd2; padding: 20px; margin-bottom: 25px; border-radius: 12px; background: #fff; overflow: hidden; }
+        
+        /* Red Watermark Sadik */
+        .q-card::before {
+            content: "Sadik";
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-25deg);
+            font-size: 85px;
+            color: rgba(198, 40, 40, 0.07);
+            font-weight: 900;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .q-text { position: relative; z-index: 1; font-size: 19px; font-weight: bold; color: #2c3e50; margin-bottom: 15px; }
+        .opt-list { position: relative; z-index: 1; display: grid; gap: 10px; }
+        .opt { padding: 12px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: 0.3s; background: rgba(255,255,255,0.9); }
+        .opt:hover { background: #ffebee; }
+        
+        .selected { border: 2px solid #c62828; background: #ffebee !important; }
+        .correct { background: #e8f5e9 !important; border-color: #2e7d32 !important; color: #1b5e20; font-weight: bold; }
+        .wrong { background: #ffebee !important; border-color: #c62828 !important; color: #b71c1c; }
+
+        .action-btn { width: 100%; padding: 16px; background: #c62828; color: white; border: none; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        #res-box { display: none; text-align: center; padding: 25px; border: 3px dashed #c62828; border-radius: 15px; margin-bottom: 25px; background: #fff; }
+        
+        #entry-screen { text-align: center; padding: 60px 20px; }
+        #user-name { padding: 15px; width: 80%; font-size: 18px; border: 2px solid #c62828; border-radius: 8px; margin-bottom: 25px; outline: none; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container" id="entry-screen">
+    <h2 style="color: #c62828;">Railway General Study - Page 37</h2>
+    <p>नमस्ते! कृपया अपना नाम लिखें:</p>
+    <input type="text" id="user-name" placeholder="आपका नाम यहाँ...">
+    <button class="action-btn" style="width: auto; padding: 12px 60px;" onclick="begin()">शुरू करें</button>
+</div>
+
+<div class="quiz-container" id="quiz-screen" style="display:none;">
+    <div id="timer-box">समय शेष: 10:00</div>
+    <div id="res-box"></div>
+    <div id="questions-area"></div>
+    <button class="action-btn" id="finish-btn" onclick="evaluateAll()">सबमिट करें</button>
+</div>
+
+<script>
+let name = "";
+const data37 = [
+    { q: "असोम की राजधानी कहाँ है?", o: ["गुवाहाटी", "दिसपुर", "सिलचर", "जोरहाट"], a: 1 },
+    { q: "असोम का प्राचीन नाम क्या है?", o: ["कामरूप", "प्रयाग", "कलिंग", "मगध"], a: 0 },
+    { q: "विश्व का सबसे बड़ा नदी द्वीप 'माजुली' किस जिले में है?", o: ["डिब्रूगढ़", "जोरहाट", "तिनसुकिया", "लखीमपुर"], a: 1 },
+    { q: "असोम का मुख्य त्योहार कौन सा है?", o: ["पोंगल", "बिहु", "ओणम", "छठ"], a: 1 },
+    { q: "भारत का सबसे प्राचीन तेल क्षेत्र कौन सा है?", o: ["बॉम्बे हाई", "डिगबोई", "अंकलेश्वर", "मथुरा"], a: 1 },
+    { q: "असोम का राजकीय पशु क्या है?", o: ["हाथी", "एक सींग वाला गेंडा", "बाघ", "शेर"], a: 1 },
+    { q: "चाय अनुसंधान केंद्र असोम में कहाँ स्थित है?", o: ["दिसपुर", "जोरहाट", "गुवाहाटी", "डिगबोई"], a: 1 },
+    { q: "असोम केसरी के नाम से किसे जाना जाता है?", o: ["गोपीनाथ बोर्डोलोई", "अम्बिकागिरी राय चौधरी", "ज्योतिप्रसाद", "बिष्णु प्रसाद"], a: 1 },
+    { q: "एक आवेशित खोखले गोलक के अंदर विद्युत क्षेत्र का मान क्या होता है?", o: ["अनंत", "शून्य", "एक", "स्थिर"], a: 1 },
+    { q: "भारत अभियान के समय महमूद गजनवी के साथ कौन सा विद्वान था?", o: ["इब्नबतूता", "अलबरूनी", "फाह्यान", "ह्वेनसांग"], a: 1 },
+    { q: "'व्हाइट हाउस' कहाँ स्थित है?", o: ["लंदन", "पेरिस", "वाशिंगटन डी.सी.", "न्यूयॉर्क"], a: 2 },
+    { q: "शब्द 'फ्यूहरर' किसके लिए प्रयुक्त हुआ है?", o: ["मुसोलिनी", "हिटलर", "बिस्मार्क", "नेपोलियन"], a: 1 },
+    { q: "महाभाष्य का संबंध किससे है?", o: ["इतिहास", "राजनीति", "व्याकरण", "धर्म"], a: 2 },
+    { q: "विश्व जनसंख्या दिवस कब मनाया जाता है?", o: ["11 जुलाई", "5 जून", "1 दिसंबर", "15 अगस्त"], a: 0 },
+    { q: "कचारी जनजाति का संबंध किस राज्य से है?", o: ["मेघालय", "असोम", "सिक्किम", "मिजोरम"], a: 1 },
+    { q: "प्रसिद्ध मीनाक्षी मंदिर कहाँ स्थित है?", o: ["चेन्नई", "मदुराई", "तंजावुर", "रामेश्वरम"], a: 1 },
+    { q: "भारत की सबसे लंबी नदी कौन सी है?", o: ["यमुना", "ब्रह्मपुत्र", "गंगा", "गोदावरी"], a: 2 },
+    { q: "मौलिक अधिकारों का उल्लेख संविधान के किस भाग में है?", o: ["भाग-II", "भाग-III", "भाग-IV", "भाग-V"], a: 1 },
+    { q: "नासिक किस नदी के तट पर अवस्थित है?", o: ["कृष्णा", "कावेरी", "गोदावरी", "नर्मदा"], a: 2 },
+    { q: "स्विट्जरलैंड का उपनाम क्या है?", o: ["प्लेग्राउंड ऑफ यूरोप", "उगते सूर्य का देश", "सफेद हाथियों का देश", "कोई नहीं"], a: 0 },
+    { q: "भारत का नेपोलियन किसे कहा जाता है?", o: ["चंद्रगुप्त", "समुद्रगुप्त", "अशोक", "अकबर"], a: 1 },
+    { q: "पानीपत का तीसरा युद्ध (1761) किसके बीच हुआ था?", o: ["अकबर-हेमू", "अहमदशाह अब्दाली एवं मराठा", "बाबर-लोदी", "शिवाजी-औरंगजेब"], a: 1 },
+    { q: "सोना का आपेक्षिक घनत्व कितना होता है?", o: ["15.5", "19.30", "13.6", "10.5"], a: 1 },
+    { q: "गेटवे ऑफ इंडिया का निर्माण कब हुआ था?", o: ["1901", "1911", "1921", "1931"], a: 1 },
+    { q: "भारतीय संविधान में मौलिक कर्तव्य कब समाहित किए गए?", o: ["1950", "1976", "1982", "1990"], a: 1 }
+];
+
+const area = document.getElementById('questions-area');
+const userAnswers = new Array(data37.length).fill(null);
+
+function begin() {
+    name = document.getElementById('user-name').value;
+    if(!name.trim()) { alert("दोस्त, नाम तो लिख दो!"); return; }
+    document.getElementById('entry-screen').style.display = 'none';
+    document.getElementById('quiz-screen').style.display = 'block';
+    render();
+    startTimer();
+}
+
+function render() {
+    data37.forEach((item, i) => {
+        const card = document.createElement('div');
+        card.className = 'q-card';
+        card.innerHTML = `<div class="q-text">${i + 1}. ${item.q}</div>
+            <div class="opt-list" id="group-${i}">
+                ${item.o.map((o, idx) => `<div class="opt" onclick="set(${i}, ${idx})">${o}</div>`).join('')}
+            </div>`;
+        area.appendChild(card);
+    });
+}
+
+function set(qi, oi) {
+    userAnswers[qi] = oi;
+    const opts = document.querySelectorAll(`#group-${qi} .opt`);
+    opts.forEach(op => op.classList.remove('selected'));
+    opts[oi].classList.add('selected');
+}
+
+function evaluateAll() {
+    clearInterval(timerId);
+    let final = 0;
+    data37.forEach((item, i) => {
+        const opts = document.querySelectorAll(`#group-${i} .opt`);
+        opts[item.a].classList.add('correct');
+        if(userAnswers[i] !== null) {
+            if(userAnswers[i] === item.a) final++;
+            else opts[userAnswers[i]].classList.add('wrong');
+        }
+    });
+    document.getElementById('finish-btn').style.display = 'none';
+    const res = document.getElementById('res-box');
+    res.style.display = 'block';
+    res.innerHTML = `शानदार ${name}!<br>आपका स्कोर: ${final} / ${data37.length}`;
+    window.scrollTo(0,0);
+}
+
+let left = 600;
+let timerId;
+function startTimer() {
+    timerId = setInterval(() => {
+        left--;
+        let m = Math.floor(left/60);
+        let s = left%60;
+        document.getElementById('timer-box').innerText = `समय शेष: ${m}:${s < 10 ? '0'+s : s}`;
+        if(left <= 0) evaluateAll();
+    }, 1000);
+}
+</script>
+</body>
+</html>
