@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sadik's Mega Quiz - Page 38</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #fff0f0; margin: 0; padding: 10px; }
+        .wrapper { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); position: relative; }
+        
+        #timer-display { position: sticky; top: 0; z-index: 1000; background: #b71c1c; color: white; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; border-radius: 0 0 10px 10px; margin-bottom: 25px; }
+
+        .quiz-item { position: relative; border-left: 5px solid #b71c1c; padding: 20px; margin-bottom: 30px; border-radius: 8px; background: #fff; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
+        /* Sadik Red Watermark */
+        .quiz-item::after {
+            content: "Sadik";
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 80px;
+            color: rgba(183, 28, 28, 0.06);
+            font-weight: 900;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .question { position: relative; z-index: 1; font-size: 19px; font-weight: bold; color: #1a1a1a; margin-bottom: 15px; }
+        .options-grid { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; }
+        .option-btn { padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: 0.2s; background: white; }
+        .option-btn:hover { background: #ffebee; }
+        
+        .active { border: 2px solid #b71c1c; background: #ffebee; font-weight: bold; }
+        .is-correct { background: #d4edda !important; border-color: #28a745 !important; color: #155724; }
+        .is-wrong { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+
+        .main-button { width: 100%; padding: 18px; background: #b71c1c; color: white; border: none; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        #score-board { display: none; text-align: center; padding: 30px; border: 4px double #b71c1c; border-radius: 15px; margin-bottom: 30px; background: #fff; }
+        
+        #start-area { text-align: center; padding: 80px 20px; }
+        .name-box { padding: 15px; width: 85%; font-size: 18px; border: 2px solid #b71c1c; border-radius: 10px; margin-bottom: 30px; outline: none; }
+    </style>
+</head>
+<body>
+
+<div class="wrapper" id="start-area">
+    <h1 style="color: #b71c1c;">GK with Sadik - Page 38</h1>
+    <p style="font-size: 18px;">अपना नाम दर्ज करें और टेस्ट शुरू करें:</p>
+    <input type="text" id="player-name" class="name-box" placeholder="यहाँ नाम लिखें...">
+    <button class="main-button" onclick="launch()">Start Test</button>
+</div>
+
+<div class="wrapper" id="quiz-area" style="display:none;">
+    <div id="timer-display">समय शेष: 15:00</div>
+    <div id="score-board"></div>
+    <div id="quiz-container"></div>
+    <button class="main-button" id="submit-all" onclick="finish()">टेस्ट सबमिट करें</button>
+</div>
+
+<script>
+let currentName = "";
+const db38 = [
+    { q: "सिंधुघाटी सभ्यता कैसी सभ्यता है?", o: ["लौहयुगीन", "कांस्ययुगीन", "पाषाणयुगीन", "वैदिक"], a: 1 },
+    { q: "विश्व स्वास्थ्य सभा (WHA) की अध्यक्ष बनने वाली पहली महिला कौन थी?", o: ["सरोजिनी नायडू", "राजकुमारी अमृत कौर", "इंदिरा गांधी", "मदर टेरेसा"], a: 1 },
+    { q: "शक संवत् का आरंभ कब हुआ था?", o: ["58 ई.", "78 ई.", "319 ई.", "622 ई."], a: 1 },
+    { q: "रेलगाड़ी 'शताब्दी एक्सप्रेस' किसके जन्म शताब्दी के अवसर पर चली?", o: ["गांधी जी", "नेहरू जी", "पटेल जी", "शास्त्री जी"], a: 1 },
+    { q: "भारत में सर्वप्रथम टेलीविजन 1959 में कहाँ दिखाया गया?", o: ["मुंबई", "दिल्ली", "कोलकाता", "चेन्नई"], a: 1 },
+    { q: "LPG में मुख्यत: क्या होता है?", o: ["मिथेन", "ब्यूटेन और प्रोपेन", "ईथेन", "हाइड्रोजन"], a: 1 },
+    { q: "मार्टिना हिंगिस एक प्रसिद्ध खिलाड़ी हैं, उनका संबंध किससे है?", o: ["बैडमिंटन", "टेनिस", "चेस", "क्रिकेट"], a: 1 },
+    { q: "भारत के संविधान की धारा-356 का संबंध किससे है?", o: ["वित्तीय आपात", "राष्ट्रपति शासन", "राष्ट्रीय आपात", "शिक्षा का अधिकार"], a: 1 },
+    { q: "इंटरपोल का मुख्यालय कहाँ स्थित है?", o: ["न्यूयॉर्क", "लियोन (फ्रांस)", "लंदन", "पेरिस"], a: 1 },
+    { q: "संयुक्त राज्य अमेरिका का राष्ट्रीय खेल क्या है?", o: ["फुटबॉल", "बेसबॉल", "बास्केटबॉल", "क्रिकेट"], a: 1 },
+    { q: "राज्य सभा कभी नहीं क्या होती है?", o: ["निर्वाचित", "विघटित", "स्थगित", "इनमें से कोई नहीं"], a: 1 },
+    { q: "भारत में पंचवर्षीय योजना को किसने प्रारंभ किया था?", o: ["नेहरू", "पी.सी. महालनोबिस", "अमर्त्य सेन", "पटेल"], a: 1 },
+    { q: "भारत में थियोसोफिकल सोसाइटी ने अपना पहला मुख्यालय कहाँ स्थापित किया?", o: ["मद्रास", "अड्यार (1882)", "कोलकाता", "मुंबई"], a: 1 },
+    { q: "'हॉफमैन कप' किस खेल से संबंधित है?", o: ["क्रिकेट", "टेनिस", "हॉकी", "गोल्फ"], a: 1 },
+    { q: "'क्यू' (Cue) शब्द किस खेल से संबंधित है?", o: ["पोलो", "बिलियर्ड्स", "शतरंज", "मुक्केबाजी"], a: 1 },
+    { q: "जहाँगीर के दरबार में पक्षियों के चित्र बनाने वाला महान चित्रकार कौन था?", o: ["अब्दुस समद", "मंसूर", "दसवंत", "बिशनदास"], a: 1 },
+    { q: "सिराजुद्दौला के शासनकाल में 1756 में 'ब्लैक होल' की घटना कहाँ हुई थी?", o: ["ढाका", "कोलकाता", "मुर्शिदाबाद", "मुंगेर"], a: 1 },
+    { q: "पेशवा पद को साहू मराठा राज्य के समय में क्या बना दिया गया था?", o: ["निर्वाचित", "वंशानुगत", "अस्थायी", "समाप्त"], a: 1 },
+    { q: "भारत का पहला रसायन बंदरगाह कौन सा है?", o: ["कांडला", "दाहेज (गुजरात)", "हल्दिया", "कोचीन"], a: 1 },
+    { q: "मदर टेरेसा द्वारा स्थापित धर्म संघ क्या कहलाता है?", o: ["शांति मिशन", "मिशनरीज ऑफ चैरिटी", "सेवा संघ", "निर्मल हृदय"], a: 1 },
+    { q: "बंगाल के नवाब मीर कासिम ने 18वीं सदी में अपनी राजधानी कहाँ स्थानांतरित की?", o: ["मुर्शिदाबाद", "मुंगेर", "ढाका", "कोलकाता"], a: 1 },
+    { q: "चोल साम्राज्य किसके अधीन उन्नति पर था?", o: ["राजराज प्रथम", "राजेन्द्र चोल प्रथम", "कुलुतुंग", "आदित्य प्रथम"], a: 1 },
+    { q: "गर्भाशय में कौन सी पेशी पाई जाती है?", o: ["हृदय पेशी", "आरेखित पेशी", "कंकाल पेशी", "कोई नहीं"], a: 1 },
+    { q: "भारत की संपरीक्षा तथा लेखा प्रणालियों का प्रधान कौन होता है?", o: ["प्रधानमंत्री", "महालेखा परीक्षक", "वित्त मंत्री", "राष्ट्रपति"], a: 1 },
+    { q: "आधुनिक ओलंपिक खेलों का आयोजन सर्वप्रथम 1896 में कहाँ हुआ?", o: ["लंदन", "एथेंस", "पेरिस", "रोम"], a: 1 },
+    { q: "टी.बी. रोग के प्रतिरोध के लिए कौन सा टीका लगाया जाता है?", o: ["DPT", "BCG", "OPV", "MMR"], a: 1 },
+    { q: "ओडिशा राज्य का गठन कब हुआ था?", o: ["1950", "1 अप्रैल 1936", "1947", "1956"], a: 1 },
+    { q: "ओडिशा की राजधानी कहाँ है?", o: ["कटक", "भुवनेश्वर", "पुरी", "राउरकेला"], a: 1 },
+    { q: "ओडिशा का प्राचीन नाम क्या है?", o: ["कामरूप", "कलिंग", "कलिंगा", "प्रागज्योतिषपुर"], a: 1 },
+    { q: "प्रसिद्ध जगन्नाथ मंदिर और कोणार्क का सूर्य मंदिर कहाँ स्थित है?", o: ["बिहार", "ओडिशा", "बंगाल", "असोम"], a: 1 },
+    { q: "केंद्रीय चावल शोध संस्थान कहाँ स्थित है?", o: ["दिल्ली", "कटक", "पटना", "कोलकाता"], a: 1 },
+    { q: "भारत का सबसे लम्बा बाँध हीराकुंड किस नदी पर है?", o: ["गंगा", "महानदी", "कृष्णा", "कावेरी"], a: 1 },
+    { q: "'ग्रैंड ट्रंक रोड' का निर्माण किसने करवाया था?", o: ["अकबर", "शेरशाह सूरी", "हुमायूँ", "जहाँगीर"], a: 1 },
+    { q: "मिट्टी के कटाव का मुख्य कारण क्या है?", o: ["खेती", "जंगलों की कटाई", "नदी का बहाव", "पशु चराई"], a: 1 },
+    { q: "न्यूट्रॉन बम का आविष्कार किसने किया?", o: ["ओपनहाइमर", "सैमुअल कोहेन", "आइंस्टीन", "नोबेल"], a: 1 },
+    { q: "माचिस की तीली पर लगाया जाने वाला पदार्थ क्या है?", o: ["सफेद फास्फोरस", "लाल फास्फोरस", "पोटेशियम", "सल्फर"], a: 1 },
+    { q: "गांधी जी का जन्म कब हुआ था?", o: ["1850", "1869", "1889", "1901"], a: 1 },
+    { q: "लोटस टेम्पल, दिल्ली का संबंध किस धर्म से है?", o: ["सिख", "बहाई धर्म", "जैन", "हिंदू"], a: 1 },
+    { q: "रक्त समूह 'O' को क्या कहा जाता है?", o: ["सर्वग्राही", "सर्वदाता", "सामान्य", "कोई नहीं"], a: 1 },
+    { q: "दिन के समय पौधे क्या छोड़ते हैं?", o: ["CO2", "ऑक्सीजन", "नाइट्रोजन", "हाइड्रोजन"], a: 1 },
+    { q: "पिचर प्लांट का पौधा क्या खाता है?", o: ["घास", "कीट", "फल", "पानी"], a: 1 },
+    { q: "डेंगू ज्वर किससे फैलता है?", o: ["मक्खी", "एडीज मच्छर", "चूहा", "हवा"], a: 1 },
+    { q: "भारत में उच्च न्यायालयों की संख्या कितनी है (पेज 38 के अनुसार)?", o: ["20", "25", "21", "24"], a: 1 },
+    { q: "बंगाली उपन्यास 'आनंद मठ' के लेखक कौन हैं?", o: ["प्रेमचंद", "बंकिम चंद्र चटर्जी", "टैगोर", "निराला"], a: 1 },
+    { q: "'God of small things' के लेखक कौन हैं?", o: ["अमृता प्रीतम", "अरुंधति राय", "खुशवंत सिंह", "विक्रम सेठ"], a: 1 },
+    { q: "अयोध्या किस नदी के तट पर स्थित है?", o: ["गंगा", "सरयू", "यमुना", "गोमती"], a: 1 },
+    { q: "स्वतंत्र भारत के प्रथम गवर्नर जनरल कौन थे?", o: ["राजगोपालाचारी", "लॉर्ड माउण्टबेटन", "नेहरू", "पटेल"], a: 1 },
+    { q: "चाणक्य किसके राजनीतिक गुरु थे?", o: ["अशोक", "चन्द्रगुप्त मौर्य", "बिन्दुसार", "हर्ष"], a: 1 },
+    { q: "नोबेल पुरस्कार कुल कितने क्षेत्रों में दिए जाते हैं?", o: ["5", "6", "4", "7"], a: 1 },
+    { q: "'भारत-भारती' के लेखक कौन हैं?", o: ["निराला", "मैथिलीशरण गुप्त", "दिनकर", "पंत"], a: 1 }
+];
+
+const container = document.getElementById('quiz-container');
+const picks = new Array(db38.length).fill(null);
+
+function launch() {
+    currentName = document.getElementById('player-name').value;
+    if(!currentName.trim()) { alert("नाम लिखना ज़रूरी है दोस्त!"); return; }
+    document.getElementById('start-area').style.display = 'none';
+    document.getElementById('quiz-area').style.display = 'block';
+    draw();
+    countdown();
+}
+
+function draw() {
+    db38.forEach((q, i) => {
+        const div = document.createElement('div');
+        div.className = 'quiz-item';
+        div.innerHTML = `<div class="question">${i+1}. ${q.q}</div>
+            <div class="options-grid" id="blk-${i}">
+                ${q.o.map((opt, idx) => `<div class="option-btn" onclick="choose(${i}, ${idx})">${opt}</div>`).join('')}
+            </div>`;
+        container.appendChild(div);
+    });
+}
+
+function choose(qi, oi) {
+    picks[qi] = oi;
+    const btns = document.querySelectorAll(`#blk-${qi} .option-btn`);
+    btns.forEach(b => b.classList.remove('active'));
+    btns[oi].classList.add('active');
+}
+
+function finish() {
+    clearInterval(tId);
+    let pts = 0;
+    db38.forEach((q, i) => {
+        const opts = document.querySelectorAll(`#blk-${i} .option-btn`);
+        opts[q.a].classList.add('is-correct');
+        if(picks[i] !== null) {
+            if(picks[i] === q.a) pts++;
+            else opts[picks[i]].classList.add('is-wrong');
+        }
+    });
+    document.getElementById('submit-all').style.display = 'none';
+    const sb = document.getElementById('score-board');
+    sb.style.display = 'block';
+    sb.innerHTML = `<h2>रिजल्ट: ${currentName}</h2><h3>कुल सही: ${pts} / ${db38.length}</h3>`;
+    window.scrollTo(0,0);
+}
+
+let sec = 900;
+let tId;
+function countdown() {
+    tId = setInterval(() => {
+        sec--;
+        let m = Math.floor(sec/60);
+        let s = sec%60;
+        document.getElementById('timer-display').innerText = `समय शेष: ${m}:${s < 10 ? '0'+s : s}`;
+        if(sec <= 0) finish();
+    }, 1000);
+}
+</script>
+</body>
+</html>
