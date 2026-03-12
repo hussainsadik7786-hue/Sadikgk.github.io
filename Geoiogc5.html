@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>भूगोल वस्तुनिष्ठ प्रश्न - टेस्ट</title>
+    <title>भूगोल वस्तुनिष्ठ प्रश्न - 30 मिनट टेस्ट</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
         .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
@@ -16,16 +16,17 @@
         .hidden { display: none; }
         button { background: #3498db; color: white; border: none; padding: 12px 25px; border-radius: 5px; cursor: pointer; font-size: 16px; display: block; margin: 20px auto; }
         button:hover { background: #2980b9; }
-        .correct { background-color: #d4edda !important; color: #155724; border: 1px solid #c3e6cb; }
+        .correct { background-color: #d4edda !important; color: #155724; border: 1px solid #c3e6cb; font-weight: bold; }
         .wrong { background-color: #f8d7da !important; color: #721c24; border: 1px solid #f5c6cb; }
-        #resultArea { text-align: center; font-size: 1.5em; margin-top: 20px; color: #27ae60; }
-        input[type="text"] { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
+        #resultArea { text-align: center; font-size: 1.5em; margin-top: 20px; color: #27ae60; font-weight: bold; border: 2px solid #27ae60; padding: 15px; border-radius: 8px; }
+        input[type="text"] { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
 <div class="container" id="loginBox">
     <h1>भूगोल वस्तुनिष्ठ प्रश्नोत्तरी</h1>
+    <p style="text-align:center;">कुल प्रश्न: 100 | समय: 30 मिनट</p>
     <p>कृपया अपना नाम दर्ज करें और टेस्ट शुरू करें:</p>
     <input type="text" id="userName" placeholder="आपका नाम यहाँ लिखें..." required>
     <button onclick="startQuiz()">टेस्ट शुरू करें</button>
@@ -34,14 +35,14 @@
 <div class="container hidden" id="quizBox">
     <div class="info-panel">
         <div id="displayName"></div>
-        <div class="timer">समय शेष: <span id="time">15:00</span></div>
+        <div class="timer">समय शेष: <span id="time">30:00</span></div>
     </div>
     
     <div id="questionsContainer">
         </div>
 
     <button id="submitBtn" onclick="calculateScore()">फाइनल सबमिशन</button>
-    <div id="resultArea"></div>
+    <div id="resultArea" class="hidden"></div>
 </div>
 
 <script>
@@ -117,7 +118,7 @@
         { q: "जलाक्रांतता का अर्थ है —", a: "C", options: ["सूखा", "अधिक वर्षा", "खेतों में पानी भरना", "नदियों का सूखना"] },
         { q: "भारत में कुल बोये गए क्षेत्र के लगभग कितने प्रतिशत भाग पर अनाज बोये जाते हैं?", a: "C", options: ["40%", "45%", "54%", "60%"] },
         { q: "भारत में कौन-सी दो फसलें 'उत्तम अनाज' के रूप में जानी जाती हैं?", a: "B", options: ["मक्का और बाजरा", "गेहूँ और चावल", "रागी और ज्वार", "बाजरा और चावल"] },
-        { q: "भारत अनाज उत्पादन में विश्व में किस स्थान पर है?", a: "C", options: ["प्रथम", "द्वितीय", "तृतीय", "दूत"] },
+        { q: "भारत अनाज उत्पादन में विश्व में किस स्थान पर है?", a: "C", options: ["प्रथम", "द्वितीय", "तृतीय", "चतुर्थ"] },
         { q: "भारत विश्व का लगभग कितना प्रतिशत अनाज उत्पन्न करता है?", a: "C", options: ["9%", "10%", "11%", "12%"] },
         { q: "देश के समस्त बोये क्षेत्र के कितने भाग पर खाद्यान्न फसलें उगाई जाती हैं?", a: "B", options: ["एक-तिहाई", "दो-तिहाई", "आधा", "तीन-चौथाई"] },
         { q: "चावल किस प्रकार की जलवायु में उगाई जाने वाली फसल है?", a: "B", options: ["शीतोष्ण शुष्क", "उष्ण आर्द्र", "शीत आर्द्र", "शुष्क अर्ध-शुष्क"] },
@@ -149,15 +150,15 @@
     ];
 
     let timer;
-    let timeRemaining = 900; // 15 minutes
+    let timeRemaining = 1800; // 30 minutes in seconds
 
     function startQuiz() {
         const name = document.getElementById('userName').value;
-        if (!name) { alert("कृपया अपना नाम दर्ज करें"); return; }
+        if (!name.trim()) { alert("कृपया टेस्ट शुरू करने के लिए अपना नाम लिखें।"); return; }
         
         document.getElementById('loginBox').classList.add('hidden');
         document.getElementById('quizBox').classList.remove('hidden');
-        document.getElementById('displayName').innerText = "परीक्षार्थी: " + name;
+        document.getElementById('displayName').innerHTML = "<b>परीक्षार्थी:</b> " + name;
         
         renderQuestions();
         startTimer();
@@ -192,6 +193,7 @@
             document.getElementById('time').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
             if (timeRemaining <= 0) {
                 clearInterval(timer);
+                alert("समय समाप्त हो गया है!");
                 calculateScore();
             }
         }, 1000);
@@ -203,26 +205,31 @@
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.disabled = true;
         submitBtn.style.background = "#ccc";
+        submitBtn.innerText = "टेस्ट सबमिट हो चुका है";
 
         questions.forEach((q, index) => {
             const selected = document.querySelector(`input[name="q${index}"]:checked`);
             const correctAns = q.a;
             
-            // Highlight correct answer in green
+            // सही उत्तर को हमेशा हरा करें
             document.getElementById(`label-${index}-${correctAns}`).classList.add('correct');
 
             if (selected) {
                 if (selected.value === correctAns) {
                     score++;
                 } else {
-                    // Highlight wrong answer in red
+                    // गलत चुने गए उत्तर को लाल करें
                     document.getElementById(`label-${index}-${selected.value}`).classList.add('wrong');
                 }
             }
         });
 
-        document.getElementById('resultArea').innerHTML = `टेस्ट समाप्त! <br> आपका स्कोर: ${score} / ${questions.length}`;
-        window.scrollTo(0, document.body.scrollHeight);
+        const resultArea = document.getElementById('resultArea');
+        resultArea.classList.remove('hidden');
+        resultArea.innerHTML = `टेस्ट पूरा हुआ! <br> आपका स्कोर: ${score} / ${questions.length} <br> प्रतिशत: ${(score/questions.length*100).toFixed(2)}%`;
+        
+        // रिजल्ट दिखाने के बाद ऊपर स्क्रॉल करें या रिजल्ट सेक्शन पर ले जाएं
+        resultArea.scrollIntoView({ behavior: 'smooth' });
     }
 </script>
 
