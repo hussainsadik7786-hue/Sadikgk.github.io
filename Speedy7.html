@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GK with Sadik - Page 39</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #f0f2f5; margin: 0; padding: 10px; }
+        .quiz-wrapper { max-width: 800px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); position: relative; }
+        
+        #timer-header { position: sticky; top: 0; z-index: 100; background: #c0392b; color: white; padding: 15px; text-align: center; font-size: 22px; font-weight: bold; border-radius: 8px; margin-bottom: 20px; }
+
+        .q-card { position: relative; border-bottom: 2px solid #eee; padding: 20px 0; overflow: hidden; }
+        
+        /* Sadik Red Watermark */
+        .q-card::before {
+            content: "Sadik";
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 70px;
+            color: rgba(192, 57, 43, 0.05);
+            font-weight: 800;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .question-text { position: relative; z-index: 1; font-size: 18px; font-weight: bold; color: #2c3e50; margin-bottom: 12px; }
+        .option-list { position: relative; z-index: 1; display: grid; gap: 8px; }
+        .opt-btn { padding: 12px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: 0.2s; background: #fff; }
+        .opt-btn:hover { background: #fdf2f2; }
+        
+        .marked { background: #f2d7d5 !important; border-color: #c0392b !important; }
+        .right-ans { background: #d4edda !important; border-color: #28a745 !important; color: #155724; font-weight: bold; }
+        .wrong-ans { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+
+        .submit-all-btn { width: 100%; padding: 18px; background: #c0392b; color: white; border: none; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; margin-top: 25px; }
+        #final-score { display: none; text-align: center; padding: 25px; border: 3px dashed #c0392b; border-radius: 12px; margin-bottom: 20px; background: #fff; }
+        
+        #entry-box { text-align: center; padding: 60px 20px; }
+        .input-name { padding: 15px; width: 80%; font-size: 18px; border: 2px solid #c0392b; border-radius: 10px; margin-bottom: 25px; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-wrapper" id="entry-box">
+    <h1 style="color: #c0392b;">रेलवे सामान्य अध्ययन - पेज 39</h1>
+    <p>आपका नाम दर्ज करें:</p>
+    <input type="text" id="user-name-in" class="input-name" placeholder="नाम यहाँ लिखें...">
+    <button class="submit-all-btn" style="width: auto; padding: 12px 60px;" onclick="start()">Start Quiz</button>
+</div>
+
+<div class="quiz-wrapper" id="quiz-box" style="display:none;">
+    <div id="timer-header">समय शेष: 15:00</div>
+    <div id="final-score"></div>
+    <div id="q-container"></div>
+    <button class="submit-all-btn" id="finish-btn" onclick="checkAll()">सबमिट करें</button>
+</div>
+
+<script>
+let name = "";
+const qaSet = [
+    { q: "अकबर का जन्म 1542 में कहाँ हुआ था?", o: ["दिल्ली", "अमरकोट", "आगरा", "काबुल"], a: 1 },
+    { q: "मानव सर्वप्रथम 1969 में किस उपग्रह पर उतरा?", o: ["मंगल", "चंद्रमा", "शुक्र", "शनि"], a: 1 },
+    { q: "बुध का एक दिन पृथ्वी के कितने दिनों के बराबर होता है?", o: ["30 दिन", "60 दिन", "90 दिन", "120 दिन"], a: 2 },
+    { q: "जलियांवाला बाग नरसंहार के उत्तरदायी 'ओ' डायर' को 1940 में किसने गोली मारी?", o: ["भगत सिंह", "उधम सिंह", "चंद्रशेखर आज़ाद", "राजगुरु"], a: 1 },
+    { q: "रानी लक्ष्मीबाई के बचपन का नाम क्या था?", o: ["मनुबाई", "छबीली", "कस्तूरबा", "उपरोक्त दोनों"], a: 0 },
+    { q: "कला की 'गंधार शैली' का विकास किसके समय हुआ था?", o: ["मौर्य", "कुषाण", "गुप्त", "वर्द्धन"], a: 1 },
+    { q: "'चरक' प्राचीन औषधि किससे संबंधित हैं?", o: ["गणित", "आयुर्वेद", "खगोल", "इतिहास"], a: 1 },
+    { q: "भारत का प्रथम नाभिकीय ऊर्जा संयंत्र कहाँ स्थापित हुआ?", o: ["नरोरा", "तारापुर (महाराष्ट्र)", "रावतभाटा", "ककरापारा"], a: 1 },
+    { q: "प्रथम लोकसभा अध्यक्ष कौन थे?", o: ["हुकुम सिंह", "जी. वी. मावलंकर", "बलराम जाखड़", "के. एस. हेगड़े"], a: 1 },
+    { q: "नालंदा विश्वविद्यालय को किसने बनवाया था?", o: ["चंद्रगुप्त", "कुमारगुप्त प्रथम", "धर्मपाल", "अशोक"], a: 1 },
+    { q: "सूर्य और पृथ्वी के बीच दो ग्रह कौन से हैं?", o: ["मंगल और बुध", "बुध और शुक्र", "शुक्र और मंगल", "शनि और बुध"], a: 1 },
+    { q: "भागीरथी और अलकनंदा कहाँ मिलकर गंगा बन जाती हैं?", o: ["हरिद्वार", "देव प्रयाग", "ऋषिकेश", "रुद्रप्रयाग"], a: 1 },
+    { q: "जलोढ़ मिट्टी में किसकी मात्रा अधिक होती है?", o: ["पोटैशियम", "कार्बनिक पदार्थ", "नाइट्रोजन", "फॉस्फोरस"], a: 1 },
+    { q: "राष्ट्रपति का अभिभाषण किसके द्वारा तैयार किया जाता है?", o: ["लोकसभा अध्यक्ष", "केंद्रीय मंत्रिमंडल", "उपराष्ट्रपति", "स्वयं राष्ट्रपति"], a: 1 },
+    { q: "लैटेराइट मिट्टी में किसकी अधिकता होती है?", o: ["आयरन एवं सिलिका", "चूना", "फास्फोरस", "ह्यूमस"], a: 0 },
+    { q: "पृथ्वी की त्रिज्या सबसे पहले किसने मापी थी?", o: ["न्यूटन", "इरेटोस्थनीज", "गैलीलियो", "आर्यभट्ट"], a: 1 },
+    { q: "महात्मा गांधी की अनुपस्थिति में भारत छोड़ो आंदोलन का नेतृत्व किसने किया?", o: ["सरोजिनी नायडू", "अरुणा आसिफ अली", "नेहरू", "पटेल"], a: 1 },
+    { q: "'दशमलव पद्धति' का उदय कहाँ हुआ था?", o: ["चीन", "भारत", "यूनान", "अरब"], a: 1 },
+    { q: "प्लासी के युद्ध (1757) के समय बंगाल का नवाब कौन था?", o: ["मीर जाफर", "सिराजुद्दौला", "मीर कासिम", "आलमगीर"], a: 1 },
+    { q: "नर्मदा और ताप्ती नदियों के जल को कौन सी श्रृंखला विभाजित करती है?", o: ["अरावली", "सतपुड़ा", "विंध्याचल", "नीलगिरी"], a: 1 },
+    { q: "गारो हिल्स कहाँ स्थित है?", o: ["असोम", "मेघालय", "सिक्किम", "मणिपुर"], a: 1 },
+    { q: "प्रथम भारतीय जो ब्रिटिश संसद के सदस्य हुए?", o: ["तिलक", "दादा भाई नौरोजी", "गांधी", "गोखले"], a: 1 },
+    { q: "जापान की राजधानी 'टोक्यो' किस द्वीप पर स्थित है?", o: ["क्यूशू", "होंशू द्वीप", "शिकोकू", "होक्काइडो"], a: 1 },
+    { q: "कार्बन डाइऑक्साइड कौन सी गैस है?", o: ["जहरीली", "ग्रीन हाउस गैस", "अक्रिय", "हल्की"], a: 1 },
+    { q: "हीरा का क्रांतिक कोण कितना होता है?", o: ["20.4°", "24.4°", "42.4°", "48.4°"], a: 1 },
+    { q: "वायु का बुलबुला जल में किसकी भांति कार्य करता है?", o: ["उत्तल लेंस", "अवतल लेंस", "समतल दर्पण", "उत्तल दर्पण"], a: 1 },
+    { q: "वॉशिंग मशीन किस सिद्धांत पर कार्य करती है?", o: ["अपोहन", "अपकेंद्रण", "विसरण", "परासरण"], a: 1 },
+    { q: "कर्नाटक का प्राचीन नाम क्या है?", o: ["मैसूर", "विजयनगर", "कलिंग", "मद्रास"], a: 0 },
+    { q: "कर्नाटक की राजधानी कहाँ है?", o: ["मैसूर", "बेंगलूरू", "हुबली", "बेलगाम"], a: 1 },
+    { q: "कर्नाटक का मुख्य भाषा क्या है?", o: ["मलयालम", "कन्नड़", "तमिल", "तेलुगु"], a: 1 },
+    { q: "कर्नाटक का प्रमुख लोक नृत्य कौन सा है?", o: ["कथकली", "यक्षगान", "बिहु", "गरबा"], a: 1 },
+    { q: "भारत का सबसे चौड़ा जलप्रपात जोग या गरसोप्पा कहाँ है?", o: ["केरल", "कर्नाटक", "तमिलनाडु", "महाराष्ट्र"], a: 1 },
+    { q: "भारत का बगीचा किसे कहा जाता है?", o: ["मैसूर", "बेंगलूरू", "कूर्ग", "हम्पी"], a: 1 },
+    { q: "किसे 'कर्नाटक का रत्न' कहा जाता है?", o: ["बेंगलूरू", "मैसूर", "कोलार", "हुबली"], a: 1 },
+    { q: "विश्व का सबसे विशाल गुम्बज 'गोल गुम्बज' कहाँ है?", o: ["दिल्ली", "बीजापुर", "आगरा", "हैदराबाद"], a: 1 },
+    { q: "सोने की खान 'कोलार' किस राज्य में स्थित है?", o: ["आंध्र प्रदेश", "कर्नाटक", "ओडिशा", "झारखंड"], a: 1 },
+    { q: "X-किरणों की खोज किसने की थी?", o: ["मैडम क्यूरी", "रॉन्टजन", "फैराडे", "न्यूटन"], a: 1 },
+    { q: "भूकंप को किस यंत्र द्वारा मापा जाता है?", o: ["बैरोमीटर", "सिस्मोाग्राफ", "हाइग्रोमीटर", "लैक्टोमीटर"], a: 1 },
+    { q: "उत्तरी ध्रुव पर पहुँचने वाला प्रथम व्यक्ति कौन था?", o: ["एमंडसेन", "राबर्ट पियरी", "कोलंबस", "मैगलन"], a: 1 },
+    { q: "रेडियोसक्रियता के आविष्कारक कौन थे?", o: ["मैडम क्यूरी", "हेनरी बेकुरल", "रदरफोर्ड", "डाल्टन"], a: 1 },
+    { q: "भारत में प्रथम आम चुनाव कब हुए थे?", o: ["1947", "1951-52", "1955", "1960"], a: 1 },
+    { q: "स्वतंत्र भारत के प्रथम एवं अंतिम भारतीय गवर्नर जनरल कौन थे?", o: ["नेहरू", "सी. राजगोपालाचारी", "पटेल", "माउंटबेटन"], a: 1 },
+    { q: "विश्व की सबसे ऊँची मूर्ति 'स्टैच्यू ऑफ यूनिटी' कहाँ है?", o: ["अमेरिका", "भारत", "चीन", "जापान"], a: 1 },
+    { q: "भारतीय राष्ट्रीय कांग्रेस (1885) के संस्थापक कौन थे?", o: ["गांधी", "ए.ओ. ह्यूम", "नेहरू", "तिलक"], a: 1 },
+    { q: "ध्वनि की अधिकतम गति किसमें होती है?", o: ["हवा", "इस्पात", "पानी", "निर्वात"], a: 1 },
+    { q: "भारत में सर्वाधिक चाँदी उत्पन्न करने वाला राज्य?", o: ["कर्नाटक", "राजस्थान", "झारखंड", "बिहार"], a: 1 },
+    { q: "आपेक्षिक आर्द्रता किससे मापी जाती है?", o: ["हाइड्रोमीटर", "हाइग्रोमीटर", "लैक्टोमीटर", "अल्जीमीटर"], a: 1 },
+    { q: "पॉन्चवीं पंचवर्षीय योजना का मुख्य उद्देश्य क्या था?", o: ["कृषि", "गरीबी हटाना", "उद्योग", "शिक्षा"], a: 1 },
+    { q: "संगीत नाटक अकादमी (1953) की स्थापना कहाँ हुई?", o: ["मुंबई", "नई दिल्ली", "चेन्नई", "कोलकाता"], a: 1 },
+    { q: "सुखना झील कहाँ स्थित है?", o: ["शिमला", "चंडीगढ़", "श्रीनगर", "नैनीताल"], a: 1 }
+];
+
+const container = document.getElementById('q-container');
+const userAns = new Array(qaSet.length).fill(null);
+
+function start() {
+    name = document.getElementById('user-name-in').value;
+    if(!name.trim()) { alert("सादिक भाई, नाम लिखना मत भूलिए!"); return; }
+    document.getElementById('entry-box').style.display = 'none';
+    document.getElementById('quiz-box').style.display = 'block';
+    loadQs();
+    runTimer();
+}
+
+function loadQs() {
+    qaSet.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.className = 'q-card';
+        div.innerHTML = `<div class="question-text">${i+1}. ${item.q}</div>
+            <div class="option-list" id="opt-g-${i}">
+                ${item.o.map((o, idx) => `<div class="opt-btn" onclick="select(${i}, ${idx})">${o}</div>`).join('')}
+            </div>`;
+        container.appendChild(div);
+    });
+}
+
+function select(qi, oi) {
+    userAns[qi] = oi;
+    const btns = document.querySelectorAll(`#opt-g-${qi} .opt-btn`);
+    btns.forEach(b => b.classList.remove('marked'));
+    btns[oi].classList.add('marked');
+}
+
+function checkAll() {
+    clearInterval(timer);
+    let score = 0;
+    qaSet.forEach((item, i) => {
+        const btns = document.querySelectorAll(`#opt-g-${i} .opt-btn`);
+        btns[item.a].classList.add('right-ans');
+        if(userAns[i] !== null) {
+            if(userAns[i] === item.a) score++;
+            else btns[userAns[i]].classList.add('wrong-ans');
+        }
+    });
+    document.getElementById('finish-btn').style.display = 'none';
+    const res = document.getElementById('final-score');
+    res.style.display = 'block';
+    res.innerHTML = `<h3>नाम: ${name}</h3><h4>आपका स्कोर: ${score} / ${qaSet.length}</h4>`;
+    window.scrollTo(0,0);
+}
+
+let time = 900;
+let timer;
+function runTimer() {
+    timer = setInterval(() => {
+        time--;
+        let m = Math.floor(time/60);
+        let s = time%60;
+        document.getElementById('timer-header').innerText = `समय शेष: ${m}:${s < 10 ? '0'+s : s}`;
+        if(time <= 0) checkAll();
+    }, 1000);
+}
+</script>
+</body>
+</html>
+
