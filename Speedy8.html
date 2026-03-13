@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Railway Quiz - Page 40</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 15px; }
+        .quiz-card { max-width: 850px; margin: auto; background: #fff; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; }
+        
+        #timer-box { position: sticky; top: 10px; z-index: 100; background: #2c3e50; color: #ecf0f1; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; border-radius: 12px; margin-bottom: 25px; border: 2px solid #34495e; }
+
+        .q-section { position: relative; border-bottom: 1px solid #eee; padding: 25px 0; overflow: hidden; }
+        
+        /* Sadik Name Watermark */
+        .q-section::after {
+            content: "Sadik";
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-25deg);
+            font-size: 90px;
+            color: rgba(44, 62, 80, 0.04);
+            font-weight: 900;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .q-title { position: relative; z-index: 1; font-size: 19px; font-weight: 600; color: #333; margin-bottom: 15px; }
+        .opt-container { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .option { padding: 14px; border: 2px solid #e0e0e0; border-radius: 10px; cursor: pointer; transition: 0.3s; background: #fafafa; text-align: center; }
+        .option:hover { border-color: #3498db; background: #ebf5fb; }
+        
+        .selected { border-color: #2c3e50; background: #d5dbdb; font-weight: bold; }
+        .correct-opt { background: #d4edda !important; border-color: #28a745 !important; color: #155724; }
+        .wrong-opt { background: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+
+        .btn-action { width: 100%; padding: 20px; background: #2c3e50; color: white; border: none; border-radius: 12px; font-size: 22px; font-weight: bold; cursor: pointer; margin-top: 30px; transition: 0.3s; }
+        .btn-action:hover { background: #1a252f; }
+        
+        #score-display { display: none; text-align: center; padding: 30px; border: 5px double #2c3e50; border-radius: 15px; margin-bottom: 30px; background: #fff; font-size: 26px; color: #2c3e50; }
+        
+        #login-screen { text-align: center; padding: 100px 20px; }
+        .input-field { padding: 18px; width: 85%; font-size: 20px; border: 2px solid #2c3e50; border-radius: 12px; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-card" id="login-screen">
+    <h1 style="color: #2c3e50; margin-bottom: 10px;">GK Mega Test - Page 40</h1>
+    <p style="color: #7f8c8d; font-size: 18px;">अपना नाम लिखकर शुरू करें:</p>
+    <input type="text" id="user-name" class="input-field" placeholder="आपका शुभ नाम...">
+    <button class="btn-action" onclick="init()">START QUIZ</button>
+</div>
+
+<div class="quiz-card" id="quiz-screen" style="display:none;">
+    <div id="timer-box">Time Left: 15:00</div>
+    <div id="score-display"></div>
+    <div id="questions-list"></div>
+    <button class="btn-action" id="submit-btn" onclick="evaluateQuiz()">सबमिट करें</button>
+</div>
+
+<script>
+let userName = "";
+const data40 = [
+    { q: "एक राज्य का राज्यपाल अपने कृत्य के लिए किसके प्रति उत्तरदायी होता है?", o: ["मुख्यमंत्री", "राष्ट्रपति", "प्रधानमंत्री", "संसद"], a: 1 },
+    { q: "माउण्ट एवरेस्ट पर विजय पाने वाली पहली महिला कौन थी?", o: ["बचेंद्री पाल", "जुनको तेबई (16 मई, 1975)", "संतोष यादव", "आरती साहा"], a: 1 },
+    { q: "वर्ष 1987 में भारत रत्न से सम्मानित होने वाले प्रथम विदेशी कौन थे?", o: ["नेल्सन मंडेला", "खान अब्दुल गफ्फार खां", "मदर टेरेसा", "मार्टिन लूथर"], a: 1 },
+    { q: "इन्द्रधनुष के मध्य कौन सा रंग होता है?", o: ["लाल", "हरा", "नीला", "पीला"], a: 1 },
+    { q: "लाल रंग का तरंगदैर्घ्य सबसे क्या होता है?", o: ["न्यूनतम", "अधिक", "शून्य", "अनंत"], a: 1 },
+    { q: "सूर्य के प्रकाश को संकेंद्रित करने के लिए किस लेंस का उपयोग किया जाता है?", o: ["उत्तल लेंस", "अवतल लेंस", "बेलनाकार लेंस", "समतल लेंस"], a: 1 },
+    { q: "मोबाइल सिम कार्ड में 'सिम' (SIM) का अर्थ क्या है?", o: ["Subscriber Identity Module", "System Information Mode", "Simple Identity Mode", "Secure Information Module"], a: 0 },
+    { q: "रोम को विश्व का कैसा शहर कहा जाता है?", o: ["नया शहर", "अपरिवर्तनीय शहर", "गुलाबी शहर", "सोने का शहर"], a: 1 },
+    { q: "'नेशनल डिफेन्स एकेडमी' का मुख्यालय कहाँ स्थित है?", o: ["देहरादून", "खड़गवासला", "नई दिल्ली", "चेन्नई"], a: 1 },
+    { q: "खालसा पंथ के संस्थापक कौन थे?", o: ["गुरु नानक", "गुरु गोविन्द सिंह", "गुरु अर्जुन देव", "गुरु तेग बहादुर"], a: 1 },
+    { q: "पुरुषों में रक्त क्षीणता (एनीमिया) किस विटामिन की कमी से होता है?", o: ["विटामिन A", "विटामिन B12", "विटामिन C", "विटामिन D"], a: 1 },
+    { q: "कुष्ठरोग बीमारी किसके संक्रमण के कारण होता है?", o: ["विषाणु", "जीवाणु (Bacteria)", "कवक", "प्रोटोजोआ"], a: 1 },
+    { q: "'भुगतान-संतुलन' शब्द किसके बीच के अंतर को संदर्भित करता है?", o: ["आय और व्यय", "आयात तथा निर्यात", "बचत और निवेश", "इनमें से कोई नहीं"], a: 1 },
+    { q: "खाद्य संसाधन तथा संचय द्वारा कौन सा विटामिन मुख्य रूप से प्रभावित होता है?", o: ["विटामिन A", "विटामिन C", "विटामिन D", "विटामिन K"], a: 1 },
+    { q: "अन्तर्राष्ट्रीय मुद्रा कोष (IMF) का मुख्य कार्य क्या है?", o: ["गरीबी हटाना", "सदस्य देशों की भुगतान संतुलन समस्याओं में सहायता", "व्यापार बढ़ाना", "ऋण देना"], a: 1 },
+    { q: "Y2K समस्या किससे संबंधित है?", o: ["प्रदूषण", "कम्प्यूटर", "जनसंख्या", "मौसम"], a: 1 },
+    { q: "ISO-9000 किसका मानक है?", o: ["पर्यावरण", "अच्छे प्रबंध", "शिक्षा", "बैंकिंग"], a: 1 },
+    { q: "जल सतह की अधिकतम गहराई 'मेरियाना ट्रेंच' किस महासागर में है?", o: ["हिंद महासागर", "प्रशांत महासागर", "अटलांटिक", "आर्कटिक"], a: 1 },
+    { q: "एशिया का प्राचीन तथा विशालतम बौद्ध मठ कहाँ स्थित है?", o: ["तवांग", "लहासा (तिब्बत)", "काठमांडू", "गया"], a: 1 },
+    { q: "'परम' (Param) किससे संबंधित है?", o: ["मिसाइल", "पद कम्प्यूटर", "उपग्रह", "विमान"], a: 1 },
+    { q: "'चौथा खंभा/स्तंभ' शब्द किससे संबंधित है?", o: ["न्यायपालिका", "प्रेस", "विधायिका", "कार्यपालिका"], a: 1 },
+    { q: "ओजोन परत सूर्य की किन किरणों से पृथ्वी की रक्षा करती है?", o: ["अवरक्त", "पराबैंगनी किरणों", "X-किरणों", "गामा किरणों"], a: 1 },
+    { q: "'CRY' एक संगठन है, जो किसके कल्याण से संबंधित है?", o: ["महिलाओं", "बहिष्कृत बच्चों", "वृद्धों", "किसानों"], a: 1 },
+    { q: "ऑपरेशन 'ब्लैक बोर्ड' किससे संबंधित है?", o: ["कृषि", "प्रौढ़ शिक्षा", "खेल", "उद्योग"], a: 1 },
+    { q: "हैदराबाद किस नदी के किनारे स्थित है?", o: ["गंगा", "मुसी नदी", "कृष्णा", "गोदावरी"], a: 1 },
+    { q: "आंध्र प्रदेश की राजधानी क्या है?", o: ["विशाखापत्तनम", "हैदराबाद (प्र.-अमरावती)", "कुरनूल", "तिरुपति"], a: 1 },
+    { q: "आंध्र प्रदेश की मुख्य भाषा क्या है?", o: ["मलयालम", "तेलुगू और उर्दू", "तमिल", "कन्नड़"], a: 1 },
+    { q: "आंध्र प्रदेश का प्रमुख नृत्य कौन सा है?", o: ["कथक", "कुचीपुड़ी", "ओडिसी", "बिहु"], a: 1 },
+    { q: "आंध्र प्रदेश का राजकीय पशु क्या है?", o: ["शेर", "कृष्णा जिंका (ब्लैक बक)", "हाथी", "बाघ"], a: 1 },
+    { q: "आंध्र प्रदेश का राजकीय पक्षी क्या है?", o: ["मोर", "रामा चिलुका", "कोयल", "तोता"], a: 1 },
+    { q: "भाषायी आधार पर गठित होने वाला देश का पहला राज्य कौन सा है?", o: ["बिहार", "आंध्र प्रदेश (1953)", "केरल", "पंजाब"], a: 1 },
+    { q: "सतीश धवन अंतरिक्ष केन्द्र आंध्र प्रदेश के किस जिले में है?", o: ["गुंटूर", "नेल्लोर (श्रीहरिकोटा)", "चित्तूर", "कुरनूल"], a: 1 },
+    { q: "संसार का सबसे बड़ा द्वीप समूह कौन सा है?", o: ["जापान", "इंडोनेशिया", "फिलीपींस", "अंडमान"], a: 1 },
+    { q: "विजयनगर साम्राज्य के पुरावशेष कहाँ पाए गए हैं?", o: ["बीजापुर", "हम्पी", "मैसूर", "गोलकुंडा"], a: 1 },
+    { q: "पुष्कर मेला कहाँ लगता है?", o: ["बिहार", "राजस्थान (अजमेर)", "गुजरात", "पंजाब"], a: 1 },
+    { q: "विश्व का सबसे बड़ा द्वीप कौन सा है?", o: ["श्रीलंका", "ग्रीनलैंड", "मेडागास्कर", "सुमात्रा"], a: 1 },
+    { q: "डॉ. सी. वी. रमन को 1930 में किस विषय के लिए नोबेल पुरस्कार मिला?", o: ["रसायन शास्त्र", "भौतिक शास्त्र", "साहित्य", "अर्थशास्त्र"], a: 1 },
+    { q: "भारत में योजना आयोग की स्थापना कब की गई थी?", o: ["15 अगस्त 1947", "15 मार्च 1950", "26 जनवरी 1950", "1 अप्रैल 1951"], a: 1 },
+    { q: "एशियाई नोबेल पुरस्कार के नाम से किसे जाना जाता है?", o: ["गांधी शांति पुरस्कार", "रैमन मैग्सेसे पुरस्कार", "पुलित्जर", "बुकर"], a: 1 },
+    { q: "चम्बल नदी किन राज्यों से होकर बहती है?", o: ["बिहार और यूपी", "मध्य प्रदेश और राजस्थान", "गुजरात और महाराष्ट्र", "पंजाब और हरियाणा"], a: 1 },
+    { q: "सत्ता के हस्तांतरण के लिए संवैधानिक व्यवस्था तैयार करने के लिए कौन भारत आया था?", o: ["क्रिप्स मिशन", "कैबिनेट मिशन (1946)", "साइमन कमीशन", "हंटर आयोग"], a: 1 },
+    { q: "सार्वत्रिक गुरुत्वाकर्षण नियम का प्रतिपादन किसने किया था?", o: ["गैलीलियो", "न्यूटन", "केपलर", "आइंस्टीन"], a: 1 },
+    { q: "किसी वस्तु की त्रिविमीय (3D) छवियाँ रिकॉर्ड करने की तकनीक क्या कहलाती है?", o: ["फोटोग्राफी", "होलोग्राफी", "ऑडियोग्राफी", "रेडियोग्राफी"], a: 1 },
+    { q: "चमगादड़ अंधेरे में किन तरंगों के आधार पर उड़ता है?", o: ["अवरक्त", "पराबैंगनी", "पराध्वनि (Ultrasonic)", "रेडियो"], a: 2 },
+    { q: "अन्तर्राष्ट्रीय क्रिकेट कौंसिल (ICC) का मुख्यालय कहाँ है?", o: ["लंदन", "दुबई (संयुक्त अरब अमीरात)", "मेलबर्न", "मुंबई"], a: 1 },
+    { q: "पेंसिल का 'सिक्का' किसका बना होता है?", o: ["कोयला", "ग्रेफाइट", "सीसा", "लोहा"], a: 1 },
+    { q: "टाइफॉयड बीमारी किसके कारण होती है?", o: ["विषाणु", "जीवाणु (Bacteria)", "कवक", "दूषित पानी"], a: 1 },
+    { q: "भारत महोत्सव की शुरुआत कब हुई थी?", o: ["1972", "1982", "1992", "2002"], a: 1 },
+    { q: "SEBI को वैधानिक दर्जा कब प्रदान किया गया?", o: ["1988", "30 जनवरी, 1992", "1995", "2000"], a: 1 },
+    { q: "स्वतंत्र भारत की पहली बहुउद्देशीय नदी घाटी परियोजना कौन सी है?", o: ["भाखड़ा नांगल", "दामोदर घाटी परियोजना", "हीराकुंड", "रिहंद"], a: 1 }
+];
+
+const list = document.getElementById('questions-list');
+const marks = new Array(data40.length).fill(null);
+
+function init() {
+    userName = document.getElementById('user-name').value;
+    if(!userName.trim()) { alert("अरे सादिक भाई, नाम तो लिखो!"); return; }
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('quiz-screen').style.display = 'block';
+    renderQs();
+    startTimer();
+}
+
+function renderQs() {
+    data40.forEach((item, i) => {
+        const d = document.createElement('div');
+        d.className = 'q-section';
+        d.innerHTML = `<div class="q-title">${i+1}. ${item.q}</div>
+            <div class="opt-container" id="grp-${i}">
+                ${item.o.map((op, idx) => `<div class="option" onclick="selectOpt(${i}, ${idx})">${op}</div>`).join('')}
+            </div>`;
+        list.appendChild(d);
+    });
+}
+
+function selectOpt(qi, oi) {
+    marks[qi] = oi;
+    const all = document.querySelectorAll(`#grp-${qi} .option`);
+    all.forEach(a => a.classList.remove('selected'));
+    all[oi].classList.add('selected');
+}
+
+function evaluateQuiz() {
+    clearInterval(timerId);
+    let correctCount = 0;
+    data40.forEach((item, i) => {
+        const opts = document.querySelectorAll(`#grp-${i} .option`);
+        opts[item.a].classList.add('correct-opt');
+        if(marks[i] !== null) {
+            if(marks[i] === item.a) correctCount++;
+            else opts[marks[i]].classList.add('wrong-opt');
+        }
+    });
+    document.getElementById('submit-btn').style.display = 'none';
+    const resBox = document.getElementById('score-display');
+    resBox.style.display = 'block';
+    resBox.innerHTML = `शाबाश ${userName}!<br>आपका स्कोर: ${correctCount} / ${data40.length}`;
+    window.scrollTo(0,0);
+}
+
+let remaining = 900;
+let timerId;
+function startTimer() {
+    timerId = setInterval(() => {
+        remaining--;
+        let mm = Math.floor(remaining/60);
+        let ss = remaining%60;
+        document.getElementById('timer-box').innerText = `Time Left: ${mm}:${ss < 10 ? '0'+ss : ss}`;
+        if(remaining <= 0) evaluateQuiz();
+    }, 1000);
+}
+</script>
+</body>
+</html>
