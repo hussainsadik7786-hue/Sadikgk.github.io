@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GK with Sadik - Page 41</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #e8eff1; margin: 0; padding: 10px; }
+        .main-container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative; }
+        
+        #timer-banner { position: sticky; top: 0; z-index: 999; background: #16a085; color: white; padding: 15px; text-align: center; font-size: 22px; font-weight: bold; border-radius: 10px; margin-bottom: 20px; }
+
+        .question-box { position: relative; border-bottom: 2px solid #f1f1f1; padding: 20px 0; overflow: hidden; }
+        
+        /* Red Sadik Watermark */
+        .question-box::before {
+            content: "Sadik";
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 75px;
+            color: rgba(231, 76, 60, 0.05);
+            font-weight: 800;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .q-text { position: relative; z-index: 1; font-size: 18px; font-weight: bold; color: #2c3e50; }
+        .opt-list { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .opt-item { padding: 12px; border: 1.5px solid #bdc3c7; border-radius: 8px; cursor: pointer; background: #fff; transition: 0.2s; }
+        .opt-item:hover { background: #e0f2f1; }
+        
+        .selected-opt { border-color: #16a085; background: #e8f4f2; font-weight: bold; }
+        .correct { background: #2ecc71 !important; border-color: #27ae60 !important; color: white; }
+        .wrong { background: #e74c3c !important; border-color: #c0392b !important; color: white; }
+
+        .footer-btn { width: 100%; padding: 18px; background: #16a085; color: white; border: none; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; margin-top: 25px; }
+        #result-box { display: none; text-align: center; padding: 25px; border: 3px dashed #16a085; border-radius: 15px; background: #fff; margin-bottom: 20px; }
+        
+        #start-screen { text-align: center; padding: 70px 20px; }
+        .name-input { padding: 15px; width: 85%; font-size: 18px; border: 2px solid #16a085; border-radius: 10px; margin-bottom: 25px; outline: none; }
+    </style>
+</head>
+<body>
+
+<div class="main-container" id="start-screen">
+    <h1 style="color: #16a085;">Speedy Railway GK - Page 41</h1>
+    <p>कृपया अपना नाम दर्ज करें:</p>
+    <input type="text" id="p-name" class="name-input" placeholder="यहाँ नाम लिखें...">
+    <button class="footer-btn" onclick="beginQuiz()">टेस्ट शुरू करें</button>
+</div>
+
+<div class="main-container" id="quiz-screen" style="display:none;">
+    <div id="timer-banner">समय शेष: 15:00</div>
+    <div id="result-box"></div>
+    <div id="q-holder"></div>
+    <button class="footer-btn" id="sub-all" onclick="showResults()">सबमिट करें</button>
+</div>
+
+<script>
+let uName = "";
+const qBank41 = [
+    { q: "स्वर्ण मंदिर किस धर्म से संबंधित है?", o: ["हिंदू", "सिख", "जैन", "बौद्ध"], a: 1 },
+    { q: "भारत ने ओलंपिक खेलों में पहला स्वर्ण पदक कब (हॉकी में) जीता था?", o: ["1920", "1928", "1932", "1948"], a: 1 },
+    { q: "शक संवत् पर आधारित राष्ट्रीय पंचांग का प्रथम महीना कौन सा है?", o: ["फाल्गुन", "चैत", "वैशाख", "आषाढ़"], a: 1 },
+    { q: "आदि मानव ने सबसे पहले क्या सीखा था?", o: ["खेती करना", "आग जलाना", "पहिया बनाना", "शिकार"], a: 1 },
+    { q: "'दक्षिण-गंगा' किस नदी को कहा जाता है?", o: ["कावेरी", "गोदावरी", "कृष्णा", "नर्मदा"], a: 1 },
+    { q: "'जफरनामा' के लेखक कौन हैं?", o: ["अकबर", "गुरु गोविन्द सिंह", "अबुल फजल", "बाबर"], a: 1 },
+    { q: "अमृतसर शहर के संस्थापक कौन थे?", o: ["गुरु नानक", "गुरु रामदास", "गुरु अर्जुन देव", "गुरु तेग बहादुर"], a: 1 },
+    { q: "61वाँ संविधान संशोधन विधेयक (1989) द्वारा मतदान की आयु 21 से घटाकर कितनी कर दी गई?", o: ["20 वर्ष", "18 वर्ष", "19 वर्ष", "16 वर्ष"], a: 1 },
+    { q: "दो बार एवरेस्ट पर चढ़ने वाली भारतीय महिला कौन है?", o: ["बचेंद्री पाल", "संतोष यादव", "अरुणिमा सिन्हा", "प्रीति गर्ग"], a: 1 },
+    { q: "तैमूरलंग के आक्रमण का परिणाम किस वंश का पतन था?", o: ["खिलजी वंश", "तुगलक वंश", "लोदी वंश", "गुलाम वंश"], a: 1 },
+    { q: "सरस्वती सम्मान के प्रथम प्राप्तकर्ता कौन हैं?", o: ["महादेवी वर्मा", "हरिवंश राय बच्चन", "निराला", "दिनकर"], a: 1 },
+    { q: "मुगल काल में 'बाबुल का मक्का' किस बंदरगाह को कहा जाता था?", o: ["मुंबई", "सूरत", "कांडला", "कोचीन"], a: 1 },
+    { q: "'दीपशिखा' पद का रचनाकार कौन है?", o: ["सुभद्रा कुमारी चौहान", "महादेवी वर्मा", "अमृता प्रीतम", "सरोजिनी नायडू"], a: 1 },
+    { q: "'हैरी पॉटर एण्ड द गोब्लेट ऑफ फायर' के लेखक कौन हैं?", o: ["शेक्सपियर", "जे. के. रॉलिंग", "मार्क ट्वेन", "लियो टॉल्स्टॉय"], a: 1 },
+    { q: "भारत का 28वाँ राज्य कौन सा है?", o: ["उत्तराखंड", "झारखंड", "छत्तीसगढ़", "तेलंगाना"], a: 1 },
+    { q: "गरीबी रेखा का मापन किस खपत पर आधारित होता है?", o: ["आय", "कैलोरीय खपत", "शिक्षा", "स्वास्थ्य"], a: 1 },
+    { q: "चंद्रग्रहण कब लगता है?", o: ["जब सूर्य बीच में आए", "जब पृथ्वी, सूर्य एवं चन्द्रमा के बीच आ जाती है", "जब चंद्रमा बीच में आए", "कभी नहीं"], a: 1 },
+    { q: "एक लैम्प की बत्ती में तेल ऊपर चढ़ने का कारण क्या है?", o: ["दाब", "केशिकत्व क्रिया (Capillary)", "घनत्व", "ऊर्जा"], a: 1 },
+    { q: "संविधान सभा की अध्यक्षता किसने की थी?", o: ["अम्बेडकर", "डॉ. राजेन्द्र प्रसाद", "नेहरू", "पटेल"], a: 1 },
+    { q: "संपत्ति का अधिकार अब कैसा अधिकार है?", o: ["मौलिक अधिकार", "विधिक/कानूनी अधिकार", "संवैधानिक अधिकार", "कोई नहीं"], a: 1 },
+    { q: "झारखंड किस गोलार्द्ध में स्थित है?", o: ["दक्षिणी गोलार्द्ध", "उत्तरी गोलार्द्ध", "पूर्वी", "पश्चिमी"], a: 1 },
+    { q: "सातवीं पंचवर्षीय योजना (1985-90) में किसे परिभाषित किया गया था?", o: ["बेरोजगारी", "गरीबी रेखा", "कृषि", "उद्योग"], a: 1 },
+    { q: "गुजरात की राजधानी क्या है?", o: ["अहमदाबाद", "गाँधीनगर", "सूरत", "राजकोट"], a: 1 },
+    { q: "गुजरात का प्रमुख लोक नृत्य कौन सा है?", o: ["बिहु", "गरबा एवं रास", "कथकली", "यक्षगान"], a: 1 },
+    { q: "नर्मदा नदी को किसकी 'जीवन रेखा' कहा जाता है?", o: ["मध्य प्रदेश", "गुजरात", "महाराष्ट्र", "राजस्थान"], a: 1 },
+    { q: "भारत का मैनचेस्टर किसे कहा जाता है?", o: ["मुंबई", "अहमदाबाद", "कानपुर", "सूरत"], a: 1 },
+    { q: "26 जनवरी, 2001 को गुजरात के किस क्षेत्र में भयंकर भूकंप आया था?", o: ["सूरत", "भुज", "राजकोट", "जामनगर"], a: 1 },
+    { q: "जनसंख्या के अनुसार गुजरात का सबसे बड़ा जिला कौन सा है?", o: ["गांधीनगर", "अहमदाबाद", "सूरत", "वडोदरा"], a: 1 },
+    { q: "सिंधु घाटी सभ्यता का महत्वपूर्ण केंद्र 'लोथल' कहाँ स्थित है?", o: ["पंजाब", "गुजरात", "राजस्थान", "हरियाणा"], a: 1 },
+    { q: "कर्क रेखा गुजरात की किस सीमा से होकर गुजरती है?", o: ["दक्षिणी", "उत्तरी सीमा", "पूर्वी", "पश्चिमी"], a: 1 },
+    { q: "गुजरात की सबसे लम्बी नदी कौन सी है?", o: ["साबरमती", "भादर नदी", "नर्मदा", "ताप्ती"], a: 1 },
+    { q: "गुजरात का प्रमुख बंदरगाह कौन सा है?", o: ["मुंद्रा", "कांडला", "वेरावल", "पोरबंदर"], a: 1 },
+    { q: "गुजरात का महत्वपूर्ण उद्योग कौन सा है?", o: ["हीरा", "सूती वस्त्र उद्योग", "पेट्रोलियम", "नमक"], a: 1 },
+    { q: "मकर रेखा के उत्तर एवं कर्क रेखा के दक्षिण में स्थित क्षेत्र क्या कहलाता है?", o: ["शीतोष्ण", "उष्ण कटिबंध", "शीत", "विषुवत"], a: 1 },
+    { q: "कौटिल्य का अर्थशास्त्र किससे संबंधित है?", o: ["धर्म", "राजनीति", "अर्थव्यवस्था", "समाजशास्त्र"], a: 1 },
+    { q: "विश्व का सबसे बड़ा कपास उत्पादक देश कौन सा है?", o: ["भारत", "चीन", "अमेरिका", "ब्राजील"], a: 1 },
+    { q: "एंजाइम मूलतः क्या होते हैं?", o: ["वसा", "प्रोटीन", "कार्बोहाइड्रेट", "विटामिन"], a: 1 },
+    { q: "लज्जा पुस्तक का लेखक कौन है?", o: ["अरुंधति राय", "तस्लीमा नसरीन", "किरण देसाई", "विक्रम सेठ"], a: 1 },
+    { q: "आधुनिक सिख धर्म का जन्म कब हुआ था?", o: ["1599", "12 अप्रैल, 1699", "1799", "1899"], a: 1 },
+    { q: "नीलगिरी पहाड़ियों पर किस प्रकार के वन पाए जाते हैं?", o: ["पतझड़", "उष्णकटिबंधीय सदाबहार वन", "शंकुधारी", "मरुस्थलीय"], a: 1 },
+    { q: "विकसित देश डेनमार्क के पास कौन सा कार्यक्रम नहीं है?", o: ["अंतरिक्ष", "परमाणु कार्यक्रम", "शिक्षा", "कृषि"], a: 1 },
+    { q: "प्राचीन यूनान में अपोलो को किसका देवता माना जाता था?", o: ["चंद्रमा", "सूर्य देवता", "वायु", "समुद्र"], a: 1 },
+    { q: "'द लास्ट सपर' नामक प्रसिद्ध पेंटिंग के कृतिकार कौन हैं?", o: ["पिकासो", "लिओनार्दो द विंसी (इटली)", "राफेल", "एंजेलो"], a: 1 },
+    { q: "लोकसभा के लिए 'कोरम' कुल सदस्यों का कितना भाग होता है?", o: ["1/5", "1/10", "1/20", "1/4"], a: 1 },
+    { q: "राष्ट्रीय फिल्म पुरस्कार किस मंत्रालय द्वारा दिया जाता है?", o: ["वित्त", "सूचना एवं प्रसारण मंत्रालय", "गृह", "शिक्षा"], a: 1 },
+    { q: "टेटनस किसके संक्रमण के कारण होता है?", o: ["विषाणु", "जीवाणु (Bacteria)", "कवक", "चोट"], a: 1 },
+    { q: "मनुष्य के हृदय की सामान्य स्पंदन गति कितनी है?", o: ["60 बार", "72 बार प्रति मिनट", "80 बार", "90 बार"], a: 1 },
+    { q: "मुमताज महल किस मुगल शासक की माँ थी?", o: ["अकबर", "औरंगजेब", "शाहजहाँ", "जहाँगीर"], a: 1 },
+    { q: "द्वितीय विश्व युद्ध (1939-45) में पर्ल हार्बर पर किसने हमला किया था?", o: ["जर्मनी", "जापान", "इटली", "रूस"], a: 1 },
+    { q: "थीन बाँध किस नदी पर स्थित है?", o: ["व्यास", "रावी नदी", "सतलज", "झेलम"], a: 1 }
+];
+
+const qContainer = document.getElementById('q-holder');
+const playerChoices = new Array(qBank41.length).fill(null);
+
+function beginQuiz() {
+    uName = document.getElementById('p-name').value;
+    if(!uName.trim()) { alert("सादिक भाई, नाम लिखना तो बनता है!"); return; }
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('quiz-screen').style.display = 'block';
+    setupQs();
+    startCount();
+}
+
+function setupQs() {
+    qBank41.forEach((item, i) => {
+        const d = document.createElement('div');
+        d.className = 'question-box';
+        d.innerHTML = `<div class="q-text">${i+1}. ${item.q}</div>
+            <div class="opt-list" id="set-${i}">
+                ${item.o.map((o, idx) => `<div class="opt-item" onclick="pick(${i}, ${idx})">${o}</div>`).join('')}
+            </div>`;
+        qContainer.appendChild(d);
+    });
+}
+
+function pick(qi, oi) {
+    playerChoices[qi] = oi;
+    const btns = document.querySelectorAll(`#set-${qi} .opt-item`);
+    btns.forEach(b => b.classList.remove('selected-opt'));
+    btns[oi].classList.add('selected-opt');
+}
+
+function showResults() {
+    clearInterval(tInterval);
+    let pts = 0;
+    qBank41.forEach((item, i) => {
+        const btns = document.querySelectorAll(`#set-${i} .opt-item`);
+        btns[item.a].classList.add('correct');
+        if(playerChoices[i] !== null) {
+            if(playerChoices[i] === item.a) pts++;
+            else btns[playerChoices[i]].classList.add('wrong');
+        }
+    });
+    document.getElementById('sub-all').style.display = 'none';
+    const rBox = document.getElementById('result-box');
+    rBox.style.display = 'block';
+    rBox.innerHTML = `<h3>नाम: ${uName}</h3><h4>आपका स्कोर: ${pts} / ${qBank41.length}</h4>`;
+    window.scrollTo(0,0);
+}
+
+let left = 900;
+let tInterval;
+function startCount() {
+    tInterval = setInterval(() => {
+        left--;
+        let mn = Math.floor(left/60);
+        let sc = left%60;
+        document.getElementById('timer-banner').innerText = `समय शेष: ${mn}:${sc < 10 ? '0'+sc : sc}`;
+        if(left <= 0) showResults();
+    }, 1000);
+}
+</script>
+</body>
+</html>
+
