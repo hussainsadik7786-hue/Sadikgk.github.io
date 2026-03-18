@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GK with Sadik - Mega 100 Shuffle</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 10px; }
+        .main-card { max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; }
+        
+        #timer-display { position: sticky; top: 10px; z-index: 1000; background: #e74c3c; color: white; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3); }
+
+        .question-wrap { position: relative; border-bottom: 1px solid #eee; padding: 30px 0; overflow: hidden; }
+        
+        /* Sadik Red Watermark - Invisible but present */
+        .question-wrap::after {
+            content: "Sadik";
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-25deg);
+            font-size: 90px;
+            color: rgba(231, 76, 60, 0.04);
+            font-weight: 900;
+            pointer-events: none;
+        }
+
+        .question-title { position: relative; z-index: 2; font-size: 20px; font-weight: 700; color: #1a1a1a; line-height: 1.5; margin-bottom: 15px; }
+        .options-container { position: relative; z-index: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .opt-box { padding: 14px; border: 2px solid #edeff2; border-radius: 10px; cursor: pointer; background: #f8f9fa; transition: all 0.2s; font-size: 16px; text-align: center; }
+        .opt-box:hover { background: #fff5f5; border-color: #e74c3c; }
+        
+        .is-selected { border-color: #e74c3c; background: #fff5f5; font-weight: bold; transform: scale(1.02); }
+        .is-right { background: #2ecc71 !important; border-color: #27ae60 !important; color: white; }
+        .is-wrong { background: #e74c3c !important; border-color: #c0392b !important; color: white; }
+
+        .btn-submit { width: 100%; padding: 22px; background: #2c3e50; color: white; border: none; border-radius: 12px; font-size: 22px; font-weight: bold; cursor: pointer; margin-top: 40px; transition: 0.3s; }
+        .btn-submit:hover { background: #1a252f; }
+        
+        #final-score-card { display: none; text-align: center; padding: 40px; border: 5px double #e74c3c; border-radius: 20px; background: #fff; margin-bottom: 30px; }
+        
+        #welcome-screen { text-align: center; padding: 100px 20px; }
+        .input-style { padding: 18px; width: 85%; font-size: 20px; border: 2px solid #ccc; border-radius: 12px; margin-bottom: 30px; outline: none; transition: 0.3s; }
+        .input-style:focus { border-color: #e74c3c; }
+    </style>
+</head>
+<body>
+
+<div class="main-card" id="welcome-screen">
+    <h1 style="color: #e74c3c; font-size: 32px;">Railway Mega Revision 100 (Shuffle)</h1>
+    <p style="font-size: 18px; color: #555;">पेज 33 से 42 तक का असली टेस्ट</p>
+    <input type="text" id="student-name" class="input-style" placeholder="अपना नाम यहाँ लिखें...">
+    <br>
+    <button class="btn-submit" style="width: auto; padding: 15px 60px;" onclick="initTest()">शुरू करें</button>
+</div>
+
+<div class="main-card" id="test-screen" style="display:none;">
+    <div id="timer-display">समय शेष: 30:00</div>
+    <div id="final-score-card"></div>
+    <div id="load-questions"></div>
+    <button class="btn-submit" id="btn-done" onclick="checkAll()">फाइनल सबमिट करें</button>
+</div>
+
+<script>
+let sName = "";
+const rawData = [
+    { q: "सांची का स्तूप किसने बनवाया?", o: ["अशोक", "बिन्दुसार", "अजातशत्रु", "कनिष्क"], a: 0 },
+    { q: "गुलाम वंश का संस्थापक?", o: ["इल्तुतमिश", "ऐबक", "बलबन", "रजिया"], a: 1 },
+    { q: "पूर्वी और पश्चिमी घाट कहाँ मिलते हैं?", o: ["अन्नामलाई", "इलायची पहाड़", "नीलगिरी", "पालनी"], a: 2 },
+    { q: "यूनिसेफ का मुख्यालय?", o: ["पेरिस", "न्यूयॉर्क", "लंदन", "जेनेवा"], a: 1 },
+    { q: "फाह्यान किसके समय आया?", o: ["हर्ष", "अशोक", "चंद्रगुप्त द्वितीय", "कनिष्क"], a: 2 },
+    { q: "मनसबदारी प्रथा किसने शुरू की?", o: ["अकबर", "बाबर", "जहाँगीर", "शाहजहाँ"], a: 0 },
+    { q: "इंसुलिन कहाँ बनता है?", o: ["यकृत", "फेफड़ा", "अग्नाशय", "प्लीहा"], a: 2 },
+    { q: "स्वर्ण मंदिर का संबंध?", o: ["हिंदू", "जैन", "सिख", "बौद्ध"], a: 2 },
+    { q: "पहला परमाणु ऊर्जा केंद्र?", o: ["नरोरा", "तारापुर", "कोटा", "कलपक्कम"], a: 1 },
+    { q: "इन्द्रधनुष के बीच का रंग?", o: ["लाल", "पीला", "हरा", "नीला"], a: 2 },
+    { q: "X-किरण की खोज?", o: ["फैराडे", "रॉन्टजन", "न्यूटन", "बोर"], a: 1 },
+    { q: "भूकंप मापी यंत्र?", o: ["लैक्टोमीटर", "बैरोमीटर", "सिस्मोग्राफ", "हाइग्रोमीटर"], a: 2 },
+    { q: "स्वराज पार्टी के पहले अध्यक्ष?", o: ["नेहरू", "गांधी", "चितरंजन दास", "पटेल"], a: 2 },
+    { q: "इंसुलिन की खोज?", o: ["बैटिंग एवं बेस्ट", "पाश्चर", "फ्लेमिंग", "कोच"], a: 0 },
+    { q: "ऊँचा बाँध भारत का?", o: ["हीराकुंड", "भाखड़ा", "टिहरी", "रिहंद"], a: 2 },
+    { q: "हृदय की धड़कन?", o: ["60", "80", "72 बार/मिनट", "90"], a: 2 },
+    { q: "लोहे में जंग का कारण?", o: ["CO2", "ऑक्सीजन", "नाइट्रोजन", "मीथेन"], a: 1 },
+    { q: "प्याज का खाने वाला भाग?", o: ["जड़", "पुष्प", "तना", "फल"], a: 2 },
+    { q: "वोट डालने की उम्र 21 से 18?", o: ["42वाँ", "44वाँ", "61वाँ संशोधन", "73वाँ"], a: 2 },
+    { q: "हैरी पॉटर के लेखक?", o: ["शेक्सपियर", "जे. के. रॉलिंग", "मार्क ट्वेन", "रशदी"], a: 1 },
+    { q: "बंगाल विभाजन 1905?", o: ["कर्जन", "डफरिन", "मिंटो", "चेम्सफोर्ड"], a: 0 },
+    { q: "भारत छोड़ो आंदोलन?", o: ["1940", "1942", "1945", "1947"], a: 1 },
+    { q: "सिकंदर की मृत्यु?", o: ["काबुल", "बेबीलोन", "सिंध", "यूनान"], a: 1 },
+    { q: "विटामिन A संचय?", o: ["यकृत", "गुर्दा", "हृदय", "तिल्ली"], a: 0 },
+    { q: "तैमूरलंग का आक्रमण?", o: ["नासिरुद्दीन महमूद", "बलबन", "अलाउद्दीन", "लोदी"], a: 0 },
+    { q: "नीलगिरी पर कौन से वन?", o: ["पतझड़", "सदाबहार", "शंकुधारी", "मरुस्थलीय"], a: 1 },
+    { q: "सिख धर्म का जन्म?", o: ["1599", "1699", "1799", "1499"], a: 1 },
+    { q: "गुजरात की राजधानी?", o: ["सूरत", "गांधीनगर", "अहमदाबाद", "राजकोट"], a: 1 },
+    { q: "कांडला पोर्ट कहाँ है?", o: ["महाराष्ट्र", "गुजरात", "गोवा", "केरल"], a: 1 },
+    { q: "अमृतसर की स्थापना?", o: ["रामदास", "नानक", "अर्जुन", "गोबिंद"], a: 0 },
+    { q: "जफरनामा के लेखक?", o: ["बाबर", "अकबर", "गुरु गोबिंद सिंह", "औरंगजेब"], a: 2 },
+    { q: "दूध का खट्टा होना?", o: ["विषाणु", "जीवाणु", "कवक", "धूप"], a: 1 },
+    { q: "ध्वनि की गति तेज?", o: ["हवा", "पानी", "इस्पात (Steel)", "निर्वात"], a: 2 },
+    { q: "प्रथम लोकसभा अध्यक्ष?", o: ["नेहरू", "मावलंकर", "पटेल", "आजाद"], a: 1 },
+    { q: "नालंदा विश्वविद्यालय?", o: ["अशोक", "हर्ष", "कुमारगुप्त प्रथम", "बिम्बिसार"], a: 2 },
+    { q: "हैदराबाद किस नदी पर?", o: ["कृष्णा", "मूसी", "कावेरी", "गोदावरी"], a: 1 },
+    { q: "कुचीपुड़ी नृत्य?", o: ["केरल", "तमिलनाडु", "आंध्र प्रदेश", "ओडिशा"], a: 2 },
+    { q: "भाषायी आधार पर पहला राज्य?", o: ["गुजरात", "पंजाब", "आंध्र प्रदेश", "बिहार"], a: 2 },
+    { q: "श्रीहरिकोटा कहाँ है?", o: ["ओडिशा", "आंध्र प्रदेश", "तमिलनाडु", "केरल"], a: 1 },
+    { q: "हम्पी के अवशेष?", o: ["कर्नाटक", "आंध्र", "महाराष्ट्र", "तमिलनाडु"], a: 0 },
+    { q: "एशिया का नोबेल?", o: ["मैग्सेसे", "पुलित्जर", "बुकर", "भारत रत्न"], a: 0 },
+    { q: "टाइफॉयड का कारण?", o: ["वायरस", "जीवाणु (Bacteria)", "प्रदूषण", "कवक"], a: 1 },
+    { q: "पेंसिल का लेड?", o: ["कोयला", "लोहा", "ग्रेफाइट", "तांबा"], a: 2 },
+    { q: "SIM का अर्थ?", o: ["Subscriber Identity Module", "Simple Mode", "System Info", "Safe ID"], a: 0 },
+    { q: "खालसा पंथ की स्थापना?", o: ["नानक", "तेग बहादुर", "गोबिंद सिंह", "रामदास"], a: 2 },
+    { q: "कर्नाटक का रत्न?", o: ["मैसूर", "बेंगलुरु", "कूर्ग", "हम्पी"], a: 0 },
+    { q: "अकबर का जन्म?", o: ["1542", "1556", "1530", "1526"], a: 0 },
+    { q: "भारत का मैनचेस्टर?", o: ["मुंबई", "अहमदाबाद", "सूरत", "कानपुर"], a: 1 },
+    { q: "लज्जा पुस्तक?", o: ["अरुंधति", "तस्लीमा नसरीन", "शोभा डे", "किरण बेदी"], a: 1 },
+    { q: "मशरूम में ज्यादा?", o: ["वसा", "कार्बोहाइड्रेट", "प्रोटीन", "खनिज"], a: 2 },
+    { q: "तख्ते ताउस (मयूर सिंहासन)?", o: ["बाबर", "जहाँगीर", "शाहजहाँ", "अकबर"], a: 2 },
+    { q: "एशियाटिक सोसाइटी?", o: ["मैकाले", "विलियम जोन्स", "हंटर", "बेंटिक"], a: 1 },
+    { q: "दाभोल प्रोजेक्ट?", o: ["गुजरात", "महाराष्ट्र", "गोवा", "केरल"], a: 1 },
+    { q: "B12 की कमी से?", o: ["रतौंधी", "एनीमिया", "बेरी-बेरी", "स्कर्वी"], a: 1 },
+    { q: "बड़ा द्वीप दुनिया का?", o: ["सुमात्रा", "जावा", "ग्रीनलैंड", "क्यूबा"], a: 2 },
+    { q: "पुष्कर मेला?", o: ["अजमेर", "जयपुर", "पुष्कर (राज.)", "बीकानेर"], a: 2 },
+    { q: "चमगादड़ तरंगे?", o: ["रेडियो", "अवरक्त", "अल्ट्रासोनिक", "दृश्य"], a: 2 },
+    { q: "भारत महोत्सव?", o: ["1972", "1982", "1992", "2002"], a: 1 },
+    { q: "सतपुड़ा श्रृंखला अलग करती है?", o: ["गंगा-यमुना", "नर्मदा-ताप्ती", "कृष्णा-कावेरी", "सिंधु-झेलम"], a: 1 },
+    { q: "पृथ्वी की त्रिज्या मापी?", o: ["न्यूटन", "इरेटोस्थनीज", "आर्यभट्ट", "कॉपरनिकस"], a: 1 },
+    { q: "अरुणा आसफ अली का संबंध?", o: ["असहयोग", "चंपारण", "भारत छोड़ो", "आजाद हिंद"], a: 2 },
+    { q: "टोक्यो किस द्वीप पर?", o: ["क्युशू", "होंशू", "शिकोकू", "होक्काइडो"], a: 1 },
+    { q: "ग्रीन हाउस गैस?", o: ["O2", "N2", "CO2", "Argon"], a: 2 },
+    { q: "वॉशिंग मशीन?", o: ["अपकेंद्रण", "अभिकेंद्र", "विसरण", "परासरण"], a: 0 },
+    { q: "नमी (आर्द्रता) मापते हैं?", o: ["हाइड्रोमीटर", "हाइग्रोमीटर", "लैक्टोमीटर", "एनीमोमीटर"], a: 1 },
+    { q: "संगीत नाटक अकादमी?", o: ["मुंबई", "नई दिल्ली", "कोलकाता", "चेन्नई"], a: 1 },
+    { q: "सुखना झील?", o: ["श्रीनगर", "मनाली", "चंडीगढ़", "शिमला"], a: 2 },
+    { q: "बगीचों का शहर (भारत)?", o: ["मैसूर", "कोच्चि", "बेंगलूरू", "देहरादून"], a: 2 },
+    { q: "गोल गुम्बज?", o: ["बीजापुर", "हैदराबाद", "दिल्ली", "गुलबर्गा"], a: 0 },
+    { q: "इंसुलिन स्रोत?", o: ["पैन्क्रियाज", "थायरॉयड", "एड्रीनलीन", "पीयूष"], a: 0 },
+    { q: "धारा (Current) मात्रक?", o: ["वोल्ट", "ओम", "एम्पियर", "वाट"], a: 2 },
+    { q: "विटामिन C स्रोत?", o: ["अंडा", "आंवला", "केला", "मछली"], a: 1 },
+    { q: "शरीर का तापमान?", o: ["35°C", "37°C", "39°C", "98°C"], a: 1 },
+    { q: "हीरा क्या है?", o: ["धातु", "कार्बन का अपरूप", "गैस", "मिश्रण"], a: 1 },
+    { q: "पाश्चर ने खोजा?", o: ["पेनिसिलिन", "रेबीज का टीका", "चेचक", "पोलियो"], a: 1 },
+    { q: "बड़ा जीवित पक्षी?", o: ["शुतुरमुर्ग", "इमू", "हमिंग बर्ड", "चील"], a: 0 },
+    { q: "रक्तचाप (Normal BP)?", o: ["100/60", "120/80", "140/90", "80/120"], a: 1 },
+    { q: "अम्ल (Acid)?", o: ["मीठा", "कड़वा", "खट्टा", "नमकीन"], a: 2 },
+    { q: "रक्त का pH?", o: ["6.4", "7.0", "7.4", "8.2"], a: 2 },
+    { q: "गोभी मरुस्थल?", o: ["चीन/मंगोलिया", "अफ्रीका", "भारत", "चिले"], a: 0 },
+    { q: "सबसे ज्यादा गैस हवा में?", o: ["O2", "H2", "N2", "He"], a: 2 },
+    { q: "सूर्य ऊर्जा?", o: ["विखंडन", "संलयन (Fusion)", "दहन", "चुंबकत्व"], a: 1 },
+    { q: "गांधी जन्म?", o: ["1869", "1879", "1889", "1859"], a: 0 },
+    { q: "स्थायी अध्यक्ष (संविधान सभा)?", o: ["अम्बेडकर", "राजेन्द्र प्रसाद", "नेहरू", "सिन्हा"], a: 1 },
+    { q: "राष्ट्रीय खेल भारत?", o: ["क्रिकेट", "कबड्डी", "हॉकी", "कुश्ती"], a: 2 },
+    { q: "एक सींग वाला गेंडा?", o: ["काजींरगा", "गिर", "कान्हा", "जिम कॉर्बेट"], a: 0 },
+    { q: "केरल प्रसिद्ध है?", o: ["मसालों के लिए", "चाय के लिए", "जूट के लिए", "कॉफी"], a: 0 },
+    { q: "गंगा की लम्बाई लगभग?", o: ["2000", "2525 किमी", "3000", "1500"], a: 1 },
+    { q: "जल दिवस?", o: ["22 मार्च", "22 अप्रैल", "5 जून", "11 जुलाई"], a: 0 },
+    { q: "Discovery of India?", o: ["गांधी", "पटेल", "नेहरू", "आजाद"], a: 2 },
+    { q: "बेरी-बेरी कमी?", o: ["B1", "B12", "C", "D"], a: 0 },
+    { q: "आग बुझाने वाली गैस?", o: ["N2", "CO2", "H2", "He"], a: 1 },
+    { q: "बड़ा ग्रह?", o: ["शनि", "बृहस्पति", "मंगल", "वरुण"], a: 1 },
+    { q: "शरावती नदी पर?", o: ["जोग प्रपात", "धुआंधार", "हुंडरू", "शिवसमुद्रम"], a: 0 },
+    { q: "कठोरतम?", o: ["सोना", "लोहा", "हीरा", "तांबा"], a: 2 },
+    { q: "प्रथम नागरिक?", o: ["PM", "राष्ट्रपति", "स्पीकर", "CJI"], a: 1 },
+    { q: "जनसंख्या दिवस?", o: ["11 जुलाई", "1 जुलाई", "15 अगस्त", "26 जनवरी"], a: 0 },
+    { q: "चाय के लिए मिट्टी?", o: ["काली", "जलोढ़", "लैटेराइट", "लाल"], a: 2 },
+    { q: "लैक्टोमीटर से?", o: ["हवा", "दूध की शुद्धता", "पानी", "रक्त"], a: 1 },
+    { q: "लोकसभा अवधि?", o: ["4 साल", "6 साल", "5 साल", "स्थायी"], a: 2 }
+];
+
+const listArea = document.getElementById('load-questions');
+const choiceTracker = new Array(rawData.length).fill(null);
+
+function initTest() {
+    sName = document.getElementById('student-name').value;
+    if(!sName.trim()) { alert("सादिक भाई, नाम लिखना अनिवार्य है!"); return; }
+    document.getElementById('welcome-screen').style.display = 'none';
+    document.getElementById('test-screen').style.display = 'block';
+    renderAll();
+    timerStart();
+}
+
+function renderAll() {
+    rawData.forEach((item, i) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'question-wrap';
+        wrap.innerHTML = `<div class="question-title">${i+1}. ${item.q}</div>
+            <div class="options-container" id="grp-${i}">
+                ${item.o.map((val, idx) => `<div class="opt-box" onclick="pickItem(${i}, ${idx})">${val}</div>`).join('')}
+            </div>`;
+        listArea.appendChild(wrap);
+    });
+}
+
+function pickItem(qi, oi) {
+    choiceTracker[qi] = oi;
+    const allBtns = document.querySelectorAll(`#grp-${qi} .opt-box`);
+    allBtns.forEach(b => b.classList.remove('is-selected'));
+    allBtns[oi].classList.add('is-selected');
+}
+
+function checkAll() {
+    clearInterval(clockRef);
+    let finalMark = 0;
+    rawData.forEach((item, i) => {
+        const boxes = document.querySelectorAll(`#grp-${i} .opt-box`);
+        boxes[item.a].classList.add('is-right');
+        if(choiceTracker[i] !== null) {
+            if(choiceTracker[i] === item.a) finalMark++;
+            else boxes[choiceTracker[i]].classList.add('is-wrong');
+        }
+    });
+    document.getElementById('btn-done').style.display = 'none';
+    const report = document.getElementById('final-score-card');
+    report.style.display = 'block';
+    report.innerHTML = `<h2 style="color:#e74c3c;">रिजल्ट: ${sName}</h2><h1 style="font-size:48px;">${finalMark} / 100</h1><p>पेज 33-42 का रिवीजन सफल रहा!</p>`;
+    window.scrollTo(0,0);
+}
+
+let secLeft = 1800;
+let clockRef;
+function timerStart() {
+    clockRef = setInterval(() => {
+        secLeft--;
+        let mm = Math.floor(secLeft/60);
+        let ss = secLeft%60;
+        document.getElementById('timer-display').innerText = `समय शेष: ${mm}:${ss < 10 ? '0'+ss : ss}`;
+        if(secLeft <= 0) checkAll();
+    }, 1000);
+}
+</script>
+</body>
+</html>
