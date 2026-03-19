@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GK with Sadik - Page 43</title>
+    <style>
+        :root { --primary-red: #d32f2f; --dark-blue: #2c3e50; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 10px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.1); }
+        
+        /* Welcome Screen */
+        #welcome-box { text-align: center; padding: 80px 20px; }
+        .input-name { padding: 15px; width: 80%; font-size: 18px; border: 2px solid #ddd; border-radius: 10px; margin-bottom: 25px; outline: none; }
+        .input-name:focus { border-color: var(--primary-red); }
+        .btn-start { padding: 15px 50px; background: var(--primary-red); color: white; border: none; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; }
+
+        /* Timer */
+        #sticky-timer { position: sticky; top: 5px; z-index: 100; background: var(--primary-red); color: white; padding: 12px; text-align: center; font-size: 22px; font-weight: bold; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+
+        /* Questions Layout */
+        .q-card { position: relative; border-bottom: 2px solid #eee; padding: 30px 0; overflow: hidden; }
+        .q-card::after {
+            content: "Sadik";
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-25deg);
+            font-size: 90px; color: rgba(211, 47, 47, 0.04); font-weight: 900; pointer-events: none;
+        }
+
+        .q-title { font-size: 19px; font-weight: bold; color: var(--dark-blue); margin-bottom: 15px; position: relative; z-index: 2; }
+        .opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; position: relative; z-index: 2; }
+        .opt-item { padding: 12px; border: 1px solid #ccc; border-radius: 8px; cursor: pointer; text-align: center; background: #fafafa; transition: 0.2s; }
+        .opt-item:hover { background: #fff1f1; border-color: var(--primary-red); }
+        
+        .selected { background: #ffebee; border-color: var(--primary-red); font-weight: bold; }
+        .correct { background: #4caf50 !important; color: white; border-color: #388e3c !important; }
+        .wrong { background: #f44336 !important; color: white; border-color: #d32f2f !important; }
+
+        .btn-submit { width: 100%; padding: 20px; background: var(--dark-blue); color: white; border: none; border-radius: 12px; font-size: 20px; font-weight: bold; cursor: pointer; margin-top: 30px; }
+        #res-box { display: none; text-align: center; padding: 30px; border: 4px solid var(--primary-red); border-radius: 15px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="welcome-box">
+    <h1 style="color: var(--primary-red);">GK with Sadik</h1>
+    <h3 style="color: #666;">रेलवे सामान्य अध्ययन: पेज 43 स्पेशल</h3>
+    <input type="text" id="user-input" class="input-name" placeholder="अपना नाम लिखें...">
+    <br>
+    <button class="btn-start" onclick="initTest()">टेस्ट शुरू करें</button>
+</div>
+
+<div class="container" id="test-box" style="display:none;">
+    <div id="sticky-timer">समय शेष: 20:00</div>
+    <div id="res-box"></div>
+    <div id="q-container"></div>
+    <button class="btn-submit" id="check-btn" onclick="evaluateQuiz()">रिजल्ट देखें</button>
+</div>
+
+<script>
+let userName = "";
+const quizData = [
+    { q: "चेचक और रेबीज रोग किसके कारण होते हैं?", o: ["बैक्टीरिया", "वायरस", "प्रोटोजोआ", "फफूंदी"], a: 1 },
+    { q: "मलेरिया और पायरिया बीमारी का मुख्य कारक क्या है?", o: ["वायरस", "प्रोटोजोआ", "बैक्टीरिया", "फफूंदी"], a: 1 },
+    { q: "इबोला और एड्स किस श्रेणी की बीमारियाँ हैं?", o: ["बैक्टीरिया", "प्रोटोजोआ", "वायरस", "फंगस"], a: 2 },
+    { q: "टिटनेस और हैजा किस सूक्ष्मजीव से फैलते हैं?", o: ["वायरस", "बैक्टीरिया", "प्रोटोजोआ", "कृमि"], a: 1 },
+    { q: "न्युमोनिया और तपेदिक (TB) शरीर के किस अंग को प्रभावित करते हैं?", o: ["यकृत", "फेफड़ा", "आँत", "तंत्रिका तंत्र"], a: 1 },
+    { q: "मलेरिया रोग से शरीर का कौन सा अंग प्रभावित होता है?", o: ["अग्न्याशय", "तिल्ली (RBC/Pliha)", "गुर्दा", "फेफड़े"], a: 1 },
+    { q: "घेघा (Goitre) रोग किसकी कमी या गड़बड़ी से होता है?", o: ["यकृत", "थायरॉयड ग्रंथि", "पीयूष ग्रंथि", "अग्न्याशय"], a: 1 },
+    { q: "लाल चींटियों और बिच्छू के डंक में कौन सा अम्ल होता है?", o: ["साइट्रिक अम्ल", "फॉर्मिक अम्ल", "ऑक्जेलिक अम्ल", "टार्टरिक अम्ल"], a: 1 },
+    { q: "खट्टे फलों (नींबू, संतरा) में कौन सा एसिड पाया जाता है?", o: ["लैक्टिक अम्ल", "साइट्रिक अम्ल", "बेंजोइक अम्ल", "यूरिक अम्ल"], a: 1 },
+    { q: "इमली और अंगूर में प्रचुर मात्रा में क्या मिलता है?", o: ["फार्मिक अम्ल", "टार्टरिक अम्ल", "एसिटिक अम्ल", "ऑक्जेलिक अम्ल"], a: 1 },
+    { q: "दूध में कौन सा अम्ल मौजूद होता है?", o: ["साइट्रिक अम्ल", "लैक्टिक अम्ल", "बेंजोइक अम्ल", "यूरिक अम्ल"], a: 1 },
+    { q: "सफेद और लाल फास्फोरस किसके अपरूप हैं?", o: ["कार्बन", "फास्फोरस", "सल्फर", "नाइट्रोजन"], a: 1 },
+    { q: "हीरा, ग्रेफाइट और कोक किसके मुख्य अपरूप हैं?", o: ["सल्फर", "कार्बन", "फास्फोरस", "लोहा"], a: 1 },
+    { q: "बोकारो स्टील प्लांट (झारखंड) किस देश की सहायता से बना?", o: ["ब्रिटेन", "पूर्व सोवियत संघ (रूस)", "पश्चिमी जर्मनी", "अमेरिका"], a: 1 },
+    { q: "भिलाई स्टील प्लांट (छत्तीसगढ़) की स्थापना में सहयोगी देश?", o: ["जर्मनी", "पूर्व सोवियत संघ", "ब्रिटेन", "जापान"], a: 1 },
+    { q: "राउरकेला स्टील प्लांट (ओड़िसा) किस देश की मदद से बना?", o: ["रूस", "पश्चिमी जर्मनी", "ब्रिटेन", "कनाडा"], a: 1 },
+    { q: "दुर्गापुर स्टील प्लांट (पश्चिम बंगाल) किसके सहयोग से बना?", o: ["रूस", "ब्रिटेन", "जर्मनी", "फ्रांस"], a: 1 },
+    { q: "तारपीन का तेल किस पेड़ से प्राप्त किया जाता है?", o: ["नीम", "चीड़", "सागवान", "पीपल"], a: 1 },
+    { q: "अर्जुन पुरस्कार की वर्तमान राशि कितनी है?", o: ["1 लाख", "5 लाख", "10 लाख", "15 लाख"], a: 1 },
+    { q: "नेचुरल सिलेक्शन (प्राकृतिक वरण) का सिद्धांत किसने दिया?", o: ["मेंडल", "डार्विन", "लेमार्क", "न्यूटन"], a: 1 },
+    { q: "नेपाल का राष्ट्रीय झंडा किस आकार में है?", o: ["आयताकार", "दोहरे त्रिभुज", "वर्गाकार", "गोलाकार"], a: 1 },
+    { q: "टाइटेनिक फिल्म की मुख्य अभिनेत्री कौन थीं?", o: ["एंजेलिना जोली", "केट विंसलेट", "मैडोना", "जूलिया"], a: 1 },
+    { q: "प्लास्टर ऑफ पेरिस के जमने में कौन सी प्रक्रिया अपनाई जाती है?", o: ["ऑक्सीकरण", "निर्जलीकरण", "अपचयन", "वाष्पीकरण"], a: 1 },
+    { q: "गांधी जी (1869) और लाल बहादुर शास्त्री का जन्म किस तिथि को हुआ?", o: ["15 अगस्त", "2 अक्टूबर", "26 जनवरी", "14 नवंबर"], a: 1 },
+    { q: "शांति निकेतन की स्थापना किसने की थी?", o: ["गांधी जी", "रवीन्द्रनाथ ठाकुर", "नेहरू जी", "तिलक"], a: 1 },
+    { q: "भारत के प्रथम क्रिकेट कप्तान कौन थे?", o: ["कपिल देव", "सी.के.नायडू", "गावस्कर", "कोहली"], a: 1 },
+    { q: "नोबेल पुरस्कार किस वर्ष शुरू किए गए थे?", o: ["1895", "1901", "1911", "1921"], a: 1 },
+    { q: "वयस्क मानव में रुधिर (Blood) की रचना कहाँ होती है?", o: ["यकृत में", "अस्थिमज्जा में", "हृदय में", "फेफड़ों में"], a: 1 },
+    { q: "चीन की दीवार का निर्माण किसने करवाया था?", o: ["माओ", "सी-हुआंग-टी", "चेंग ली", "हू जिंताओ"], a: 1 },
+    { q: "म्यांमार का प्राचीन नाम क्या है?", o: ["सीलोन", "बर्मा", "सियाम", "मेसोपोटामिया"], a: 1 },
+    { q: "शक संवत पर आधारित राष्ट्रीय पंचांग का प्रथम महीना?", o: ["फाल्गुन", "चैत", "वैशाख", "माघ"], a: 1 },
+    { q: "गुट निरपेक्ष आंदोलन (NAM) का प्रथम शिखर सम्मेलन कहाँ हुआ?", o: ["दिल्ली", "बेलग्रेड", "काहिरा", "जकार्ता"], a: 1 },
+    { q: "भारत का सबसे ऊँचा दरवाजा कौन सा है?", o: ["इंडिया गेट", "बुलंद दरवाजा", "गेटवे ऑफ़ इंडिया", "रूमी दरवाजा"], a: 1 },
+    { q: "बाथ पार्टी किस देश की प्रमुख राजनीतिक पार्टी है?", o: ["ईरान", "इराक", "सऊदी अरब", "मिस्र"], a: 1 },
+    { q: "अष्ट-प्रधान मंत्रिपरिषद किसके शासनकाल में थी?", o: ["अकबर", "शिवाजी", "कृष्णदेव राय", "चंद्रगुप्त"], a: 1 },
+    { q: "दिल्ली सल्तनत के किस सुल्तान ने 'सुल्तान' की उपाधि नहीं ली थी?", o: ["इल्तुतमिश", "कुतुबुद्दीन ऐबक", "बलबन", "लोधी"], a: 1 },
+    { q: "भविष्य का ईंधन किसे कहा जाता है?", o: ["पेट्रोल", "हाइड्रोजन", "डीजल", "मीथेन"], a: 1 },
+    { q: "सियाचिन ग्लेशियर भारत के किस क्षेत्र में स्थित है?", o: ["लद्दाख", "कश्मीर", "सिक्किम", "अरुणाचल"], a: 1 },
+    { q: "आंध्र प्रदेश और कर्नाटक किस फसल के उत्पादन में अग्रणी हैं?", o: ["चाय", "तम्बाकू और कॉफी", "मसाले", "गेहूँ"], a: 1 },
+    { q: "चिश्ती संप्रदाय की स्थापना किसने की थी?", o: ["निजामुद्दीन औलिया", "ख्वाजा मोइनुद्दीन चिश्ती", "बाबा फरीद", "बख्तियार काकी"], a: 1 },
+    { q: "बंगाल में पाल वंश का संस्थापक कौन था?", o: ["धर्मपाल", "गोपाल", "देवपाल", "महिपाल"], a: 1 },
+    { q: "मधुशाला के रचयिता कौन हैं?", o: ["दिनकर", "हरिवंश राय बच्चन", "पंत", "निराला"], a: 1 },
+    { q: "कालाजार का रोगवाहक कौन सी मक्खी है?", o: ["घरेलू मक्खी", "सिकटा (बालू) मक्खी", "सीसी मक्खी", "मच्छर"], a: 1 },
+    { q: "भाषा के आधार पर राज्यों का पुनर्गठन किस वर्ष हुआ?", o: ["1950", "1956", "1962", "1947"], a: 1 },
+    { q: "विटामिन B तथा C किसमें विलेय (Soluble) होते हैं?", o: ["वसा में", "जल में", "अल्कोहल में", "तेल में"], a: 1 },
+    { q: "बी.सी.जी. (BCG) का टीका किस रोग के बचाव के लिए है?", o: ["पोलियो", "यक्ष्मा (TB)", "चेचक", "पीलिया"], a: 1 },
+    { q: "नेत्रदान में आँख के किस भाग का दान किया जाता है?", o: ["लेंस", "कॉर्निया", "रेटिना", "पूरी आँख"], a: 1 },
+    { q: "क्लोरोफिल की उपस्थिति के कारण पत्तियों का रंग कैसा होता है?", o: ["लाल", "हरा", "पीला", "सफेद"], a: 1 },
+    { q: "गोवा किस नदी के किनारे स्थित है?", o: ["नर्मदा", "मांडोवी नदी", "ताप्ती", "साबरमती"], a: 1 },
+    { q: "रेड क्रॉस की स्थापना किसने की थी?", o: ["फ्लोरेंस नाइटिंगेल", "हेनरी डयूनार्न्ट", "मैडम क्यूरी", "रॉबर्ट हुक"], a: 1 }
+];
+
+const container = document.getElementById('q-container');
+const userAnswers = new Array(quizData.length).fill(null);
+
+function initTest() {
+    userName = document.getElementById('user-input').value;
+    if(!userName.trim()) { alert("सादिक भाई, नाम लिखना तो अनिवार्य है!"); return; }
+    document.getElementById('welcome-box').style.display = 'none';
+    document.getElementById('test-box').style.display = 'block';
+    renderQuiz();
+    startTimer();
+}
+
+function renderQuiz() {
+    quizData.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'q-card';
+        div.innerHTML = `<div class="q-title">${index + 1}. ${item.q}</div>
+            <div class="opt-grid" id="q-row-${index}">
+                ${item.o.map((opt, i) => `<div class="opt-item" onclick="pickOpt(${index}, ${i})">${opt}</div>`).join('')}
+            </div>`;
+        container.appendChild(div);
+    });
+}
+
+function pickOpt(qIdx, oIdx) {
+    userAnswers[qIdx] = oIdx;
+    const items = document.querySelectorAll(`#q-row-${qIdx} .opt-item`);
+    items.forEach(it => it.classList.remove('selected'));
+    items[oIdx].classList.add('selected');
+}
+
+function evaluateQuiz() {
+    clearInterval(timer);
+    let score = 0;
+    quizData.forEach((item, i) => {
+        const items = document.querySelectorAll(`#q-row-${i} .opt-item`);
+        items[item.a].classList.add('correct');
+        if(userAnswers[i] !== null) {
+            if(userAnswers[i] === item.a) score++;
+            else items[userAnswers[i]].classList.add('wrong');
+        }
+    });
+    document.getElementById('check-btn').style.display = 'none';
+    const resultBox = document.getElementById('res-box');
+    resultBox.style.display = 'block';
+    resultBox.innerHTML = `<h2>शानदार सादिक भाई!</h2><h3>${userName}, आपका स्कोर: ${score} / ${quizData.length}</h3>`;
+    window.scrollTo(0,0);
+}
+
+let timeLeft = 1200;
+let timer;
+function startTimer() {
+    timer = setInterval(() => {
+        timeLeft--;
+        let m = Math.floor(timeLeft/60);
+        let s = timeLeft%60;
+        document.getElementById('sticky-timer').innerText = `समय शेष: ${m}:${s < 10 ? '0'+s : s}`;
+        if(timeLeft <= 0) evaluateQuiz();
+    }, 1000);
+}
+</script>
+</body>
+</html>
