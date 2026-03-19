@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GK with Sadik - 50 MCQ Special</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 10px; }
+        .quiz-container { max-width: 800px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        
+        #timer-box { position: sticky; top: 10px; z-index: 1000; background: #d32f2f; color: white; padding: 12px; text-align: center; font-size: 22px; font-weight: bold; border-radius: 10px; margin-bottom: 20px; }
+
+        .question-card { border-bottom: 2px solid #eee; padding: 25px 0; position: relative; }
+        .question-card::after {
+            content: "Sadik";
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-20deg);
+            font-size: 80px; color: rgba(211, 47, 47, 0.03); font-weight: 900; pointer-events: none;
+        }
+
+        .question-text { font-size: 18px; font-weight: bold; color: #333; margin-bottom: 15px; }
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .option { padding: 12px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; background: #fafafa; text-align: center; transition: 0.2s; }
+        .option:hover { background: #fff5f5; border-color: #d32f2f; }
+        
+        .selected { background: #ffebee; border-color: #d32f2f; font-weight: bold; }
+        .correct { background: #c8e6c9 !important; border-color: #388e3c !important; }
+        .wrong { background: #ffcdd2 !important; border-color: #d32f2f !important; }
+
+        .submit-btn { width: 100%; padding: 18px; background: #2c3e50; color: white; border: none; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; margin-top: 30px; }
+        #result-display { display: none; text-align: center; padding: 30px; border: 4px solid #d32f2f; border-radius: 15px; margin-bottom: 20px; background: #fff; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container" id="quiz-main">
+    <div id="timer-box">समय शेष: 20:00</div>
+    <div id="result-display"></div>
+    <div id="questions-area"></div>
+    <button class="submit-btn" id="finish-btn" onclick="checkAnswers()">रिजल्ट देखें</button>
+</div>
+
+<script>
+const quizData = [
+    { q: "ध्वनि की गति अधिकतम किसमें होती है?", o: ["वायु", "जल", "इस्पात (Steel)", "निर्वात"], a: 2 },
+    { q: "इंसुलिन का निर्माण शरीर के किस अंग में होता है?", o: ["यकृत", "अग्नाशय", "प्लीहा", "हृदय"], a: 1 },
+    { q: "विटामिन 'A' का सबसे उत्तम स्रोत कौन सा है?", o: ["आंवला", "गाजर", "आलू", "दाल"], a: 1 },
+    { q: "मानव शरीर का सामान्य तापमान कितना होता है?", o: ["310 K", "37°C", "98.6°F", "उपरोक्त सभी"], a: 3 },
+    { q: "लोहे में जंग लगने का मुख्य कारण क्या है?", o: ["हाइड्रोजन", "ऑक्सीजन एवं नमी", "नाइट्रोजन", "नमक"], a: 1 },
+    { q: "पीतल किन दो धातुओं का मिश्रण है?", o: ["तांबा और जस्ता", "तांबा और टिन", "लोहा और जस्ता", "जस्ता और टिन"], a: 0 },
+    { q: "शुष्क बर्फ (Dry Ice) किसे कहा जाता है?", o: ["ठोस ऑक्सीजन", "ठोस नाइट्रोजन", "ठोस कार्बन डाइऑक्साइड", "बर्फ का टुकड़ा"], a: 2 },
+    { q: "पेनिसिलिन की खोज किस वैज्ञानिक ने की थी?", o: ["लुई पाश्चर", "अलेक्जेंडर फ्लेमिंग", "एडवर्ड जेनर", "वाटसन"], a: 1 },
+    { q: "फलों को पकाने के लिए किस गैस का प्रयोग होता है?", o: ["मीथेन", "एथिलीन", "ऑक्सीजन", "ब्यूटेन"], a: 1 },
+    { q: "चेचक के टीके की खोज किसने की थी?", o: ["रॉबर्ट कोच", "एडवर्ड जेनर", "रोनल्ड रॉस", "फ्लेमिंग"], a: 1 },
+    { q: "आनुवंशिकता के नियम का प्रतिपादन किसने किया?", o: ["डार्विन", "मेंडल", "लेमार्क", "अरस्तू"], a: 1 },
+    { q: "रक्त का थक्का जमने में कौन सा विटामिन सहायक है?", o: ["विटामिन A", "विटामिन C", "विटामिन K", "विटामिन E"], a: 2 },
+    { q: "पौधों में क्लोरोफिल बनाने के लिए कौन सा तत्व सहायक है?", o: ["कैल्शियम", "मैग्नीशियम", "पोटैशियम", "फास्फोरस"], a: 1 },
+    { q: "प्रकाश संश्लेषण के दौरान कौन सी गैस निकलती है?", o: ["CO2", "ऑक्सीजन", "नाइट्रोजन", "हाइड्रोजन"], a: 1 },
+    { q: "रक्त का pH मान कितना होता है?", o: ["6.4", "7.0", "7.4", "8.1"], a: 2 },
+    { q: "लाफिंग गैस (Hasya Gas) का रासायनिक नाम क्या है?", o: ["नाइट्रिक ऑक्साइड", "नाइट्रस ऑक्साइड", "नाइट्रोजन", "क्लोरीन"], a: 1 },
+    { q: "विद्युत बल्ब का फिलामेंट किसका बना होता है?", o: ["लोहा", "तांबा", "टंगस्टन", "नाइक्रोम"], a: 2 },
+    { q: "गाजर में कौन सा विटामिन प्रचुर मात्रा में होता है?", o: ["विटामिन A", "विटामिन B", "विटामिन C", "विटामिन D"], a: 0 },
+    { q: "पेंसिल का लेड किसका बना होता है?", o: ["कोयला", "ग्रेफाइट", "जस्ता", "लेड"], a: 1 },
+    { q: "ध्वनि की तीव्रता किसमें मापी जाती है?", o: ["हर्ट्ज़", "डेसिबल", "मीटर", "वाट"], a: 1 },
+    { q: "सफेद स्वर्ण (White Gold) किसे कहा जाता है?", o: ["चांदी", "प्लेटिनम", "पारा", "लिथियम"], a: 1 },
+    { q: "शुद्ध जल का pH मान कितना होता है?", o: ["6", "7", "8", "9"], a: 1 },
+    { q: "रक्त समूह (Blood Group) की खोज किसने की थी?", o: ["लैंडस्टीनर", "वाटसन", "रॉबर्ट ब्राउन", "विल्सन"], a: 0 },
+    { q: "विटामिन C का रासायनिक नाम क्या है?", o: ["रेटिनॉल", "एस्कॉर्बिक एसिड", "थायमिन", "कैल्सीफेरोल"], a: 1 },
+    { q: "इन्द्रधनुष में किस रंग का विक्षेपण अधिक होता है?", o: ["बैंगनी", "लाल", "पीला", "नीला"], a: 1 },
+    { q: "दूध की शुद्धता किससे मापी जाती है?", o: ["हाइग्रोमीटर", "लैक्टोमीटर", "बैरोमीटर", "फैदोमीटर"], a: 1 },
+    { q: "वायुमंडल की आर्द्रता किससे मापी जाती है?", o: ["हाइग्रोमीटर", "हाइड्रोमीटर", "लैक्टोमीटर", "थर्मामीटर"], a: 0 },
+    { q: "जोग जलप्रपात किस नदी पर स्थित है?", o: ["कृष्णा", "शरावती", "नर्मदा", "कावेरी"], a: 1 },
+    { q: "भारत की सबसे लंबी नदी कौन सी है?", o: ["यमुना", "गोदावरी", "गंगा", "सिंधु"], a: 2 },
+    { q: "विश्व जल दिवस कब मनाया जाता है?", o: ["22 मार्च", "22 अप्रैल", "5 जून", "11 जुलाई"], a: 0 },
+    { q: "हीरा और ग्रेफाइट किसके अपरूप हैं?", o: ["लोहा", "तांबा", "कार्बन", "सोना"], a: 2 },
+    { q: "रेबीज के टीके की खोज किसने की थी?", o: ["जेनर", "लुई पाश्चर", "फ्लेमिंग", "कोच"], a: 1 },
+    { q: "सबसे बड़ा जीवित पक्षी कौन सा है?", o: ["मोर", "शुतुरमुर्ग", "बाज", "कीवी"], a: 1 },
+    { q: "प्याज का खाने योग्य भाग कौन सा है?", o: ["तना", "जड़", "फल", "फूल"], a: 0 },
+    { q: "कोशिका का 'पावर हाउस' किसे कहा जाता है?", o: ["राइबोसोम", "लाइसोसोम", "माइटोकॉन्ड्रिया", "केंद्रक"], a: 2 },
+    { q: "तम्बाकू में कौन सा नशीला पदार्थ पाया जाता है?", o: ["कैफीन", "टीनिन", "निकोटीन", "मॉर्फिन"], a: 2 },
+    { q: "गुरुत्वाकर्षण का नियम किसने दिया?", o: ["गैलीलियो", "न्यूटन", "कॉपरनिकस", "एडिसन"], a: 1 },
+    { q: "वायुमंडल में ऑक्सीजन का प्रतिशत कितना है?", o: ["78%", "21%", "0.03%", "1%"], a: 1 },
+    { q: "पृथ्वी का एकमात्र प्राकृतिक उपग्रह कौन सा है?", o: ["शुक्र", "चंद्रमा", "मंगल", "बुध"], a: 1 },
+    { q: "सौर मंडल का सबसे बड़ा ग्रह कौन सा है?", o: ["पृथ्वी", "शनि", "बृहस्पति", "वरुण"], a: 2 },
+    { q: "मनुष्य के शरीर में कुल कितनी हड्डियाँ होती हैं?", o: ["200", "206", "208", "300"], a: 1 },
+    { q: "विटामिन D की कमी से कौन सा रोग होता है?", o: ["स्कर्वी", "रतौंधी", "रिकेट्स", "एनीमिया"], a: 2 },
+    { q: "सूर्य से हमें कौन सा विटामिन मिलता है?", o: ["विटामिन A", "विटामिन B", "विटामिन C", "विटामिन D"], a: 3 },
+    { q: "ध्वनि की चाल हवा में कितनी होती है?", o: ["332 m/s", "1500 m/s", "5000 m/s", "100 m/s"], a: 0 },
+    { q: "गोभी मरुस्थल कहाँ स्थित है?", o: ["भारत", "अफ्रीका", "मंगोलिया", "अमेरिका"], a: 2 },
+    { q: "विश्व जनसंख्या दिवस कब मनाया जाता है?", o: ["1 जुलाई", "11 जुलाई", "21 जुलाई", "5 अगस्त"], a: 1 },
+    { q: "भारी जल (Heavy Water) का सूत्र क्या है?", o: ["H2O", "D2O", "CO2", "NaCl"], a: 1 },
+    { q: "सबसे कठोर पदार्थ कौन सा है?", o: ["लोहा", "हीरा", "तांबा", "प्लेटिनम"], a: 1 },
+    { q: "लैक्टोमीटर का प्रयोग क्या मापने में होता है?", o: ["पानी", "दूध की शुद्धता", "वायु", "तेल"], a: 1 },
+    { q: "लोकसभा का कार्यकाल कितना होता है?", o: ["4 वर्ष", "6 वर्ष", "5 वर्ष", "अनिश्चित"], a: 2 }
+];
+
+const container = document.getElementById('questions-area');
+const userResponses = new Array(quizData.length).fill(null);
+
+function renderQuiz() {
+    quizData.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.innerHTML = `<div class="question-text">${index + 1}. ${item.q}</div>
+            <div class="options-grid" id="group-${index}">
+                ${item.o.map((opt, i) => `<div class="option" onclick="selectOpt(${index}, ${i})">${opt}</div>`).join('')}
+            </div>`;
+        container.appendChild(card);
+    });
+}
+
+function selectOpt(qIdx, oIdx) {
+    userResponses[qIdx] = oIdx;
+    const opts = document.querySelectorAll(`#group-${qIdx} .option`);
+    opts.forEach(o => o.classList.remove('selected'));
+    opts[oIdx].classList.add('selected');
+}
+
+function checkAnswers() {
+    clearInterval(timer);
+    let score = 0;
+    quizData.forEach((item, i) => {
+        const opts = document.querySelectorAll(`#group-${i} .option`);
+        opts[item.a].classList.add('correct');
+        if(userResponses[i] !== null) {
+            if(userResponses[i] === item.a) score++;
+            else opts[userResponses[i]].classList.add('wrong');
+        }
+    });
+    document.getElementById('finish-btn').style.display = 'none';
+    const report = document.getElementById('result-display');
+    report.style.display = 'block';
+    report.innerHTML = `<h2>रिजल्ट: सादिक भाई</h2><h1>${score} / ${quizData.length}</h1>`;
+    window.scrollTo(0,0);
+}
+
+let timeLeft = 1200;
+let timer = setInterval(() => {
+    timeLeft--;
+    let m = Math.floor(timeLeft/60);
+    let s = timeLeft%60;
+    document.getElementById('timer-box').innerText = `समय शेष: ${m}:${s < 10 ? '0'+s : s}`;
+    if(timeLeft <= 0) checkAnswers();
+}, 1000);
+
+renderQuiz();
+</script>
+</body>
+</html>
