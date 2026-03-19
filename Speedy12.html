@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GK with Sadik - Page 44 Special</title>
+    <style>
+        :root { --main-red: #d32f2f; --bg-gray: #f8f9fa; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: var(--bg-gray); margin: 0; padding: 10px; }
+        .quiz-wrapper { max-width: 850px; margin: auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; }
+        
+        /* Welcome Screen */
+        #login-screen { text-align: center; padding: 100px 20px; }
+        .name-box { padding: 18px; width: 85%; font-size: 20px; border: 2px solid #ccc; border-radius: 12px; margin-bottom: 30px; outline: none; transition: 0.3s; }
+        .name-box:focus { border-color: var(--main-red); }
+        .start-btn { padding: 18px 60px; background: var(--main-red); color: white; border: none; border-radius: 12px; font-size: 22px; font-weight: bold; cursor: pointer; }
+
+        /* Timer Header */
+        #timer-header { position: sticky; top: 10px; z-index: 1000; background: var(--main-red); color: white; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; border-radius: 15px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(211,47,47,0.3); }
+
+        .question-block { position: relative; border-bottom: 2px solid #eee; padding: 35px 0; overflow: hidden; }
+        
+        /* Sadik Watermark */
+        .question-block::before {
+            content: "Sadik";
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 100px; color: rgba(211, 47, 47, 0.04); font-weight: 900; pointer-events: none;
+        }
+
+        .q-text { font-size: 20px; font-weight: bold; color: #2c3e50; margin-bottom: 20px; line-height: 1.6; z-index: 5; position: relative; }
+        .opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; z-index: 5; position: relative; }
+        .opt-btn { padding: 15px; border: 2px solid #dee2e6; border-radius: 10px; cursor: pointer; background: #fff; text-align: center; font-size: 17px; transition: 0.2s; }
+        .opt-btn:hover { background: #fff5f5; border-color: var(--main-red); }
+        
+        .active-opt { border-color: var(--main-red); background: #fdf2f2; font-weight: bold; }
+        .is-correct { background: #27ae60 !important; color: white; border-color: #2ecc71 !important; }
+        .is-wrong { background: #e74c3c !important; color: white; border-color: #c0392b !important; }
+
+        .submit-all { width: 100%; padding: 22px; background: #2c3e50; color: white; border: none; border-radius: 15px; font-size: 22px; font-weight: bold; cursor: pointer; margin-top: 40px; }
+        #score-board { display: none; text-align: center; padding: 40px; border: 5px double var(--main-red); border-radius: 20px; background: #fff; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-wrapper" id="login-screen">
+    <h1 style="color: var(--main-red); font-size: 36px;">GK with Sadik</h1>
+    <p style="font-size: 20px; color: #555;">पेज 44: रेलवे सामान्य अध्ययन टेस्ट</p>
+    <input type="text" id="user-display-name" class="name-box" placeholder="अपना नाम लिखें...">
+    <br>
+    <button class="start-btn" onclick="beginQuiz()">टेस्ट शुरू करें</button>
+</div>
+
+<div class="quiz-wrapper" id="test-area" style="display:none;">
+    <div id="timer-header">समय शेष: 20:00</div>
+    <div id="score-board"></div>
+    <div id="questions-list"></div>
+    <button class="submit-all" id="finish-btn" onclick="calculateResult()">रिजल्ट देखें</button>
+</div>
+
+<script>
+let nameInput = "";
+const rawData = [
+    { q: "अग्न्याशय (Pancreas) द्वारा सामान्य कार्य नहीं करने पर कौन सा रोग होता है?", o: ["पीलिया", "मधुमेह (Diabetes)", "हैजा", "एनीमिया"], a: 1 },
+    { q: "इस्लाम धर्म के प्रवर्तक हजरत मोहम्मद साहब का जन्म कब हुआ था?", o: ["570 ई.", "610 ई.", "622 ई.", "632 ई."], a: 0 },
+    { q: "प्रसिद्ध संत शेख सलीम चिश्ती की कब्र कहाँ स्थित है?", o: ["अजमेर", "फतेहपुर सीकरी", "दिल्ली", "आगरा"], a: 1 },
+    { q: "भारत का प्राचीनतम राजवंश कौन सा है?", o: ["गुप्त वंश", "मौर्य वंश", "नन्द वंश", "शुंग वंश"], a: 1 },
+    { q: "तुलसीदास किसके समकालीन थे?", o: ["बाबर", "अकबर", "शाहजहाँ", "औरंगजेब"], a: 1 },
+    { q: "ब्रिटिश प्रधानमंत्री क्लीमेंट एटली के समय भारत ने क्या प्राप्त किया?", o: ["स्वतंत्रता", "गणतंत्र", "संविधान", "आज़ाद हिन्द फ़ौज"], a: 0 },
+    { q: "दिल्ली के लाल किले के अंदर 'मोती मस्जिद' का निर्माण किसने करवाया था?", o: ["अकबर", "शाहजहाँ", "औरंगजेब", "जहाँगीर"], a: 2 },
+    { q: "द्वितीय विश्व युद्ध (1939-45) के समय ब्रिटेन के प्रधानमंत्री कौन थे?", o: ["एटली", "विंस्टन चर्चिल", "चेम्बरलेन", "मैकडोनाल्ड"], a: 1 },
+    { q: "अंतरिक्ष में किसी यान को भेजने वाला प्रथम देश कौन सा था?", o: ["अमेरिका", "चीन", "सोवियत संघ (U.S.S.R)", "फ्रांस"], a: 2 },
+    { q: "ग्लोब पर भारत की स्थिति किन अक्षांशों के बीच है?", o: ["8°4' और 37°6' उत्तरी", "8°4' और 37°6' दक्षिणी", "6°4' और 38°6' उत्तरी", "5°4' और 35°6' उत्तरी"], a: 0 },
+    { q: "भारत में स्वर्ण (Gold) उत्पादन में किस राज्य का एकाधिकार है?", o: ["केरल", "कर्नाटक (कोलार)", "आंध्र प्रदेश", "तमिलनाडु"], a: 1 },
+    { q: "चौरी-चौरा कांड (5 फरवरी, 1922) किस आंदोलन से संबंधित है?", o: ["सविनय अवज्ञा", "असहयोग आंदोलन", "भारत छोड़ो", "चंपारण"], a: 1 },
+    { q: "गोबर गैस प्लांट से मुख्य रूप से कौन सी गैस उत्पन्न होती है?", o: ["ब्यूटेन", "प्रोपेन", "मीथेन", "नाइट्रोजन"], a: 2 },
+    { q: "भारतीय संविधान का अनुच्छेद-370 का संबंध किससे था?", o: ["सिक्किम", "जम्मू तथा कश्मीर", "नगालैंड", "मिजोरम"], a: 1 },
+    { q: "अनुवांशिक सूचनाओं का स्थानांतरण एक पीढ़ी से दूसरी पीढ़ी में किसके द्वारा होता है?", o: ["RNA", "DNA", "प्रोटीन", "एंजाइम"], a: 1 },
+    { q: "अंतर्राष्ट्रीय व्यापार का मुख्य उद्देश्य क्या होता है?", o: ["आयात को बढ़ावा", "निर्यात को प्रोत्साहन", "विदेशी मुद्रा बचाना", "मुद्रास्फीति रोकना"], a: 1 },
+    { q: "गल्फ-स्ट्रीम महासागरीय दबाव किससे उत्पन्न होता है?", o: ["तापमान", "पृथ्वी के घूर्णन", "हवाओं", "लवणता"], a: 1 },
+    { q: "मिश्रित अर्थव्यवस्था (Mixed Economy) का क्या अर्थ है?", o: ["सिर्फ सरकारी क्षेत्र", "सिर्फ निजी क्षेत्र", "सार्वजनिक तथा निजी क्षेत्र का सह-अस्तित्व", "कृषि और उद्योग"], a: 2 },
+    { q: "अश्रु गैस (Tear Gas) का रासायनिक नाम क्या है?", o: ["नाइट्रस ऑक्साइड", "क्लोरो-एसीटोफीनॉन", "मीथेन", "क्लोरीन"], a: 1 },
+    { q: "सत्यमेव जयते किस उपनिषद से लिया गया है?", o: ["कठोपनिषद", "मुण्डकोपनिषद", "ईशोपनिषद", "केन उपनिषद"], a: 1 },
+    { q: "विश्व का सबसे बड़ा हवाई अड्डा कहाँ स्थित है?", o: ["न्यूयॉर्क", "जेद्दा (सऊदी अरब)", "लंदन", "दुबई"], a: 1 },
+    { q: "विश्व की प्रथम महिला प्रधानमंत्री कौन थीं?", o: ["बेनजीर भुट्टो", "श्रीमती सिरिमावो भंडारनायके", "इंदिरा गांधी", "मार्गरेट थैचर"], a: 1 },
+    { q: "उत्तरी ध्रुव पर पहुँचने वाला प्रथम व्यक्ति कौन था?", o: ["अमुंडसेन", "रॉबर्ट पियरी", "कैप्टन कुक", "कोलंबस"], a: 1 },
+    { q: "अंटार्कटिका पर पहुँचने वाली प्रथम महिला कौन थी?", o: ["कैरोलिन मिकेल सेन", "मिस फ्रान फिप्स", "जुनको तेबई", "मैडम क्यूरी"], a: 0 },
+    { q: "संविधान निर्माण करने वाला विश्व का प्रथम देश कौन सा है?", o: ["भारत", "ब्रिटेन", "अमेरिका", "रूस"], a: 2 },
+    { q: "कागजी मुद्रा (Paper Money) जारी करने वाला विश्व का प्रथम देश?", o: ["भारत", "जापान", "चीन", "अमेरिका"], a: 2 },
+    { q: "शिक्षा को अनिवार्य करने वाला विश्व का प्रथम देश कौन सा है?", o: ["प्रशा (Prussia)", "ब्रिटेन", "अमेरिका", "भारत"], a: 0 },
+    { q: "इंसुलिन शर्कराओं के उपापचय (Metabolism) को कौन नियंत्रित करता है?", o: ["यकृत", "इंसुलिन", "थायरॉयड", "अग्न्याशय"], a: 1 },
+    { q: "सूर्य के प्रकाश से कौन सा विटामिन प्राप्त होता है?", o: ["विटामिन A", "विटामिन B", "विटामिन C", "विटामिन D"], a: 3 },
+    { q: "विजयनगर साम्राज्य का निर्माण 1336 ई. में किसने किया था?", o: ["कृष्णदेव राय", "हरिहर एवं बुक्का", "शिवाजी", "राजेंद्र चोल"], a: 1 },
+    { q: "हाई अल्टीट्यूड रिसर्च लेबोरेटरी कहाँ स्थित है?", o: ["शिमला", "गुलमर्ग", "देहरादून", "नैनीताल"], a: 1 },
+    { q: "शताब्दी एक्सप्रेस का संबंध किस व्यक्ति की जन्म जयंती से है?", o: ["गांधी जी", "जवाहर लाल नेहरू", "सुभाष चंद्र बोस", "तिलक"], a: 1 },
+    { q: "मोती मस्जिद (आगरा) का निर्माण किसने करवाया था?", o: ["अकबर", "शाहजहाँ", "औरंगजेब", "जहाँगीर"], a: 1 },
+    { q: "लोहा का सांकेतिक रूप (Symbol) क्या है?", o: ["Au", "Ag", "Fe", "Cu"], a: 2 },
+    { q: "चूना पत्थर का रूपांतरित चट्टान कौन सा है?", o: ["स्लेट", "संगमरमर", "ग्रेनाइट", "नीस"], a: 1 },
+    { q: "सिंधु घाटी के लोग किस वृक्ष की पूजा करते थे?", o: ["बरगद", "पीपल", "नीम", "आम"], a: 1 },
+    { q: "भारत का सबसे लम्बा राजमार्ग कौन सा है?", o: ["NH-1", "NH-7 (अब NH-44)", "NH-2", "NH-8"], a: 1 },
+    { q: "भारत का प्राचीनतम तेल शोधक कारखाना कहाँ है?", o: ["जामनगर", "डिग्बोई (असम)", "हल्दिया", "मथुरा"], a: 1 },
+    { q: "RAM का पूरा नाम (Full Form) क्या है?", o: ["Read Access Memory", "Random Access Memory", "Real Access Memory", "Rapid Access Memory"], a: 1 },
+    { q: "डायलिसिस का प्रयोग किस अंग के उपचार के लिए होता है?", o: ["हृदय", "गुर्दा (Kidney)", "फेफड़ा", "यकृत"], a: 1 },
+    { q: "विश्व में सर्वाधिक बोली जाने वाली भाषा कौन सी है?", o: ["अंग्रेजी", "चीनी (मंदारिन)", "हिंदी", "स्पेनिश"], a: 1 },
+    { q: "अस्थियों (Bones) का अध्ययन क्या कहलाता है?", o: ["मायोलॉजी", "ऑस्टियोलॉजी", "हिस्टोलॉजी", "साइटोलॉजी"], a: 1 },
+    { q: "हीरा किसका शुद्धतम रूप है?", o: ["सल्फर", "फास्फोरस", "कार्बन", "नाइट्रोजन"], a: 2 },
+    { q: "भारत में डाक टिकट किसके समय शुरू किए गए थे?", o: ["लॉर्ड डलहौजी", "लॉर्ड कर्जन", "लॉर्ड रिपन", "लॉर्ड माउंटबेटन"], a: 0 },
+    { q: "विश्व हेरिटेज डे (World Heritage Day) कब मनाया जाता है?", o: ["7 अप्रैल", "18 अप्रैल", "5 जून", "1 दिसंबर"], a: 1 },
+    { q: "कोलकाता में उच्च न्यायालय की स्थापना किस वर्ष हुई थी?", o: ["1850", "1862", "1875", "1901"], a: 1 },
+    { q: "रवीन्द्रनाथ टैगोर को साहित्य के लिए नोबेल पुरस्कार कब मिला?", o: ["1910", "1913", "1915", "1920"], a: 1 },
+    { q: "इंसुलिन की कमी से कौन सा रोग होता है?", o: ["एनीमिया", "मधुमेह", "घेघा", "रिकेट्स"], a: 1 },
+    { q: "भगवान बुद्ध ने अपना पहला उपदेश कहाँ दिया था?", o: ["बोधगया", "सारनाथ", "कुशीनगर", "लुम्बिनी"], a: 1 },
+    { q: "चाँद बीबी कहाँ की शासिका थीं?", o: ["बीजापुर", "अहमदनगर", "गोलकुंडा", "मैसूर"], a: 1 }
+];
+
+const list = document.getElementById('questions-list');
+const tracker = new Array(rawData.length).fill(null);
+
+function beginQuiz() {
+    nameInput = document.getElementById('user-display-name').value;
+    if(!nameInput.trim()) { alert("सादिक भाई, नाम लिखना तो बनता है!"); return; }
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('test-area').style.display = 'block';
+    renderTasks();
+    timerStart();
+}
+
+function renderTasks() {
+    rawData.forEach((task, i) => {
+        const card = document.createElement('div');
+        card.className = 'question-block';
+        card.innerHTML = `<div class="q-text">${i + 1}. ${task.q}</div>
+            <div class="opt-grid" id="opt-row-${i}">
+                ${task.o.map((val, idx) => `<div class="opt-btn" onclick="selectMe(${i}, ${idx})">${val}</div>`).join('')}
+            </div>`;
+        list.appendChild(card);
+    });
+}
+
+function selectMe(qi, oi) {
+    tracker[qi] = oi;
+    const allBtns = document.querySelectorAll(`#opt-row-${qi} .opt-btn`);
+    allBtns.forEach(b => b.classList.remove('active-opt'));
+    allBtns[oi].classList.add('active-opt');
+}
+
+function calculateResult() {
+    clearInterval(timerPtr);
+    let finalScore = 0;
+    rawData.forEach((task, i) => {
+        const btns = document.querySelectorAll(`#opt-row-${i} .opt-btn`);
+        btns[task.a].classList.add('is-correct');
+        if(tracker[i] !== null) {
+            if(tracker[i] === task.a) finalScore++;
+            else btns[tracker[i]].classList.add('is-wrong');
+        }
+    });
+    document.getElementById('finish-btn').style.display = 'none';
+    const board = document.getElementById('score-board');
+    board.style.display = 'block';
+    board.innerHTML = `<h2 style="color:var(--main-red);">बहुत खूब ${nameInput}!</h2><h1 style="font-size:60px; margin:10px 0;">${finalScore} / 50</h1><p>पेज 44 का रिवीजन सफलतापूर्वक पूरा हुआ!</p>`;
+    window.scrollTo(0,0);
+}
+
+let seconds = 1200;
+let timerPtr;
+function timerStart() {
+    timerPtr = setInterval(() => {
+        seconds--;
+        let m = Math.floor(seconds/60);
+        let s = seconds%60;
+        document.getElementById('timer-header').innerText = `समय शेष: ${m}:${s < 10 ? '0'+s : s}`;
+        if(seconds <= 0) calculateResult();
+    }, 1000);
+}
+</script>
+</body>
+</html>
+
