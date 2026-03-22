@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GK with Sadik - Page 45</title>
+    <style>
+        :root { --brand-red: #e53935; --slate-blue: #34495e; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 10px; }
+        .main-container { max-width: 850px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); position: relative; }
+        
+        /* Welcome/Name Entry */
+        #entry-page { text-align: center; padding: 100px 20px; }
+        .name-field { padding: 18px; width: 85%; font-size: 20px; border: 2px solid #ddd; border-radius: 10px; margin-bottom: 25px; outline: none; }
+        .name-field:focus { border-color: var(--brand-red); }
+        .btn-go { padding: 18px 55px; background: var(--brand-red); color: white; border: none; border-radius: 10px; font-size: 22px; font-weight: bold; cursor: pointer; }
+
+        /* Timer Header */
+        #test-timer { position: sticky; top: 8px; z-index: 999; background: var(--brand-red); color: white; padding: 12px; text-align: center; font-size: 24px; font-weight: bold; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+
+        .q-wrap { position: relative; border-bottom: 1px solid #eee; padding: 30px 0; overflow: hidden; }
+        
+        /* Sadik Watermark Logic */
+        .q-wrap::before {
+            content: "Sadik";
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 110px; color: rgba(229, 57, 53, 0.04); font-weight: 900; pointer-events: none;
+        }
+
+        .q-head { font-size: 20px; font-weight: bold; color: var(--slate-blue); margin-bottom: 18px; position: relative; z-index: 2; }
+        .opt-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; position: relative; z-index: 2; }
+        .opt-box { padding: 14px; border: 2px solid #e0e0e0; border-radius: 10px; cursor: pointer; background: #fff; text-align: center; font-size: 17px; transition: 0.2s; }
+        .opt-box:hover { background: #fff1f1; border-color: var(--brand-red); }
+        
+        .marked { border-color: var(--brand-red); background: #fff5f5; font-weight: bold; }
+        .right-ans { background: #2ecc71 !important; color: white; border-color: #27ae60 !important; }
+        .wrong-ans { background: #e74c3c !important; color: white; border-color: #c0392b !important; }
+
+        .btn-check { width: 100%; padding: 22px; background: var(--slate-blue); color: white; border: none; border-radius: 12px; font-size: 22px; font-weight: bold; cursor: pointer; margin-top: 35px; }
+        #final-score-card { display: none; text-align: center; padding: 35px; border: 6px double var(--brand-red); border-radius: 15px; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+
+<div class="main-container" id="entry-page">
+    <h1 style="color: var(--brand-red); font-size: 34px;">GK with Sadik</h1>
+    <p style="font-size: 20px; color: #555;">पेज 45: भारतीय पुस्तकें एवं रेलवे बोर्ड टेस्ट</p>
+    <input type="text" id="user-name" class="name-field" placeholder="अपना नाम दर्ज करें...">
+    <br>
+    <button class="btn-go" onclick="launchTest()">टेस्ट शुरू करें</button>
+</div>
+
+<div class="main-container" id="test-page" style="display:none;">
+    <div id="test-timer">समय शेष: 20:00</div>
+    <div id="final-score-card"></div>
+    <div id="quiz-stack"></div>
+    <button class="btn-check" id="submit-btn" onclick="showResults()">रिजल्ट देखें</button>
+</div>
+
+<script>
+let studentName = "";
+const page45Data = [
+    { q: "पौधों में 'श्वसन' का कार्य कौन सा अंग करता है?", o: ["तनाव", "जड़", "पत्ती", "फूल"], a: 2 },
+    { q: "गांधी जी ने 'डांडी अभियान' कब शुरू किया था?", o: ["12 मार्च 1930", "15 अगस्त 1930", "26 जनवरी 1931", "12 मार्च 1932"], a: 0 },
+    { q: "अजंता चित्रण का संबंध किस काल से है?", o: ["मौर्य काल", "गुप्तकाल", "मुगल काल", "कुषाण काल"], a: 1 },
+    { q: "शुद्ध सोना कितने कैरेट का होता है?", o: ["22 कैरेट", "24 कैरेट", "18 कैरेट", "20 कैरेट"], a: 1 },
+    { q: "अर्थशास्त्र पुस्तक के लेखक कौन हैं?", o: ["पाणिनी", "कौटिल्य", "मेगास्थनीज", "कालिदास"], a: 1 },
+    { q: "अष्टाध्यायी के रचनाकार कौन हैं?", o: ["कौटिल्य", "पाणिनी", "विशाखदत्त", "कल्हण"], a: 1 },
+    { q: "इंडिका पुस्तक किसने लिखी थी?", o: ["फाल्गुन", "मेगास्थनीज", "इत्सिंग", "ह्वेनसांग"], a: 1 },
+    { q: "मुद्राराक्षस के लेखक कौन हैं?", o: ["विशाखदत्त", "बाणभट्ट", "कालिदास", "जयदेव"], a: 0 },
+    { q: "राजतरंगिणी पुस्तक के लेखक कौन हैं?", o: ["बाणभट्ट", "कल्हण", "विष्णु शर्मा", "कौटिल्य"], a: 1 },
+    { q: "पंचतंत्र के रचनाकार कौन हैं?", o: ["कालिदास", "विष्णु शर्मा", "जयदेव", "भवभूति"], a: 1 },
+    { q: "गीत गोविन्द के लेखक कौन हैं?", o: ["चंदवरदाई", "जयदेव", "अमीर खुसरो", "कबीर"], a: 1 },
+    { q: "पृथ्वीराज रासो की रचना किसने की?", o: ["जयदेव", "चंदवरदाई", "कल्हण", "पाणिनी"], a: 1 },
+    { q: "शाहनामा के लेखक कौन हैं?", o: ["अबुल फजल", "फिरदौसी", "गुलबदन बेगम", "बाबर"], a: 1 },
+    { q: "आईने-ए-अकबरी के रचयिता कौन हैं?", o: ["बाबर", "अबुल फजल", "अमीर खुसरो", "बीतबल"], a: 1 },
+    { q: "बाबरनामा किसने लिखी थी?", o: ["बाबर", "गुलबदन बेगम", "अबुल फजल", "जहाँगीर"], a: 0 },
+    { q: "हुमायूँनामा की लेखिका कौन हैं?", o: ["नूरजहाँ", "गुलबदन बेगम", "मुमताज", "आरा बेगम"], a: 1 },
+    { q: "बुद्धचरितम् के लेखक कौन हैं?", o: ["अश्वघोष", "नागार्जुन", "बाणभट्ट", "कौटिल्य"], a: 0 },
+    { q: "विनय पत्रिका के रचयिता कौन हैं?", o: ["सूरदास", "गोस्वामी तुलसीदास", "कबीरदास", "रहीम"], a: 1 },
+    { q: "भारत-भारती और साकेत किसकी रचनाएँ हैं?", o: ["जयशंकर प्रसाद", "मैथिलीशरण गुप्त", "निराला", "पंत"], a: 1 },
+    { q: "यामा पुस्तक की लेखिका कौन हैं?", o: ["सुभद्रा कुमारी चौहान", "महादेवी वर्मा", "अमृता प्रीतम", "सरोजिनी नायडू"], a: 1 },
+    { q: "वन्दे मातरम् के रचयिता कौन हैं?", o: ["टैगोर", "बंकिमचंद्र चटर्जी", "प्रसाद", "आजाद"], a: 1 },
+    { q: "यंग इंडिया और माई एक्सपेरिमेंट विद ट्रुथ के लेखक?", o: ["नेहरू जी", "महात्मा गाँधी", "पटेल", "आजाद"], a: 1 },
+    { q: "भारत एक खोज (Discovery of India) के लेखक?", o: ["गाँधी जी", "जवाहर लाल नेहरू", "अटल जी", "पटेल"], a: 1 },
+    { q: "इग्नाइटेड माइंड्स और विंग्स ऑफ फायर के लेखक?", o: ["डॉ. कलाम", "अटल जी", "प्रसाद", "राधाकृष्णन"], a: 0 },
+    { q: "गोदान, गबन और कर्मभूमि के रचनाकार?", o: ["प्रसाद", "मुंशी प्रेमचन्द", "पंत", "दिनकर"], a: 1 },
+    { q: "ट्रेन टू पाकिस्तान के लेखक कौन हैं?", o: ["शोभा डे", "खुशवंत सिंह", "विक्रम सेठ", "नीरज चौधरी"], a: 1 },
+    { q: "इंसुलिन किसके द्वारा स्रावित (Secreted) होता है?", o: ["यकृत", "पैंक्रियाज (अग्नाशय)", "पीयूष", "थायरॉयड"], a: 1 },
+    { q: "भगत सिंह को फाँसी कब दी गई थी?", o: ["23 मार्च 1930", "23 मार्च 1931", "15 अगस्त 1947", "13 अप्रैल 1919"], a: 1 },
+    { q: "उत्तराखंड राज्य की राजधानी कहाँ है?", o: ["नैनीताल", "देहरादून", "मसूरी", "हरिद्वार"], a: 1 },
+    { q: "प्रेशर कुकर में खाना जल्दी क्यों पकता है?", o: ["तापमान कम होना", "क्वथनांक अधिक होना", "दबाव कम होना", "भाप बाहर निकलना"], a: 1 },
+    { q: "ज्ञानपीठ पुरस्कार पाने वाली प्रथम महिला साहित्यकार?", o: ["महादेवी वर्मा", "आशापूर्णा देवी", "अमृता प्रीतम", "सरोजिनी नायडू"], a: 1 },
+    { q: "भारत में 'काली मिट्टी' (रेगुर) का क्षेत्र कहाँ तक सीमित है?", o: ["उत्तर भारत", "मध्य भारत", "दक्षिण भारत", "पूर्वी भारत"], a: 1 },
+    { q: "भारत की सूचना प्रौद्योगिकी की राजधानी किसे कहा जाता है?", o: ["मुंबई", "बंगलूरू", "हैदराबाद", "चेन्नई"], a: 1 },
+    { q: "हम्पी के खण्डहर किस राज्य में स्थित हैं?", o: ["केरल", "कर्नाटक", "आंध्र प्रदेश", "तमिलनाडु"], a: 1 },
+    { q: "अंतिम मुगल सम्राट कौन था?", o: ["अकबर II", "बहादुर शाह जफर द्वितीय", "शाह आलम", "औरंगजेब"], a: 1 },
+    { q: "मांसपेशियों में थकान किस एसिड के जमाव के कारण होती है?", o: ["साइट्रिक एसिड", "लैक्टिक एसिड", "फॉर्मिक एसिड", "एसिटिक एसिड"], a: 1 },
+    { q: "जी.टी. रोड (GT Road) का निर्माण किसने किया था?", o: ["अकबर", "शेरशाह सूरी", "शाहजहाँ", "अलाउद्दीन"], a: 1 },
+    { q: "अल्माटी बाँध किस नदी पर बना है?", o: ["कावेरी", "कृष्णा नदी", "नर्मदा", "गोदावरी"], a: 1 },
+    { q: "वायुमण्डल की सबसे निचली परत कौन सी है?", o: ["समताप मण्डल", "क्षोभ-मण्डल (Troposphere)", "आयन मण्डल", "बाह्य मण्डल"], a: 1 },
+    { q: "विटामिन A का सबसे अच्छा स्रोत क्या है?", o: ["आंवला", "गाजर", "दूध", "अंडा"], a: 1 },
+    { q: "केरल में इडुक्की परियोजना किस नदी पर है?", o: ["कावेरी", "पेरियार नदी", "भरतपुझा", "पम्पा"], a: 1 },
+    { q: "पीली क्रांति (Yellow Revolution) का संबंध किससे है?", o: ["दूध", "खाद्य तेल (तिलहन)", "मछली", "अंडा"], a: 1 },
+    { q: "तमिलनाडु की नकद कमाई वाली मुख्य फसल कौन सी है?", o: ["चाय", "रूँई (कपास)", "मसाले", "कॉफी"], a: 1 },
+    { q: "सांची स्तूप (म.प्र.) का निर्माता कौन था?", o: ["बिंबिसार", "अशोक", "चंद्रगुप्त", "अजातशत्रु"], a: 1 },
+    { q: "प्लासी युद्ध (1757) जीतकर किसने अंग्रेजी साम्राज्य की नींव रखी?", o: ["हेस्टिंग्स", "क्लाइव", "डलहौजी", "कर्जन"], a: 1 },
+    { q: "नीलगिरी की सर्वोच्च चोटी का नाम क्या है?", o: ["अनाईमुडी", "दोदाबेट्टा", "गुरु शिखर", "महेंद्रगिरि"], a: 1 },
+    { q: "मुगल शासक अकबर ने राजस्व प्राप्ति के लिए कौन सी प्रणाली शुरू की?", o: ["मनसबदारी", "जब्ती-प्रणाली", "चौथ", "दहसाला"], a: 1 },
+    { q: "सिंधुघाटी सभ्यता का पतन नगर (बंदरगाह) कौन सा था?", o: ["कालीबंगा", "लोथल", "रोपड़", "हड़प्पा"], a: 1 },
+    { q: "अभिज्ञानशकुंतलम् के लेखक कौन हैं?", o: ["बाणभट्ट", "कालिदास", "भवभूति", "विशाखदत्त"], a: 1 },
+    { q: "मेघदूत और कुमारसंभवम् किसकी रचनाएँ हैं?", o: ["तुलसीदास", "कालिदास", "सूरदास", "पंत"], a: 1 }
+];
+
+const quizStack = document.getElementById('quiz-stack');
+const responses = new Array(page45Data.length).fill(null);
+
+function launchTest() {
+    studentName = document.getElementById('user-name').value;
+    if(!studentName.trim()) { alert("सादिक भाई, नाम लिखना तो अनिवार्य है!"); return; }
+    document.getElementById('entry-page').style.display = 'none';
+    document.getElementById('test-page').style.display = 'block';
+    loadQuestions();
+    ticker();
+}
+
+function loadQuestions() {
+    page45Data.forEach((item, i) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'q-wrap';
+        wrap.innerHTML = `<div class="q-head">${i + 1}. ${item.q}</div>
+            <div class="opt-list" id="group-${i}">
+                ${item.o.map((val, idx) => `<div class="opt-box" onclick="logAns(${i}, ${idx})">${val}</div>`).join('')}
+            </div>`;
+        quizStack.appendChild(wrap);
+    });
+}
+
+function logAns(qi, oi) {
+    responses[qi] = oi;
+    const targets = document.querySelectorAll(`#group-${qi} .opt-box`);
+    targets.forEach(t => t.classList.remove('marked'));
+    targets[oi].classList.add('marked');
+}
+
+function showResults() {
+    clearInterval(timerId);
+    let points = 0;
+    page45Data.forEach((item, i) => {
+        const targets = document.querySelectorAll(`#group-${i} .opt-box`);
+        targets[item.a].classList.add('right-ans');
+        if(responses[i] !== null) {
+            if(responses[i] === item.a) points++;
+            else targets[responses[i]].classList.add('wrong-ans');
+        }
+    });
+    document.getElementById('submit-btn').style.display = 'none';
+    const card = document.getElementById('final-score-card');
+    card.style.display = 'block';
+    card.innerHTML = `<h2 style="color:var(--brand-red);">शाबाश ${studentName}!</h2><h1 style="font-size:60px; margin:15px 0;">${points} / 50</h1><p>पेज 45 का टेस्ट सफलतापूर्वक पूरा हुआ!</p>`;
+    window.scrollTo(0,0);
+}
+
+let countdown = 1200;
+let timerId;
+function ticker() {
+    timerId = setInterval(() => {
+        countdown--;
+        let mm = Math.floor(countdown/60);
+        let ss = countdown%60;
+        document.getElementById('test-timer').innerText = `समय शेष: ${mm}:${ss < 10 ? '0'+ss : ss}`;
+        if(countdown <= 0) showResults();
+    }, 1000);
+}
+</script>
+</body>
+</html>
+
