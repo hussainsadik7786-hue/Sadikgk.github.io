@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GK with Sadik - Constitution Special</title>
+    <style>
+        :root { --primary-red: #b71c1c; --accent-blue: #1a237e; --light-bg: #fdfdfd; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f0f0; margin: 0; padding: 10px; }
+        .quiz-container { max-width: 800px; margin: 20px auto; background: var(--light-bg); padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-top: 8px solid var(--primary-red); }
+        
+        /* Entrance View */
+        #user-auth { text-align: center; padding: 60px 20px; }
+        .input-user { width: 80%; padding: 15px; font-size: 18px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 25px; text-align: center; }
+        .btn-start { background: var(--primary-red); color: white; padding: 15px 45px; border: none; border-radius: 8px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-start:hover { transform: scale(1.05); background: #d32f2f; }
+
+        /* Timer UI */
+        #quiz-timer { position: sticky; top: 10px; z-index: 100; background: var(--primary-red); color: white; padding: 12px; text-align: center; font-size: 22px; font-weight: bold; border-radius: 8px; margin-bottom: 25px; }
+
+        /* Question Layout */
+        .q-item { position: relative; padding: 25px 0; border-bottom: 1px solid #eee; overflow: hidden; }
+        .q-item::after {
+            content: "Sadik";
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-25deg);
+            font-size: 80px; color: rgba(183, 28, 28, 0.03); font-weight: 900; pointer-events: none;
+        }
+        .q-title { font-size: 19px; font-weight: bold; color: var(--accent-blue); margin-bottom: 15px; position: relative; z-index: 2; }
+        .opt-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; position: relative; z-index: 2; }
+        .opt-btn { padding: 12px; border: 1.5px solid #ccc; border-radius: 6px; background: white; cursor: pointer; text-align: left; font-size: 16px; transition: 0.2s; }
+        .opt-btn:hover { background: #fff8f8; border-color: var(--primary-red); }
+        
+        .selected { background: #ffebee; border-color: var(--primary-red); font-weight: bold; }
+        .is-correct { background: #4caf50 !important; color: white; border-color: #388e3c !important; }
+        .is-wrong { background: #f44336 !important; color: white; border-color: #d32f2f !important; }
+
+        .btn-finish { width: 100%; padding: 18px; background: var(--accent-blue); color: white; border: none; border-radius: 8px; font-size: 20px; font-weight: bold; cursor: pointer; margin-top: 30px; }
+        #results-area { display: none; text-align: center; border: 4px solid var(--primary-red); border-radius: 10px; padding: 25px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container" id="user-auth">
+    <h1 style="color: var(--primary-red);">GK with Sadik</h1>
+    <h3>भारत का संवैधानिक इतिहास (Page 38-42 Revision)</h3>
+    <input type="text" id="player-name" class="input-user" placeholder="अपना नाम यहाँ लिखें...">
+    <br>
+    <button class="btn-start" onclick="initiateQuiz()">टेस्ट शुरू करें</button>
+</div>
+
+<div class="quiz-container" id="quiz-main" style="display:none;">
+    <div id="quiz-timer">समय: 20:00</div>
+    <div id="results-area"></div>
+    <div id="questions-pool"></div>
+    <button class="btn-finish" id="submit-quiz" onclick="processResults()">रिजल्ट देखें</button>
+</div>
+
+<script>
+let nameOfUser = "";
+const bank = [
+    { q: "किस एक्ट के तहत बंगाल के गवर्नर को 'गवर्नर-जनरल' का नाम दिया गया?", o: ["पिट्स इण्डिया एक्ट", "रेगुलेटिंग एक्ट (1773)", "1813 चार्टर एक्ट", "1833 का अधिनियम"], a: 1 },
+    { q: "प्रथम गवर्नर-जनरल कौन थे जिन्हें बंगाल के कार्यों की मान्यता मिली?", o: ["लॉर्ड कर्जन", "लॉर्ड वारेन हेस्टिंग्स", "लॉर्ड डलहौजी", "लॉर्ड रिपन"], a: 1 },
+    { q: "कलकत्ता में सुप्रीम कोर्ट (1774) की स्थापना किस एक्ट के तहत हुई?", o: ["1781 एक्ट", "1773 रेगुलेटिंग एक्ट", "1784 पिट्स इण्डिया", "1793 चार्टर"], a: 1 },
+    { q: "सुप्रीम कोर्ट (1774) के प्रथम मुख्य न्यायाधीश कौन थे?", o: ["सर एलिजा इम्पे", "चेम्बर्स", "लिमेस्टर", "हाइड"], a: 0 },
+    { q: "किस एक्ट को 'बंगाल जुडीकेचर एक्ट' या 'संशोधनात्मक अधिनियम' कहा जाता है?", o: ["1773 एक्ट", "एक्ट ऑफ सेटलमेंट (1781)", "1784 एक्ट", "1813 एक्ट"], a: 1 },
+    { q: "पिट्स इण्डिया एक्ट कब पारित हुआ था?", o: ["1773", "1784", "1793", "1813"], a: 1 },
+    { q: "किस अधिनियम के द्वारा कंपनी के व्यापारिक एकाधिकार को 20 वर्षों के लिए बढ़ाया गया?", o: ["1784 एक्ट", "1793 का चार्टर एक्ट", "1813 एक्ट", "1853 एक्ट"], a: 1 },
+    { q: "कंपनी का भारत के साथ व्यापार करने का एकाधिकार किस वर्ष समाप्त कर दिया गया?", o: ["1833", "1813 का चार्टर अधिनियम", "1853", "1858"], a: 1 },
+    { q: "भारत में अंग्रेजी शिक्षा की नींव किस चार्टर एक्ट के दौरान पड़ी?", o: ["1793", "1813", "1833", "1853"], a: 1 },
+    { q: "किस अधिनियम के तहत 'बंगाल के गवर्नर जनरल' को 'भारत का गवर्नर जनरल' बना दिया गया?", o: ["1813 एक्ट", "1833 का अधिनियम", "1853 एक्ट", "1858 एक्ट"], a: 1 },
+    { q: "भारत के प्रथम गवर्नर जनरल कौन थे?", o: ["लॉर्ड केनिंग", "लॉर्ड विलियम बैंटिक", "लॉर्ड डलहौजी", "लॉर्ड माउंटबेटन"], a: 1 },
+    { q: "सिविल सेवकों की भर्ती हेतु खुली प्रतियोगिता परीक्षा का शुभारंभ कब हुआ?", o: ["1833", "1853 का चार्टर अधिनियम", "1858", "1861"], a: 1 },
+    { q: "किस अधिनियम के द्वारा कंपनी का शासन समाप्त कर ब्रिटिश क्राउन के अधीन कर दिया गया?", o: ["1853 अधिनियम", "1858 का भारत शासन अधिनियम", "1861 अधिनियम", "1892 अधिनियम"], a: 1 },
+    { q: "भारत का प्रथम वायसराय कौन था?", o: ["लॉर्ड माउंटबेटन", "लॉर्ड केनिंग", "लॉर्ड बैंटिक", "लॉर्ड लिटन"], a: 1 },
+    { q: "पोर्टफोलियो (विभागीय प्रणाली) का जनक किसे माना जाता है?", o: ["लॉर्ड डलहौजी", "लॉर्ड केनिंग (1861)", "लॉर्ड रिपन", "लॉर्ड कर्जन"], a: 1 },
+    { q: "ईस्ट इण्डिया कम्पनी (E.I.C) को औपचारिक रूप से कब भंग किया गया?", o: ["1858", "1 जनवरी, 1874", "1885", "1909"], a: 1 },
+    { q: "महारानी विक्टोरिया को भारत की 'साम्राज्ञी' (Empress) कब घोषित किया गया?", o: ["1858", "28 अप्रैल, 1876", "1885", "1901"], a: 1 },
+    { q: "अप्रत्यक्ष चुनाव प्रणाली की शुरुआत किस अधिनियम से हुई थी?", o: ["1861", "1892 का भारत परिषद अधिनियम", "1909", "1919"], a: 1 },
+    { q: "मार्ले-मिंटो सुधार (1909) का मुख्य उद्देश्य क्या था?", o: ["सती प्रथा अंत", "सांप्रदायिक प्रतिनिधित्व (फूट डालो और राज करो)", "स्वराज्य", "शिक्षा"], a: 1 },
+    { q: "वायसराय की कार्यकारिणी परिषद में नियुक्त होने वाले प्रथम भारतीय कौन थे?", o: ["सत्येन्द्र प्रसाद सिन्हा", "के.सी. गुप्ता", "सैय्यद हुसैन बिलग्रामी", "दादा भाई नौरोजी"], a: 0 },
+    { q: "मोंटेग्यू-चेम्सफोर्ड सुधार अधिनियम कब आया था?", o: ["1909", "1919", "1935", "1947"], a: 1 },
+    { q: "केंद्र में द्विसदनात्मक विधायिका (राज्य परिषद और केंद्रीय विधानसभा) की स्थापना कब हुई?", o: ["1909 अधिनियम", "1919 अधिनियम", "1892 अधिनियम", "1935 अधिनियम"], a: 1 },
+    { q: "द्वैध-शासन प्रणाली (Dyarchy) का जन्मदाता किसे कहा जाता है?", o: ["लॉर्ड चेम्सफोर्ड", "लियोनेल कर्टिस", "मोंटेग्यू", "क्लाइव"], a: 1 },
+    { q: "लोक सेवा आयोग के गठन का प्रावधान किस अधिनियम में था?", o: ["1909", "1919", "1853", "1935"], a: 1 },
+    { q: "भारत में महिलाओं को वोट देने का अधिकार पहली बार कब मिला?", o: ["1909", "1919", "1935", "1950"], a: 1 },
+    { q: "ब्रिटेन में महिलाओं को वोट देने का अधिकार कब प्राप्त हुआ?", o: ["1920", "1928", "1919", "1947"], a: 1 },
+    { q: "अमेरिका में महिलाओं को वोट देने का अधिकार कब मिला?", o: ["1919", "1920", "1928", "1945"], a: 1 },
+    { q: "प्रांतीय विषयों को कितने भागों में बाँटा गया था?", o: ["1", "2 (हस्तांतरित और आरक्षित)", "3", "4"], a: 1 },
+    { q: "अप्रत्यक्ष चुनाव प्रणाली का प्रारंभ किस अधिनियम की विशेषता थी?", o: ["1861", "1892", "1909", "1919"], a: 1 },
+    { q: "सांप्रदायिक निर्वाचन के जनक के रूप में किसे जाना जाता है?", o: ["लॉर्ड कर्जन", "लॉर्ड मिंटो", "मोंटेग्यू", "चेम्सफोर्ड"], a: 1 },
+    { q: "1833 के अधिनियम के समय भारत में किस प्रथा को 'अवैध' घोषित किया गया?", o: ["सती प्रथा", "दासता का उन्मूलन", "बाल विवाह", "ठगी प्रथा"], a: 1 },
+    { q: "किस चार्टर अधिनियम के तहत पहली बार विधान परिषद (12 सदस्य) की स्थापना हुई?", o: ["1813", "1853", "1833", "1858"], a: 1 },
+    { q: "वायसराय को 'अध्यादेश' जारी करने की शक्ति किस अधिनियम ने दी?", o: ["1858", "1861 का अधिनियम", "1892", "1909"], a: 1 },
+    { q: "कलकत्ता में उच्च न्यायालय की स्थापना किस वर्ष हुई थी?", o: ["1774", "1862", "1853", "1885"], a: 1 },
+    { q: "भारतीय संविधान का सबसे बड़ा स्रोत कौन सा माना जाता है?", o: ["1919 अधिनियम", "1935 अधिनियम", "ब्रिटेन संविधान", "अमेरिकी संविधान"], a: 1 },
+    { q: "इलाहाबाद विश्वविद्यालय की स्थापना किस वर्ष हुई थी?", o: ["1880", "1887", "1862", "1901"], a: 1 },
+    { q: "विधायी कार्य को प्रशासनिक कार्यों से अलग किस चार्टर एक्ट में किया गया?", o: ["1833", "1853", "1813", "1858"], a: 1 },
+    { q: "किस एक्ट ने कंपनी के व्यापारिक और राजनीतिक कार्यों को अलग किया?", o: ["रेगुलेटिंग एक्ट", "पिट्स इण्डिया एक्ट", "चार्टर एक्ट", "सेटलमेंट एक्ट"], a: 1 },
+    { q: "ईसाई मिशनरियों को भारत में धर्म प्रचार की अनुमति कब मिली?", o: ["1793", "1813 का चार्टर", "1833", "1853"], a: 1 },
+    { q: "बोर्ड ऑफ कंट्रोल का गठन किस अधिनियम के तहत किया गया था?", o: ["1773", "1784 का पिट्स इण्डिया एक्ट", "1813", "1833"], a: 1 },
+    { q: "भारत शासन अधिनियम 1858 के तहत भारत सचिव की परिषद में कितने सदस्य थे?", o: ["10", "15", "12", "20"], a: 1 },
+    { q: "प्रांतों में द्वैध शासन कब लागू किया गया?", o: ["1909", "1919", "1935", "1892"], a: 1 },
+    { q: "स्वतंत्र भारत के प्रथम गवर्नर जनरल कौन थे?", o: ["राजगोपालाचारी", "लॉर्ड माउंटबेटन", "नेहरू जी", "राजेंद्र प्रसाद"], a: 1 },
+    { q: "शिक्षा पर प्रतिवर्ष 1 लाख रुपये खर्च करने का उपबंध किस वर्ष हुआ?", o: ["1793", "1813", "1833", "1853"], a: 1 },
+    { q: "भारत के प्रथम वायसराय लॉर्ड केनिंग किस वर्ष बने?", o: ["1853", "1858", "1861", "1833"], a: 1 },
+    { q: "किस अधिनियम द्वारा सिखों और भारतीयों ईसाइयों के लिए अलग निर्वाचन की व्यवस्था हुई?", o: ["1909", "1919", "1935", "1892"], a: 1 },
+    { q: "लॉर्ड चेम्सफोर्ड के समय कौन सा प्रमुख संवैधानिक सुधार आया?", o: ["मार्ले-मिंटो", "मोंटेग्यू-चेम्सफोर्ड", "साइमन कमीशन", "कैबिनेट मिशन"], a: 1 },
+    { q: "किस चार्टर एक्ट में कंपनी के व्यापारिक अधिकार पूरी तरह समाप्त कर दिए गए?", o: ["1813", "1833", "1853", "1858"], a: 1 },
+    { q: "1773 रेगुलेटिंग एक्ट के दोषों को दूर करने के लिए कौन सा एक्ट आया?", o: ["पिट्स इण्डिया एक्ट", "एक्ट ऑफ सेटलमेंट (1781)", "चार्टर एक्ट", "भारत परिषद एक्ट"], a: 1 },
+    { q: "प्रांतीय स्वायत्तता (Provincial Autonomy) किस अधिनियम की मुख्य विशेषता थी?", o: ["1919", "1935", "1909", "1892"], a: 1 }
+];
+
+const pool = document.getElementById('questions-pool');
+const selections = new Array(bank.length).fill(null);
+
+function initiateQuiz() {
+    nameOfUser = document.getElementById('player-name').value;
+    if(!nameOfUser.trim()) { alert("सादिक दोस्त, नाम लिखना तो जरूरी है!"); return; }
+    document.getElementById('user-auth').style.display = 'none';
+    document.getElementById('quiz-main').style.display = 'block';
+    renderPool();
+    startClock();
+}
+
+function renderPool() {
+    bank.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.className = 'q-item';
+        div.innerHTML = `<div class="q-title">${i + 1}. ${item.q}</div>
+            <div class="opt-row" id="row-${i}">
+                ${item.o.map((o, idx) => `<div class="opt-btn" onclick="makeChoice(${i}, ${idx})">${o}</div>`).join('')}
+            </div>`;
+        pool.appendChild(div);
+    });
+}
+
+function makeChoice(qi, oi) {
+    selections[qi] = oi;
+    const btns = document.querySelectorAll(`#row-${qi} .opt-btn`);
+    btns.forEach(b => b.classList.remove('selected'));
+    btns[oi].classList.add('selected');
+}
+
+function processResults() {
+    clearInterval(clockPtr);
+    let total = 0;
+    bank.forEach((item, i) => {
+        const btns = document.querySelectorAll(`#row-${i} .opt-btn`);
+        btns[item.a].classList.add('is-correct');
+        if(selections[i] !== null) {
+            if(selections[i] === item.a) total++;
+            else btns[selections[i]].classList.add('is-wrong');
+        }
+    });
+    document.getElementById('submit-quiz').style.display = 'none';
+    const area = document.getElementById('results-area');
+    area.style.display = 'block';
+    area.innerHTML = `<h2>बधाई हो ${nameOfUser}!</h2><h1>आपका स्कोर: ${total} / ${bank.length}</h1>`;
+    window.scrollTo(0,0);
+}
+
+let limit = 1200;
+let clockPtr;
+function startClock() {
+    clockPtr = setInterval(() => {
+        limit--;
+        let m = Math.floor(limit/60);
+        let s = limit%60;
+        document.getElementById('quiz-timer').innerText = `समय: ${m}:${s < 10 ? '0'+s : s}`;
+        if(limit <= 0) processResults();
+    }, 1000);
+}
+</script>
+</body>
+</html>
