@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GK with Sadik - Biology Quiz</title>
+    <style>
+        :root { --bio-green: #2e7d32; --dark-blue: #1a237e; --soft-gray: #f9f9f9; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #eceff1; margin: 0; padding: 10px; }
+        .quiz-card { max-width: 850px; margin: 20px auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.1); border-left: 10px solid var(--bio-green); position: relative; }
+        
+        /* Start Screen */
+        #start-box { text-align: center; padding: 80px 20px; }
+        .user-input { padding: 15px; width: 80%; font-size: 18px; border: 2px solid #ccc; border-radius: 8px; margin-bottom: 25px; outline: none; }
+        .user-input:focus { border-color: var(--bio-green); }
+        .start-btn { padding: 15px 50px; background: var(--bio-green); color: white; border: none; border-radius: 8px; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+
+        /* Timer Header */
+        #header-timer { position: sticky; top: 10px; z-index: 100; background: var(--bio-green); color: white; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+
+        .question-section { position: relative; border-bottom: 2px solid #eee; padding: 30px 0; overflow: hidden; }
+        
+        /* Sadik Watermark */
+        .question-section::before {
+            content: "Sadik";
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-25deg);
+            font-size: 90px; color: rgba(46, 125, 50, 0.04); font-weight: 900; pointer-events: none;
+        }
+
+        .q-text { font-size: 20px; font-weight: bold; color: var(--dark-blue); margin-bottom: 15px; position: relative; z-index: 2; }
+        .grid-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; position: relative; z-index: 2; }
+        .opt-btn { padding: 14px; border: 2px solid #e0e0e0; border-radius: 8px; background: #fff; cursor: pointer; font-size: 16px; transition: 0.2s; text-align: left; }
+        .opt-btn:hover { background: #f1f8e9; border-color: var(--bio-green); }
+        
+        .clicked { border-color: var(--bio-green); background: #e8f5e9; font-weight: bold; }
+        .correct-opt { background: #4caf50 !important; color: white; border-color: #388e3c !important; }
+        .wrong-opt { background: #f44336 !important; color: white; border-color: #d32f2f !important; }
+
+        .finish-btn { width: 100%; padding: 20px; background: var(--dark-blue); color: white; border: none; border-radius: 10px; font-size: 22px; font-weight: bold; cursor: pointer; margin-top: 30px; }
+        #score-display { display: none; text-align: center; padding: 30px; border: 4px dashed var(--bio-green); border-radius: 15px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-card" id="start-box">
+    <h1 style="color: var(--bio-green); font-size: 36px;">GK with Sadik</h1>
+    <p style="font-size: 20px; color: #555;">जीव विज्ञान (Biology) - महत्वपूर्ण प्रश्नोत्तरी</p>
+    <input type="text" id="player-id" class="user-input" placeholder="अपना शुभ नाम यहाँ लिखें...">
+    <br>
+    <button class="start-btn" onclick="startTest()">क्विज़ शुरू करें</button>
+</div>
+
+<div class="quiz-card" id="test-box" style="display:none;">
+    <div id="header-timer">समय शेष: 20:00</div>
+    <div id="score-display"></div>
+    <div id="quest-container"></div>
+    <button class="finish-btn" id="done-btn" onclick="checkFinalResults()">रिजल्ट देखें</button>
+</div>
+
+<script>
+let playerName = "";
+const bioData = [
+    { q: "वर्गिकी (Taxonomy) का अध्ययन क्या कहलाता है?", o: ["जीवाणु विज्ञान", "वर्गीकरण के सामान्य सिद्धांत", "कोशिका विज्ञान", "कवक विज्ञान"], a: 1 },
+    { q: "वर्गिकी (Father of Taxonomy) का पिता किसे कहा जाता है?", o: ["अरस्तू", "केरोलस लिनियस", "आर.एच. व्हिटैकर", "ल्यूवेनहॉक"], a: 1 },
+    { q: "केरोलस लिनियस ने 'द्विनाम पद्धति' (Binomial Nomenclature) की शुरुआत कब की थी?", o: ["1753 ई.", "1853 ई.", "1953 ई.", "1653 ई."], a: 0 },
+    { q: "जीवों के वर्गीकरण की सबसे छोटी इकाई कौन सी है?", o: ["वंश (Genus)", "जाति (Species)", "संघ (Phylum)", "वर्ग (Class)"], a: 1 },
+    { q: "आर.एच. व्हिटैकर ने 'पाँच जगत प्रणाली' (Five Kingdom System) कब दी थी?", o: ["1950", "1969", "1869", "1990"], a: 1 },
+    { q: "मोनेरा जगत में किन जीवों को शामिल किया गया है?", o: ["एककोशिकीय यूकेरियोटिक", "प्रोकैरियोटिक जीव (जीवाणु)", "बहुकोशिकीय पादप", "कवक"], a: 1 },
+    { q: "अमीबा और पैरामीशियम किस जगत के अंतर्गत आते हैं?", o: ["मोनेरा", "प्रोटिस्टा", "कवक", "प्लांटी"], a: 1 },
+    { q: "विषाणु (Virus) के अध्ययन को क्या कहा जाता है?", o: ["बैक्टीरियोलॉजी", "वायरोलॉजी (Virology)", "माइकोलॉजी", "फाइकोलॉजी"], a: 1 },
+    { q: "विषाणु की खोज किसने की थी?", o: ["ल्यूवेनहॉक", "इवानोवस्की", "रॉबर्ट कोच", "पाश्चर"], a: 1 },
+    { q: "विषाणु में कौन सा आनुवंशिक पदार्थ पाया जाता है?", o: ["सिर्फ DNA", "DNA या RNA", "सिर्फ RNA", "प्रोटीन"], a: 1 },
+    { q: "जीवाणुभोजी (Bacteriophage) क्या है?", o: ["एक प्रकार का जीवाणु", "जीवाणुओं को नष्ट करने वाला विषाणु", "एक कवक", "एक परजीवी पादप"], a: 1 },
+    { q: "विषाणु का बाहरी आवरण (Capsid) किसका बना होता है?", o: ["कार्बोहाइड्रेट", "प्रोटीन", "वसा", "सेल्युलोज"], a: 1 },
+    { q: "गंगा के जल को शुद्ध रखने के लिए कौन जिम्मेदार है?", o: ["जीवाणु", "जीवाणुभोजी (Bacteriophage)", "कवक", "प्रोटोजोआ"], a: 1 },
+    { q: "जीवाणु (Bacteria) की खोज किसने की थी?", o: ["रॉबर्ट हुक", "एन्टोनीवॉन ल्यूवेनहॉक", "लुई पाश्चर", "एडवर्ड जेनर"], a: 1 },
+    { q: "जीवाणु विज्ञान (Father of Bacteriology) का पिता किसे कहा जाता है?", o: ["रॉबर्ट कोच", "ल्यूवेनहॉक", "लिनियस", "अरस्तू"], a: 1 },
+    { q: "जीवाणुओं में श्वसन का कार्य कौन करता है?", o: ["माइटोकॉन्ड्रिया", "मीसोसोम", "राइबोसोम", "लाइसोसोम"], a: 1 },
+    { q: "जीवाणुओं में कौन सा राइबोसोम पाया जाता है?", o: ["80s", "70s", "60s", "50s"], a: 1 },
+    { q: "हैजा और टाइफाइड किस कारण से होते हैं?", o: ["विषाणु", "जीवाणु (Bacteria)", "कवक", "प्रोटोजोआ"], a: 1 },
+    { q: "जीवाणु कोशिका भित्ति किसकी बनी होती है?", o: ["सेल्युलोज", "पेप्टाइडोग्लाइकोन", "काइटिन", "ग्लाइकोजन"], a: 1 },
+    { q: "जीवाणु का आकार सामान्यतः कितना होता है?", o: ["1μm से 5μm", "2μm से 5μm", "10μm", "0.5μm"], a: 0 },
+    { q: "बेसिलस (Bacillus) जीवाणु का आकार कैसा होता है?", o: ["गोलाकार", "दण्डाणु या छड़ जैसा", "सर्पिलाकार", "कोमा जैसा"], a: 1 },
+    { q: "विब्रियो कोलेरी (Vibrio cholerae) का आकार कैसा होता है?", o: ["छड़ जैसा", "कोमा (,) जैसी आकृति", "गोलाकार", "गुच्छे जैसा"], a: 1 },
+    { q: "मिट्टी, मानव और पशु अपशिष्ट में पाया जाने वाला जीवाणु समूह?", o: ["कवक", "कोलीफॉर्म", "विषाणु", "प्रोटिस्टा"], a: 1 },
+    { q: "सिस्टम नेचुरा (Systema Naturae) पुस्तक के लेखक कौन हैं?", o: ["डार्विन", "केरोलस लिनियस", "अरस्तू", "लैम्पमार्क"], a: 1 },
+    { q: "पादप विषाणुओं में मुख्य रूप से कौन सा आनुवंशिक पदार्थ होता है?", o: ["DNA", "RNA", "प्रोटीन", "विटामिन"], a: 1 },
+    { q: "रेबीज और इन्फ्लुएंजा किसके द्वारा होने वाले रोग हैं?", o: ["जीवाणु", "विषाणु (Virus)", "कवक", "प्रोटोजोआ"], a: 1 },
+    { q: "कवक (Fungi) में पोषण किस प्रकार का होता है?", o: ["स्वपोषी", "परपोषी/परजीवी/मृतोपजीवी", "प्रकाश संश्लेषी", "इनमें से कोई नहीं"], a: 1 },
+    { q: "जीवाणु कोशिका में अतिरिक्त वृत्ताकार DNA क्या कहलाता है?", o: ["केंद्रक", "प्लाज्मिड (Plasmid)", "राइबोसोम", "मीसोसोम"], a: 1 },
+    { q: "जीवाणुओं को गति करने के लिए कौन सी संरचना मदद करती है?", o: ["फिम्ब्री", "फलेजिला", "पिलाइ", "कैप्सूल"], a: 1 },
+    { q: "प्राचीनतम जीवित जीवाणु (Living Fossil) किसे कहा जाता है?", o: ["यूकेरियोट्स", "आर्कीबैक्टीरिया", "सायनोबैक्टीरिया", "माइकोप्लाज्मा"], a: 1 },
+    { q: "प्रकाश संश्लेषण करने वाले जीवाणुओं में क्या पाया जाता है?", o: ["क्लोरोप्लास्ट", "क्रोमेटोफोर", "माइटोकॉन्ड्रिया", "लाइसोसोम"], a: 1 },
+    { q: "किस वैज्ञानिक ने बताया कि एंथ्रेक्स और टीबी जीवाणु द्वारा होते हैं?", o: ["लिनियस", "रॉबर्ट कोच", "ल्यूवेनहॉक", "अरस्तू"], a: 1 },
+    { q: "जंतु जगत (Animalia) में किन जीवों को रखा गया है?", o: ["एककोशिकीय यूकेरियोट्स", "बहुकोशिकीय उपभोक्ता (Metazoa)", "प्रकाश संश्लेषी पादप", "प्रोकैरियोट्स"], a: 1 },
+    { q: "जीवाणुओं में अलैंगिक जनन की मुख्य विधि क्या है?", o: ["बहुविभाजन", "द्विविभाजन (Binary Fission)", "मुकुलन", "बीजाणु जनन"], a: 1 },
+    { q: "विषाणु कैसे जीव माने जाते हैं?", o: ["स्वतंत्र जीव", "अविकल्पी परजीवी (Obligate Parasite)", "मृतोपजीवी", "स्वपोषी"], a: 1 },
+    { q: "जीवाणु कोशिका की सबसे बाहरी चिपचिपी परत?", o: ["कोशिका भित्ति", "कैप्सूल (Slime Layer)", "प्लाज्मा झिल्ली", "साइटोप्लाज्म"], a: 1 },
+    { q: "जीवाणु में आनुवंशिक पदार्थ के चारों ओर केंद्रक झिल्ली?", o: ["होती है", "नहीं होती है", "कभी-कभी होती है", "स्पष्ट होती है"], a: 1 },
+    { q: "कोकस (Coccus) जीवाणु कैसे होते हैं?", o: ["छड़ जैसे", "गोलाकार या अण्डाकार", "लहरदार", "सर्पिलाकार"], a: 1 },
+    { q: "प्रोटिस्टा जगत के जीवों में केंद्रक कैसा होता है?", o: ["अविकसित", "पूर्ण विकसित (यूकेरियोटिक केंद्रक)", "नहीं होता", "केंद्रक झिल्ली रहित"], a: 1 },
+    { q: "सड़ी-गली चीजों पर उगने वाले जीव किस जगत में आते हैं?", o: ["प्लांटी", "कवक (Fungi)", "मोनेरा", "एनिमेलिया"], a: 1 },
+    { q: "ल्यूवेनहॉक ने जीवाणु को क्या नाम दिया था?", o: ["बैक्टीरिया", "एनीमलक्यूल (Animalcule)", "माइक्रोब्स", "विषाणु"], a: 1 },
+    { q: "पादप जगत (Plantae) में शामिल हैं?", o: ["सभी जीवाणु", "सभी बहुकोशिकीय हरे पादप", "सभी कवक", "सभी प्रोटोजोआ"], a: 1 },
+    { q: "वर्गीकरण का सबसे बड़ा संघ (Highest Rank) क्या है?", o: ["जाति", "जगत (Kingdom)", "वर्ग", "कुल"], a: 1 },
+    { q: "नीले-हरे शैवाल (Blue-green algae) किस जगत के हैं?", o: ["प्रोटिस्टा", "मोनेरा", "प्लांटी", "कवक"], a: 1 },
+    { q: "वर्गीकरण की द्विनाम पद्धति में पहला नाम क्या दर्शाता है?", o: ["जाति (Species)", "वंश (Genus)", "कुल (Family)", "गण (Order)"], a: 1 },
+    { q: "विषाणु (Virus) किस माध्यम में गुणन कर सकते हैं?", o: ["चीनी के घोल में", "जीवित कोशिका के भीतर", "मिट्टी में", "हवा में"], a: 1 },
+    { q: "जीवाणु के गुणसूत्र (DNA) को क्या कहा जाता है?", o: ["न्यूक्लियस", "जीनोफोर (Genophore)", "क्रोमोसोम", "प्लाज्मिड"], a: 1 },
+    { q: "एड्स (AIDS) किस प्रकार के विषाणु से होता है?", o: ["DNA विषाणु", "RNA विषाणु (Retrovirus)", "जीवाणु", "कवक"], a: 1 },
+    { q: "जीवाणु कोशिका में साइटोप्लाज्म कैसा होता है?", o: ["तरल", "गाढ़ा पदार्थ", "गैस युक्त", "नहीं होता"], a: 1 },
+    { q: "क्या विषाणु (Virus) को फिल्टर पेपर से छाना जा सकता है?", o: ["हाँ", "नहीं", "सिर्फ पादप विषाणु को", "सिर्फ जंतु विषाणु को"], a: 1 }
+];
+
+const container = document.getElementById('quest-container');
+const logs = new Array(bioData.length).fill(null);
+
+function startTest() {
+    playerName = document.getElementById('player-id').value;
+    if(!playerName.trim()) { alert("सादिक भाई, नाम लिखना तो अनिवार्य है!"); return; }
+    document.getElementById('start-box').style.display = 'none';
+    document.getElementById('test-box').style.display = 'block';
+    loadBioTasks();
+    startBioTimer();
+}
+
+function loadBioTasks() {
+    bioData.forEach((task, i) => {
+        const div = document.createElement('div');
+        div.className = 'question-section';
+        div.innerHTML = `<div class="q-text">${i + 1}. ${task.q}</div>
+            <div class="grid-options" id="opt-grp-${i}">
+                ${task.o.map((v, idx) => `<div class="opt-btn" onclick="hitOption(${i}, ${idx})">${v}</div>`).join('')}
+            </div>`;
+        container.appendChild(div);
+    });
+}
+
+function hitOption(qi, oi) {
+    logs[qi] = oi;
+    const btns = document.querySelectorAll(`#opt-grp-${qi} .opt-btn`);
+    btns.forEach(b => b.classList.remove('clicked'));
+    btns[oi].classList.add('clicked');
+}
+
+function checkFinalResults() {
+    clearInterval(bioTimer);
+    let finalMark = 0;
+    bioData.forEach((task, i) => {
+        const btns = document.querySelectorAll(`#opt-grp-${i} .opt-btn`);
+        btns[task.a].classList.add('correct-opt');
+        if(logs[i] !== null) {
+            if(logs[i] === task.a) finalMark++;
+            else btns[logs[i]].classList.add('wrong-opt');
+        }
+    });
+    document.getElementById('done-btn').style.display = 'none';
+    const scoreBox = document.getElementById('score-display');
+    scoreBox.style.display = 'block';
+    scoreBox.innerHTML = `<h2 style="color:var(--bio-green);">शानदार तैयारी, ${playerName}!</h2><h1 style="font-size:60px; margin:15px 0;">${finalMark} / 50</h1><p>जीव विज्ञान (पेज 45) का टेस्ट पूरा हुआ।</p>`;
+    window.scrollTo(0,0);
+}
+
+let timeLimit = 1200;
+let bioTimer;
+function startBioTimer() {
+    bioTimer = setInterval(() => {
+        timeLimit--;
+        let m = Math.floor(timeLimit/60);
+        let s = timeLimit%60;
+        document.getElementById('header-timer').innerText = `समय शेष: ${m}:${s < 10 ? '0'+s : s}`;
+        if(timeLimit <= 0) checkFinalResults();
+    }, 1000);
+}
+</script>
+</body>
+</html>
